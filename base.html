@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC
+  "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    
+    <link rel="stylesheet" type="text/css" href="static/base.css" />
+    <script type="text/javascript" src="/static/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="/static/base.js"></script>
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div id="header">
+        {% block header %}{% endblock %}
+    </div>
+    <div id="content">{% block content %}{% endblock %}</div>
+    <div id="flash"></div>
+</body>
+</html>

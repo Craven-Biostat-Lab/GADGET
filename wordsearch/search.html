@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %} {{q|safe}} {% endblock %}
+
+{% block head %}
+{% if q %}
+<script type="text/javascript">
+    var initialLimit = 100;
+    var limit = 100;
+    var offset = 0;
+
+    $(document).ready(function() {
+        var queryString = "q={{q}}&limit=" + initialLimit;
+        offset += initialLimit;
+        
+        spin();
+        $.get("result.html", queryString)
+        //.beforeSend(function() {spin();})
+        .success(function(result) {
+            $("#generank").append(result).fadeTo(200, 1);
+            stripetables();
+            $("#more").show();
+            hideflash();
+        })
+        .error(function() {flash("No results found!  Please try a different query.")});
+        
+        $("input#more").click(function() {
+            var queryString = "q={{q}}&limit=" + limit + "&offset=" + offset;
+            offset += limit;
+            
+            spin();
+            $.get("result.html", queryString)
+            //.complete(function() {hideflash();})
+            .success(function(result) {
+                $("#generank").append(result);
+                stripetables();
+                hideflash();
+            })
+            .error(function() {
+                flash("No more results.");
+                $("#more").hide();
+            });
+        });
+        
+        $("input#download").click(function() {
+            window.location="result.csv?q={{q}}&download=true";
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}
+
+{% block header %}
+<form name="search" action="" method="get">
+    {{ form.q }}
+    <input type="submit" value="Search" />
+</form>
+<input type="button" id="download" value="Download results"/>
+{% endblock %}
+
+{% block content %}
+<table class="results" id="generank" style="display:none">
+    <tr>
+        <th>Rank</th>
+        <th>Score</th>
+        <th>Symbol</th>
+        <th>Name</th>
+        <th>Aliases &amp; Old Symbols</th>
+        <th>Chromosome</th>
+        <th>Entrez</th>
+        <th>HUGO</th>
+    </tr>
+</table>
+<input type="button" id="more" value="More..." style="display:none" onclick="javascript:more()" />
+{% endblock %}
