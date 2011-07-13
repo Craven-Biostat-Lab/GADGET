@@ -1,22 +1,38 @@
 // display a message
 function flash(message)
 {
-    $("#flash").html(message).fadeTo(400, 1);
+    $("#flash").html(message).fadeIn(400);
 }
 
 function hideflash()
 {
-    $("#flash").fadeTo(300, 0);
+    $("#flash").fadeOut(300);
 }
 
+// ajax spinner
 function spin()
 {
     flash('<img src="/static/spinner.gif" />');
 }
 
+// zebra stripe result tables
+function stripetables() {
+    $("table.results tr").removeClass("alt");
+    $("table.results tr:even").addClass("alt");
+
+    $("table.results tr")
+    .mouseover(function() {
+        $(this).addClass("over");
+    })
+    .mouseout(function() {
+        $(this).removeClass("over");
+    });
+}
+
 $(document).ready(function() {
     stripetables();
     
+    // fade the flash box when we move the mouse over it, hide it when it's clicked
     $("#flash")
     .click(function() {
         $(this).hide();
@@ -30,16 +46,3 @@ $(document).ready(function() {
     
     
 });
-
-function stripetables() {
-    $("table.results tr").removeClass("alt");
-    $("table.results tr:even").addClass("alt");
-
-    $("table.results tr")
-    .mouseover(function() {
-        $(this).addClass("over");
-    })
-    .mouseout(function() {
-        $(this).removeClass("over");
-    });
-}
