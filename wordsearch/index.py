@@ -5,11 +5,11 @@ from whoosh.fields import SchemaClass, TEXT, NUMERIC
 from whoosh.qparser import MultifieldParser
 from whoosh.scoring import Frequency
 
-indexpath = 'index' # the directory where the index lives
+indexpath = '/home/genetext/genetext/wordsearch/index' # the directory where the index lives
 
 # open or create the index
 if index.exists_in(indexpath):
-    return index.open_dir(indexpath)
+    ix = index.open_dir(indexpath)
 else:
     # define the index fields
     class Schema(SchemaClass):
@@ -18,7 +18,7 @@ else:
         abstract = TEXT
         year = NUMERIC
         
-    return index.create_in(indexpath, Schema)
+    ix = index.create_in(indexpath, Schema)
 
 
 def updateIndex():
@@ -93,15 +93,15 @@ def getAbstracts(query):
     # get the query results
     with ix.searcher(weighting=Frequency) as searcher:
         results = searcher.search(q, limit=None)
+        return [r['pmid'] for r in results]
     
-    return [r['pmid'] for r in results]
 
 def corpusSize():
     """Return the number of abstracts in the corpus"""
     return ix.doc_count()
 
 @atexit.register
-def close() # close the index when the module is unloaded
+def close(): # close the index when the module is unloaded
     ix.close()
 
 if __name__ == '__main__':

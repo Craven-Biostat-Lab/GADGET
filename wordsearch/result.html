@@ -1,15 +1,15 @@
 {% autoescape on %}
 {% if genes %}
-    {% for g in genes %}
+    {% for g, p in genes %}
         <tr>
             <td>{{ forloop.counter|add:offset }}</td>
-            <td>{{ g.score|floatformat:-2 }}</td>
+            <td>{{ g.hits }}</td>
+            <td>{{ g.score|floatformat:-3 }}</td>
+            <td>{{ p|floatformat:-5 }}
             <td>{{ g.symbol }}</td>
             <td>{{ g.name }}</td>
-            <td>{{ g.aliases }} {{ g.old_symbols }}</td>
-            <td>{{ g.chromosome }}</td>
-            <td><a href="http://www.ncbi.nlm.nih.gov/gene?term={{g.entrez}}">{{ g.entrez }}</a></td>
-            <td><a href="http://www.genenames.org/data/hgnc_data.php?hgnc_id={{g.hugo}}">{{ g.hugo }}</a></td>
+            <td>{{ g.synonyms }}</td>
+            <td>{{ g.maplocation }}</td>
         </tr>
     {% endfor %}
 {% endif %}
