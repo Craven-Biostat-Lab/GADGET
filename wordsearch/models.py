@@ -6,7 +6,13 @@ class Gene(models.Model):
     name = models.CharField(max_length=250)
     locustag = models.CharField(max_length=100)
     synonyms = models.CharField(max_length=250)
-    dbxrefs = models.CharField(max_length=250)
+    
+    entrez_id = models.IntegerField()
+    hgnc_id = models.IntegerField()
+    mim_id = models.IntegerField()
+    ensembl_id = models.IntegerField()
+    hprd_id = models.IntegerField()
+    
     chromosome = models.CharField(max_length=7)
     maplocation = models.CharField(max_length=100)
     genetype = models.CharField(max_length=20, db_column='type') # 'type' means something in python

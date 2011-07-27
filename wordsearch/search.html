@@ -10,7 +10,7 @@
     var offset = 0;
 
     $(document).ready(function() {
-        var queryString = "q={{q}}&limit=" + initialLimit;
+        var queryString = "q={{ q|escapejs }}&limit=" + initialLimit;
         offset += initialLimit;
         
         spin();
@@ -62,11 +62,13 @@
 <table class="results" id="generank" style="display:none">
     <tr>
         <th>Rank</th>
-        <th>Hits</th>
+        {% comment %}<th>Hits</th>{% endcomment %}
         <th>Score</th>
         <th>p value</th>
         <th>Symbol</th>
         <th>Name</th>
+        <th>Entrez ID</th>
+        <th>HGNC ID</th>
         <th>Synonyms</th>
         <th>Map Location</th>
     </tr>

@@ -3,7 +3,8 @@ from django.http import HttpResponse, Http404
 from django.db.models import Sum, Count, F
 from django import forms
 
-from scipy.stats import hypergeom
+import rpy2.robjects as robjects
+
 from genetext.wordsearch.models import Gene, GeneAbstract
 from genetext.wordsearch.index import getAbstracts, corpusSize
 
@@ -44,7 +45,7 @@ def result(request):
     # get genes matching query
     # raw sql: can't figure out how to do this efficiently with the Django API
     sqlquery = """
-    SELECT g.*, COUNT(*) hits, COUNT(*)/`abstracts` score
+    SELECT g.*, COUNT(*) hits, COUNT(*)/ (`abstracts` + 1) score
     FROM `gene_abstract` a
     INNER JOIN `gene` g
     ON g.id = a.gene
@@ -56,17 +57,24 @@ def result(request):
     genes = Gene.objects.raw(sqlquery, abstracts + [offset, limit])
     
     # calculate p values
-    pvals = [1-hypergeom.cdf(g.hits, size, querycount, g.abstracts) for g in genes]
-    #pvals = [0.5 for g in genes]
+    phyper = robjects.r['phyper']
+    pvals = [1-phyper(g.hits, querycount, size-querycount, g.abstracts)[0] for g in genes]
     
-    if pvals:
-        return render_to_response('result.html', {'genes': zip(genes, pvals), 'pvals': pvals, 'offset': offset})
+    if (request.GET.get('download')):
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=results.csv'
+        response.write(makeCSV(genes, pvals))
+        return response
     else:
-        raise Http404 # no results
+        if pvals:
+            return render_to_response('result.html', {'genes': zip(genes, pvals), 'pvals': pvals, 'offset': offset})
+        else:
+            raise Http404 # no results
         
-def makeCSV(genes):
-    header = 'rank,score,symbol,name,aliases,old symbols,chromosome,accession,entrez,hugo,refseq,uniprot\n'
+def makeCSV(genes, pvals):
+    header = 'rank,score,p_value,symbol,name,synonyms,entrez_id,hgnc_id,ensembl_id,mim_id,hprd_id,chromosome,map_location\n'
     body = '\n'.join([','.join(['"{0}"'.format(f) for f in 
-        (i, '{0:0.2f}'.format(g.score), g.symbol, g.name, g.aliases, g.old_symbols, g.chromosome, g.accession, int(g.entrez), int(g.hugo), g.refseq, g.uniprot)])
-        for i, g in enumerate(genes)])
+        (rank, '{0:0.3f}'.format(g.score), '{0:0.5f}'.format(p), g.symbol, g.name, g.synonyms, g.entrez_id, g.hgnc_id, g.ensembl_id, g.mim_id, g.hprd_id, g.chromosome, g.maplocation)])
+        for rank, (g, p) in enumerate(zip(genes, pvals))])
     return header + body
+        

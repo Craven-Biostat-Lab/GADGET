@@ -3,11 +3,13 @@
     {% for g, p in genes %}
         <tr>
             <td>{{ forloop.counter|add:offset }}</td>
-            <td>{{ g.hits }}</td>
+            {% comment %}<td>{{ g.hits }}</td>{% endcomment %}
             <td>{{ g.score|floatformat:-3 }}</td>
             <td>{{ p|floatformat:-5 }}
             <td>{{ g.symbol }}</td>
             <td>{{ g.name }}</td>
+            <td><a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}">{{ g.entrez_id }}</a></td>
+            <td>{% if g.hgnc_id %}<a href="http://www.genenames.org/data/hgnc_data.php?hgnc_id={{ g.hgnc_id }}">{{ g.hgnc_id }}</a> {% else %} &emdash; {% endif %}</td>
             <td>{{ g.synonyms }}</td>
             <td>{{ g.maplocation }}</td>
         </tr>
