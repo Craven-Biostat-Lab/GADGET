@@ -1,0 +1,150 @@
+Last updated 7/5/2011
+
+Setting up the genetext database:
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+1) "gene_abstract" table:
+
+Get the data linking genes to abstracts.  Go to ftp://ftp.ncbi.nih.gov/gene/DATA/
+and download gene2pubmed.gz.
+
+Create a database table:
+CREATE TABLE  `genetext`.`gene_abstract_step1` (
+  `tax` int(11) NOT NULL,
+  `gene` int(11) NOT NULL,
+  `abstract` int(11) NOT NULL,
+  PRIMARY KEY (`gene`,`abstract`),
+  KEY `tax` (`tax`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
+
+Uncompress gene2pubmed.gz, and load it into the table.
+
+Link old discontinued gene ID's to new gene ID's.  Get gene_history from
+ftp://ftp.ncbi.nih.gov/gene/DATA/ and load it into the following table:
+
+CREATE TABLE  `genetext`.`gene_history` (
+  `tax_id` int(11) NOT NULL,
+  `entrez_id` int(11) NOT NULL,
+  `old_id` int(11) NOT NULL,
+  `old_sym` varchar(30) NOT NULL,
+  `date` int(11) NOT NULL,
+  PRIMARY KEY (`entrez_id`),
+  KEY `old_id` (`old_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8
+
+Add indices for 'entrez_id' and 'old_id'.
+
+Create an updated gene_abstract table:
+
+create table gene_abstract_step2
+select 
+	ga.tax tax,
+	coalesce(gh.entrez_id, ga.gene) gene, 
+	ga.abstract abstract
+from gene_abstract_step1 ga
+left join gene_history gh
+on ga.gene = gh.entrez_id;
+
+Add an index for the "gene" field.
+
+Get homology data.  Go to ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/ and 
+download the file called "homologene.data".
+
+Create a database table:
+CREATE TABLE .`homologene` (
+  `group` int(11) NOT NULL,
+  `tax` int(11) NOT NULL,
+  `gene_entrez` int(11) NOT NULL,
+  `gene_sym` varchar(30) NOT NULL,
+  `prot_gi` int(11) NOT NULL,
+  `prot_accession` varchar(30) NOT NULL,
+  KEY `group` (`group`),
+  KEY `tax` (`tax`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
+
+and load homologene.data into the table.  Add indeces for "group" and "tax."
+
+Create a table linking genes to abstracts, using homology data, with the following commands:
+
+create table gene_abstract_step3
+select 
+	h1.gene_entrez `gene_entrez_id`,
+	ga.`abstract` `abstract_pmid`
+from homologene h1
+inner join homologene h2
+on h1.`group` = h2.`group`
+inner join gene_abstract_step2 ga
+on h2.gene_entrez = ga.gene
+where h1.tax = 9606
+union distinct
+select
+	ga.gene `gene_entrez_id`,
+	ga.`abstract` `abstract_pmid`
+from gene_abstract_step2 ga
+where ga.tax = 9606;
+
+Add an index for gene_entrez_id.
+
+You can drop the homologene, gene_history, gene_abstract_step1, and
+gene_abstract_step2 tables to save space.
+
+--------------------------------------------------------------------------------
+
+2) "gene" table:
+
+CREATE TABLE  `genetext`.`gene_raw` (
+  `tax_id` smallint(5) unsigned DEFAULT NULL,
+  `entrez_id` int(11) NOT NULL,
+  `symbol` varchar(30) DEFAULT NULL,
+  `locustag` varchar(100) DEFAULT NULL,
+  `synonyms` varchar(250) DEFAULT NULL,
+  `dbXrefs` varchar(250) DEFAULT NULL,
+  `chromosome` varchar(7) DEFAULT NULL,
+  `maplocation` varchar(100) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `type` varchar(20) DEFAULT NULL,
+  `authsym` varchar(30) DEFAULT NULL,
+  `authname` varchar(150) DEFAULT NULL,
+  `nomstatus` char(1) DEFAULT NULL,
+  `other` varchar(800) DEFAULT NULL,
+  `date` int(11) DEFAULT NULL,
+  PRIMARY KEY (`entrez_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8
+
+create table gene
+select
+	ga.gene_entrez_id entrez_id,
+	gr.symbol symbol,
+	gr.description name,	
+	gr.locustag locustag,
+	gr.synonyms synonyms,
+	gr.dbXrefs dbxrefs,
+	gr.chromosome chromosome,
+	gr.maplocation maplocation,
+	gr.type `type`,
+	gr.other other,
+	count(ga.abstract_pmid) abstracts
+from gene_raw gr
+inner join gene_abstract_step3 ga # right join
+on gr.entrez_id = ga.gene_entrez_id
+group by ga.gene_entrez_id;
+
+ALTER TABLE `genetext`.`gene` ADD COLUMN `id` INT  NOT NULL AUTO_INCREMENT FIRST,
+ ADD PRIMARY KEY (`id`),
+ ADD INDEX `entrez_id`(`entrez_id`);
+
+ALTER TABLE `genetext`.`gene_abstract` ADD COLUMN `id` INT  NOT NULL AUTO_INCREMENT FIRST,
+ ADD PRIMARY KEY (`id`),
+ ADD INDEX `abstract_pmid`(`abstract_pmid`),
+ ADD INDEX `gene`(`gene`);
+ 
+Split database crosslinks:
+ALTER TABLE `genetext`.`gene` ADD COLUMN `dbxrefs_split` BOOLEAN  NOT NULL DEFAULT 0 AFTER `dbxrefs`,
+ ADD COLUMN `hgnc_id` INT  AFTER `dbxlinks_split`,
+ ADD COLUMN `mim_id` INT  AFTER `hgnc_id`,
+ ADD COLUMN `ensembl_id` INT  AFTER `mim_id`,
+ ADD COLUMN `hprd_id` INT  AFTER `ensembl_id`;
+
+run "splitlinks.py" 
