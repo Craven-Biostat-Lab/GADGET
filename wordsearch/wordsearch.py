@@ -5,10 +5,11 @@ from django import forms
 
 import rpy2.robjects as robjects
 
-from genetext.wordsearch.models import Gene, GeneAbstract
+from genetext.wordsearch.models import Gene, GeneAbstract, Abstract
 from genetext.wordsearch.index import getAbstracts, corpusSize
 
 def search(request):
+    """The search page for the word view (makes the forms)"""
     class SearchForm(forms.Form):
         q = forms.CharField(label='Keywords:', initial='enter keywords')
         
@@ -22,6 +23,10 @@ def search(request):
     return render_to_response('search.html', {'form': form, 'q':q})
 
 def result(request):
+    """Does the actual search for the word view.  Given a query (via the query
+    string,) search the index for abstracts containing those terms, and then find
+    and rank genes related to those abstracts."""
+    
     if not request.GET.get('q'):
         raise Http404 # don't do anything if we don't have a query
 
@@ -60,6 +65,7 @@ def result(request):
     phyper = robjects.r['phyper']
     pvals = [1-phyper(g.hits, querycount, size-querycount, g.abstracts)[0] for g in genes]
     
+    # return either a CSV (if "download" is in the query string,) an HTML page, or a 404
     if (request.GET.get('download')):
         response = HttpResponse(mimetype='text/csv')
         response['Content-Disposition'] = 'attachment; filename=results.csv'
@@ -72,9 +78,36 @@ def result(request):
             raise Http404 # no results
         
 def makeCSV(genes, pvals):
+    """Create a CSV file given a list of genes and a list of p values."""
     header = 'rank,score,p_value,symbol,name,synonyms,entrez_id,hgnc_id,ensembl_id,mim_id,hprd_id,chromosome,map_location\n'
     body = '\n'.join([','.join(['"{0}"'.format(f) for f in 
         (rank, '{0:0.3f}'.format(g.score), '{0:0.5f}'.format(p), g.symbol, g.name, g.synonyms, g.entrez_id, g.hgnc_id, g.ensembl_id, g.mim_id, g.hprd_id, g.chromosome, g.maplocation)])
         for rank, (g, p) in enumerate(zip(genes, pvals))])
     return header + body
-        
+
+def abstracts(request):
+    """Produce a list of abstracts for a gene and a query."""
+    
+    try:
+        query = request.GET['q']
+        gene = int(request.GET['gene'])
+    except ValueError:
+        raise Http404 # don't do anything if we have bad input
+    
+    try: offset = int(request.GET.get('offset'))
+    except: offset = 0
+    try: limit = int(request.GET.get('limit'))
+    except: limit = 18446744073709551615 # arbitrary large number (no better way to do this.)
+    
+    # get the abstracts matching our query 
+    queryabstracts = getAbstracts(query)
+    
+    # get abstracts tied to the gene
+    abstracts = Abstract.objects.filter(geneabstract__gene=gene).filter(pubmed_id__in=queryabstracts)[offset:limit+offset]
+    
+    if abstracts:
+        return render_to_response('abstracts.html', {'abstracts': abstracts})
+    else: 
+        #return HttpResponse("<li>yo!")
+        raise Http404 # no results
+    

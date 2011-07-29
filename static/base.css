@@ -61,6 +61,25 @@ table.results tr.over {
     background-color: #D9F4FF;
 }
 
+a.showabstracts {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+table#generank tr.abstracts td {
+    background-color: #F0EBFF;
+    padding: 0px 10% 5px 10%;
+    font-size: 80%;
+}
+
+table#generank tr.abstracts ul li {
+    padding-top: 5px;
+}
+
+table#generank a.moreabstracts {
+    font-weight: bold;
+}
+
 input {
     font-size: 14px;
     font-weight: bold;

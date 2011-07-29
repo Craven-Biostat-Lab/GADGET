@@ -25,11 +25,26 @@ class Gene(models.Model):
     class Meta:
         db_table = 'gene'
         managed = False
-
+        
+class Abstract(models.Model):
+    pubmed_id = models.IntegerField(primary_key=True)
+    title = models.CharField(max_length=900, blank=True)
+    authors = models.CharField(max_length=900, blank=True)
+    year = models.IntegerField(null=True, blank=True)
+    month = models.CharField(max_length=9, blank=True)
+    journal = models.CharField(max_length=450, blank=True)
+    volume = models.IntegerField(null=True, blank=True)
+    issue = models.IntegerField(null=True, blank=True)
+    pages = models.CharField(max_length=90, blank=True)
+    
+    class Meta:
+        db_table = u'abstract_info'
+        managed = False
+        
 class GeneAbstract(models.Model):
     id = models.IntegerField(primary_key=True)
     gene = models.ForeignKey(Gene, db_column='gene')
-    abstract = models.IntegerField(db_column='abstract_pmid')
+    abstract = models.ForeignKey(Abstract, db_column='abstract_pmid')
     
     class Meta:
         db_table = 'gene_abstract'

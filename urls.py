@@ -8,6 +8,7 @@ import wordsearch.wordsearch as ws
 urlpatterns = patterns('',
     ('^generank', ws.search),
     ('^result', ws.result),
+    ('^abstract', ws.abstracts),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
         {'document_root': '/home/genetext/genetext/static'}),
     # Example:
