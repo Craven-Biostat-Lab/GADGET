@@ -80,7 +80,7 @@ ROOT_URLCONF = 'genetext.urls'
 # put relative template paths here.
 relative_template_dirs = (
     '',
-    'wordsearch',
+    'wordview',
 )
 
 # absolute template paths
@@ -93,7 +93,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'genetext.wordsearch',
+    'genetext.wordview',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

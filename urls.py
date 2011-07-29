@@ -1,14 +1,14 @@
 from django.conf.urls.defaults import *
-import wordsearch.wordsearch as ws
+import wordview.wordview as wv
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    ('^generank', ws.search),
-    ('^result', ws.result),
-    ('^abstract', ws.abstracts),
+    ('^search', wv.search),
+    ('^result', wv.result),
+    ('^abstract', wv.abstracts),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
         {'document_root': '/home/genetext/genetext/static'}),
     # Example:
