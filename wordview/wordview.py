@@ -6,7 +6,7 @@ from django import forms
 import rpy2.robjects as robjects
 
 from genetext.wordview.models import Gene, GeneAbstract, Abstract
-from genetext.wordview.index import getAbstracts, corpusSize
+from genetext.wordview.index import get_abstracts, corpus_size
 
 def search(request):
     """The search page for the word view (makes the forms)"""
@@ -32,8 +32,8 @@ def result(request):
 
     # get the abstracts matching our query 
     query = request.GET['q']
-    abstracts = getAbstracts(query)
-    size = corpusSize()
+    abstracts = get_abstracts(query)
+    size = corpus_size()
     querycount = len(abstracts)
     
     # get limit and offset from query string
@@ -102,7 +102,7 @@ def abstracts(request):
     except: limit = 18446744073709551615 # arbitrary large number (no better way to do this.)
     
     # get the abstracts matching our query 
-    queryabstracts = getAbstracts(query)
+    queryabstracts = get_abstracts(query)
     
     # get abstracts tied to the gene
     abstracts = Abstract.objects.filter(geneabstract__gene=gene).filter(pubmed_id__in=queryabstracts)[offset:limit+offset]

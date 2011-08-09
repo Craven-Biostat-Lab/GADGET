@@ -96,5 +96,9 @@ input#download {
 }
 
 input#more {
-    margin-top:10px;
+    margin-top: 10px;
+}
+
+img.event {
+    border: solid black 1px;
 }

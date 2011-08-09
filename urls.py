@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 import wordview.wordview as wv
+import geneview.geneview as gv
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -9,6 +10,8 @@ urlpatterns = patterns('',
     ('^search', wv.search),
     ('^result', wv.result),
     ('^abstract', wv.abstracts),
+    ('^events', gv.eventlist),
+    ('^eventplot', gv.plot),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
         {'document_root': '/home/genetext/genetext/static'}),
     # Example:

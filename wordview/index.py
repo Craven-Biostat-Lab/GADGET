@@ -83,7 +83,7 @@ def updateIndex():
     c_update.close()
     db.close()
 
-def getAbstracts(query):
+def get_abstracts(query):
     """Return a list of Pubmed ID's for abstracts matching the given query."""
     
     # parse the user's query
@@ -96,7 +96,7 @@ def getAbstracts(query):
         return [r['pmid'] for r in results]
     
 
-def corpusSize():
+def corpus_size():
     """Return the number of abstracts in the corpus"""
     return ix.doc_count()
 
