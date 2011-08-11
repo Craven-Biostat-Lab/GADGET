@@ -315,7 +315,7 @@ ALTER TABLE `event_event` ADD PRIMARY KEY (`parent`, `child`, `role`);
 -- Create a parent-child table describing the event hierarchy (for only events
 -- extracted from abstracts in our `abstract` table.  To include all abstracts,
 -- take out the inner join to the `abstract` table (last 2 lines.))
-create table parent_child_all
+create table event_event_all
 select distinct
 	ea.homologene_event_id parent,
 	ea.arg_homologene_event_id child,
@@ -329,15 +329,15 @@ on m.occurrence_event_id = o.id
 inner join abstract a
 on a.pubmed_id = o.pmid;
 
--- Add indices to `parent_child_all`
-ALTER TABLE `turku`.`parent_child_all` ADD COLUMN `root` INT  DEFAULT NULL AFTER `abstract`,
+-- Add indices to `event_event_all`
+ALTER TABLE `turku`.`event_event_all` ADD COLUMN `root` INT  DEFAULT NULL AFTER `abstract`,
  ADD PRIMARY KEY (`parent`, `child`, `role`, `abstract`),
  ADD INDEX `parent_abstract`(`parent`, `abstract`),
  ADD INDEX `child_abstract`(`child`, `abstract`);
 
 -- Find root-events for complex events (run this once)
-update parent_child_all c
-left join parent_child_all p
+update event_event_all c
+left join event_event_all p
 on p.child = c.parent
 and p.abstract = c.abstract
 set c.root := c.parent
@@ -345,9 +345,153 @@ where p.child is null;
 
 -- Propogate the root events down each hierarchy.  Run this a couple times until
 -- there are not any rows with root=null.  Until
--- (select count(*) from parent_child_all where root is null;) returns 0.
-update parent_child_all c
-inner join parent_child_all p
+-- (select count(*) from event_event_all where root is null;) returns 0.
+update event_event_all c
+inner join event_event_all p
 on p.child = c.parent
 and p.abstract = c.abstract
 set c.root := p.root;
+
+-- Get event_abstract links for abstracts in our abstract table
+create table event_abstract_all
+select distinct e.`id` `event`, o.`pmid` `abstract_pmid`
+from homologene_event e
+inner join homologene_event_occmap m
+on e.id = m.homologene_event_id
+inner join occurrence_event o
+on m.occurrence_event_id = o.id
+inner join abstract a
+on a.pubmed_id = o.pmid;
+
+ALTER TABLE `event_abstract_all` ADD PRIMARY KEY (`event`, `abstract_pmid`),
+ ADD INDEX `event`(`event`),
+ ADD INDEX `abstract`(`abstract_pmid`);
+
+-- Get only events with abstracts
+create table event_all
+select distinct e.id, e.type
+from homologene_event e
+inner join event_abstract_all ea
+on e.id = ea.event;
+
+ALTER TABLE `event_all` ADD PRIMARY KEY (`id`);
+
+-- Delete events that reference genes not in our `gene` table
+delete e 
+from event_all e
+inner join homologene_eventargument_ggp eg
+on e.id = eg.homologene_event_id
+inner join homologene_gene h
+on eg.homologene_id = h.homologene_id
+left join gene g
+on h.entrezgene_id = g.entrez_id
+where g.entrez_id is null;
+
+delete e 
+from event_all e
+inner join homologene_eventargument_ggp eg
+on e.id = eg.homologene_event_id
+left join (
+    select distinct h.homologene_id
+    from homologene_gene h
+    inner join gene g
+    on h.entrezgene_id = g.entrez_id
+) h
+on eg.homologene_id = h.homologene_id
+where h.homologene_id is null;
+
+-- Get gene_event links for only genes in our `gene` table
+create table event_gene_all
+select
+	g.id gene,
+	h.homologene_id,
+	eg.homologene_event_id event,
+	eg.role role
+from homologene_eventargument_ggp eg
+inner join event_all e
+on eg.homologene_event_id = e.id
+inner join homologene_gene h
+using (homologene_id)
+inner join gene g
+on h.entrezgene_id = g.entrez_id;
+
+ALTER TABLE `event_gene_all` ADD COLUMN `id` INT  NOT NULL AUTO_INCREMENT FIRST,
+ ADD PRIMARY KEY (`id`),
+ ADD INDEX `event_homologene`(`event`,`homologene_id`);
+
+-- Get roots for all events (roots in the event_event table, and self-links for
+-- events with no parents)
+create table event_root_all
+select distinct child event, root
+from event_event_all
+union distinct
+select distinct e.id event, e.id root
+from event_all e
+inner join event_abstract_all ea
+on e.id = ea.event
+left join event_event_all pc
+on e.id = pc.child and ea.abstract_pmid = pc.abstract
+where pc.child is null;
+
+ALTER TABLE `event_root_all` ADD PRIMARY KEY (`event`, `root`),
+ ADD INDEX `root`(`root`),
+ ADD INDEX `event`(`event`);
+
+-- Get only complex events with more than 2 gene arguments
+create table event_root
+select er.*
+from event_root_all er
+inner join (
+    select er.root
+    from event_root_all er
+    inner join event_gene_all eg
+    on er.event = eg.event
+    group by er.root
+    having count(distinct eg.homologene_id) > 1
+) r
+on er.root = r.root;
+
+ALTER TABLE `event_root` ADD PRIMARY KEY (`root`, `event`),
+ ADD INDEX `root`(`root`),
+ ADD INDEX `event`(`event`);
+
+create table event
+select distinct e.id, e.type
+from event_all e
+inner join event_root er
+on e.id = er.event;
+
+ALTER TABLE `event` ADD PRIMARY KEY (`id`);
+
+-- Update all tables to contain links only to the new set of events
+create table event_abstract
+select ea.* 
+from event_abstract_all ea
+inner join event e
+on e.id = ea.event;
+
+ALTER TABLE `event_abstract` ADD PRIMARY KEY (`event`, `abstract_pmid`),
+ ADD INDEX `event`(`event`),
+ ADD INDEX `abstract_pmid`(`abstract_pmid`);
+
+create table event_gene
+select eg.*
+from event_gene_all eg
+inner join event e
+on e.id = eg.event;
+
+ALTER TABLE `event_gene` MODIFY COLUMN `id` INTEGER  NOT NULL AUTO_INCREMENT,
+ ADD PRIMARY KEY (`id`),
+ ADD INDEX `gene`(`gene`),
+ ADD INDEX `event`(`event`);
+ 
+create table event_event
+select distinct parent, child, role
+from event_event_all pc
+inner join event e
+on pc.parent = e.id;
+
+ALTER TABLE `event_event` ADD PRIMARY KEY (`parent`, `child`, `role`),
+ ADD INDEX `parent`(`parent`),
+ ADD INDEX `child`(`child`);
+

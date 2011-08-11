@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %} GADGET: {{q|safe}} {% endblock %}
+
+{% block head %}
+{% if q %}
+<script type="text/javascript">
+
+var initialLimit = 100;
+var limit = 100;
+var offset = 0;
+
+var abstractlimit = 20;
+
+$(document).ready(function() {
+    var queryString = "q={{ q|escapejs }}&limit=" + initialLimit;
+    offset += initialLimit;
+    
+    // get initial results
+    spin();
+    $.get("genelist.html", queryString)
+    .success(function(result) {
+        $("#generank").append(result).fadeTo(200, 1);
+        stripetables();
+        $("#more").show();
+        hideflash();
+    })
+    .error(function() {flash("No results found!  Please try a different query.")});
+    
+    // more button
+    $("input#more").click(function() {
+        var queryString = "q={{ q|escapejs }}&limit=" + limit + "&offset=" + offset;
+        offset += limit;
+        
+        spin();
+        $.get("genelist.html", queryString)
+        .success(function(result) {
+            $("#generank").append(result);
+            stripetables();
+            hideflash();
+        })
+        .error(function() {
+            flash("No more results.");
+            $("#more").hide();
+        });
+    });
+    
+    // download button
+    $("input#download").click(function() {
+        window.location = "genelist.csv?q={{ q|escapejs }}&download=true";
+    });
+    
+    // showing and hiding abstracts
+    $("#generank").delegate("a.showabstracts", "click", function() {
+        var gene = $(this).attr("gene");
+        
+        if ($("#generank tr#a" + gene).length == 0) {
+            // assemble querystring
+            var querystring = "q={{ q|escapejs }}&gene=" + gene + "&limit=" + abstractlimit;
+            
+            // set up abstract area
+            $(this).html("&ndash;");
+            $("#generank tr#" + gene).after('<tr class="abstracts" id="a' + gene + '"><td colspan="100"><img src="/static/spinner2.gif"></td></tr>');
+            
+            // fetch and display abstracts
+            $.get("abstracts.html", querystring)
+            .success(function(result) {
+                $("#generank tr#a" + gene + " td img").remove();
+                $("#generank tr#a" + gene + " td").append('<ul style="display:none">' + result + '</ul>')
+                $("#generank tr#a" + gene + " td").append('<a id="more' + gene + '" gene="' + gene + '" class="moreabstracts" href="javascript: void(0);" offset="' + abstractlimit + '">More...</a>');
+                $("#generank tr#a" + gene + " td ul").slideDown();
+            });
+        }
+        else
+        {
+            $("#generank tr#a" + gene).slideUp('fast', function() {$(this).remove()});
+            $(this).html("+");
+        }
+    });
+    
+    // show more abstracts
+    $("#generank").delegate("a.moreabstracts", "click", function() {
+        var id = $(this).attr("id");
+        var gene = $(this).attr("gene");
+        var offset = parseInt($(this).attr("offset"));
+        
+        var hidelink = 0;
+        
+        // update offset
+        $(this).attr("offset", offset + abstractlimit);
+        //$(this).hide();
+        
+        // fetch and display abstracts
+        var querystring = "q={{ q|escapejs }}&gene=" + gene + "&limit=" + abstractlimit + "&offset=" + offset;
+        $.get("abstracts.html", querystring)
+        .success(function(result) {
+            $("#generank tr.abstracts#a" + gene + " td ul").append(result);
+        })
+        .error(function() {
+            $("#generank a#" + id).hide();
+        });
+        
+        if (hidelink == 1) { alert("Yo again!"); $(this).hide();}
+    });
+});
+    
+</script>
+{% endif %}
+{% endblock %}
+
+{% block header %}
+<form name="search" action="" method="get">
+    {{ form.q }}
+    <input type="submit" value="Search Genes" />
+</form>
+<input type="button" id="download" value="Download results"/>
+{% endblock %}
+
+{% block content %}
+<table class="results stripe" id="generank" style="display:none">
+    <tr>
+        <th></th>
+        <th>Rank</th>
+        <th>Score</th>
+        <th>p value</th>
+        <th>Symbol</th>
+        <th>Name</th>
+        <th>Entrez ID</th>
+        <th>HGNC ID</th>
+        <th>Synonyms</th>
+        <th>Map Location</th>
+    </tr>
+</table>
+<input type="button" id="more" value="More..." style="display:none" />
+{% endblock %}

@@ -99,6 +99,25 @@ input#more {
     margin-top: 10px;
 }
 
-img.event {
-    border: solid black 1px;
+table#events tr td {
+    border-bottom: solid 1px #DCE3E8;
+}
+
+div#front {
+    margin: 50px auto 0 auto;
+    border: solid 1px black;
+    width: 50%;
+    text-align: center;
+    padding: 15px 5px;
+    background-color: #e4d9ff; /*#f4ffd9; #E8FAC5;*/
+    border: solid 1px #968fa8;
+    border-radius: 10px;
+}
+
+div#front table{
+    margin: 0 auto;
+}
+
+div#front span#title {
+    font-size: xx-large;
 }

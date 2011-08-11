@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %} GADGET: {%if genequery %}{{genequery|safe}}{% endif %} {% if q %}{{q|safe}}{% endif %} {% endblock %}
+
+{% block head %}
+{% if go %}
+
+<script type="text/javascript">
+
+var initiallimit = 20;
+var limit = 20;
+var offset = 0;
+
+$(document).ready(function(){
+    var querystring = "{% if genes %}&genes={{ genes|join:',' }}{% endif %}{% if q %}&q={{ q|escapejs }}{% endif %}&limit=" + initiallimit;
+    offset += initiallimit;
+    
+    // get initial results
+    spin();
+    $.get('eventlist.html', querystring)
+    .success(function(result){
+        $("table#events").append(result).fadeIn(200);
+        $("#more").show();
+        hideflash();
+    })
+    .error(function() {flash("No events found!  Please try a different query.")});
+    
+    $('input#more').click(function(){
+        var querystring = "{% if genes %}&genes={{ genes|join:',' }}{% endif %}{% if q %}&q={{ q|escapejs }}{% endif %}&limit=" + limit + "&offset=" + offset;
+        offset += limit;
+        
+        spin();
+        $.get("eventlist.html", querystring)
+        .success(function(result) {
+            $("table#events").append(result);
+            hideflash();
+        })
+        .error(function() {
+            flash("No more events for this query.");
+            $("#more").hide();
+        });
+    });
+});
+
+</script>
+
+{% endif %}
+{% endblock %}
+
+{% block header %}
+<form name="search" action="" method="get">
+    {{ form.genes.label }}: {{ form.genes }}
+    {{ form.q.label}}: {{ form.q }}
+    <input type="submit" value="Search Events" />
+</form>
+{% endblock %}
+
+{% block content %}
+<table id="events" style="display:none">
+    
+</table>
+<input type="button" id="more" value="More..." style="display:none" />
+{% endblock %}

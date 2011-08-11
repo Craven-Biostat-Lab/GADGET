@@ -1,0 +1,34 @@
+{% autoescape on %}{% for e in events %}
+<tr>
+<td><img class="event" src="/eventplot.png?event={{e.id}}" /></td>
+<td>
+
+<b>Genes:</b>
+{% for g in e.get_genes %}
+    {{ g.symbol }}{% if not forloop.last %}, {% endif %}
+{% empty %}
+    No genes
+{% endfor %}<br />
+
+<b>Event types:</b>
+{% for se in e.get_events %}
+    {{ se.type }}{% if not forloop.last %}, {% endif %}
+{% empty %}    
+    No events
+{% endfor %}<br />
+
+<ul>
+    {% for a in e.get_abstracts %}
+    <li> {% if a.authors %} {{ a.authors }}. {% endif %}
+        {% if a.year %} ({{ a.year }}). {% endif %}
+        {% if a.title %} <b>{{ a.title }}</b>. {% endif %}
+        {% if a.journal %} {{ a.journal }}, {% endif %}
+        {% if a.volume %} {{ a.volume }}, {% endif %}
+        {{ a.pages }}.
+        <a href="http://www.ncbi.nlm.nih.gov/pubmed?term={{ a.pubmed_id }}" target="_blank">Pubmed ID: {{ a.pubmed_id }} &rarr;</a>
+    </li>
+    {% endfor %}
+</ul>
+</td>
+{% endfor %}{% endautoescape %}
+

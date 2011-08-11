@@ -17,10 +17,10 @@ function spin()
 
 // zebra stripe result tables
 function stripetables() {
-    $("table.results tr").removeClass("alt");
-    $("table.results tr:even").not(".abstracts").addClass("alt");
+    $("table.stripe tr").removeClass("alt");
+    $("table.stripe tr:even").not(".abstracts").addClass("alt");
 
-    $("table.results tr")
+    $("table.stripe tr")
     .mouseover(function() {
         $(this).addClass("over");
     })

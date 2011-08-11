@@ -1,4 +1,4 @@
-# Django settings for genetext project.
+# Django settings for gadget project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -80,7 +80,7 @@ ROOT_URLCONF = 'genetext.urls'
 # put relative template paths here.
 relative_template_dirs = (
     '',
-    'wordview',
+    'eventview',
     'geneview',
 )
 
@@ -94,7 +94,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'genetext.wordview',
+    'genetext.eventview',
     'genetext.geneview',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
