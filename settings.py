@@ -89,7 +89,7 @@ import os.path
 TEMPLATE_DIRS = tuple([os.path.join(os.path.dirname(__file__), d).replace('\\','/') for d in relative_template_dirs])
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
+    #'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',

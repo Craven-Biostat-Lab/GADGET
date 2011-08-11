@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} GADGET: {{q|safe}} {% endblock %}
+{% block title %} GADGET: Genes for {{q|safe}} {% endblock %}
 
 {% block head %}
 {% if q %}
@@ -10,16 +10,17 @@ var initialLimit = 100;
 var limit = 100;
 var offset = 0;
 
-var abstractlimit = 20;
+var abstractlimit = 15;
 
 $(document).ready(function() {
-    var queryString = "q={{ q|escapejs }}&limit=" + initialLimit;
+    var queryString = "q={{ q|urlencode }}&limit=" + initialLimit;
     offset += initialLimit;
     
     // get initial results
     spin();
     $.get("genelist.html", queryString)
     .success(function(result) {
+        $("div#description").html('Showing and scoring genes in abstracts matching "<b>{{ q|escapejs }}</b>":');
         $("#generank").append(result).fadeTo(200, 1);
         stripetables();
         $("#more").show();
@@ -29,7 +30,7 @@ $(document).ready(function() {
     
     // more button
     $("input#more").click(function() {
-        var queryString = "q={{ q|escapejs }}&limit=" + limit + "&offset=" + offset;
+        var queryString = "q={{ q|urlencode }}&limit=" + limit + "&offset=" + offset;
         offset += limit;
         
         spin();
@@ -47,7 +48,7 @@ $(document).ready(function() {
     
     // download button
     $("input#download").click(function() {
-        window.location = "genelist.csv?q={{ q|escapejs }}&download=true";
+        window.location = "genelist.csv?q={{ q|urlencode }}&download=true";
     });
     
     // showing and hiding abstracts
@@ -56,7 +57,7 @@ $(document).ready(function() {
         
         if ($("#generank tr#a" + gene).length == 0) {
             // assemble querystring
-            var querystring = "q={{ q|escapejs }}&gene=" + gene + "&limit=" + abstractlimit;
+            var querystring = "q={{ q|urlencode }}&gene=" + gene + "&limit=" + abstractlimit;
             
             // set up abstract area
             $(this).html("&ndash;");
@@ -67,7 +68,7 @@ $(document).ready(function() {
             .success(function(result) {
                 $("#generank tr#a" + gene + " td img").remove();
                 $("#generank tr#a" + gene + " td").append('<ul style="display:none">' + result + '</ul>')
-                $("#generank tr#a" + gene + " td").append('<a id="more' + gene + '" gene="' + gene + '" class="moreabstracts" href="javascript: void(0);" offset="' + abstractlimit + '">More...</a>');
+                $("#generank tr#a" + gene + " td").append('<a id="more' + gene + '" gene="' + gene + '" class="moreabstracts" href="javascript: void(0);" offset="' + abstractlimit + '">More abstracts...</a>');
                 $("#generank tr#a" + gene + " td ul").slideDown();
             });
         }
@@ -84,14 +85,11 @@ $(document).ready(function() {
         var gene = $(this).attr("gene");
         var offset = parseInt($(this).attr("offset"));
         
-        var hidelink = 0;
-        
         // update offset
         $(this).attr("offset", offset + abstractlimit);
-        //$(this).hide();
         
         // fetch and display abstracts
-        var querystring = "q={{ q|escapejs }}&gene=" + gene + "&limit=" + abstractlimit + "&offset=" + offset;
+        var querystring = "q={{ q|urlencode }}&gene=" + gene + "&limit=" + abstractlimit + "&offset=" + offset;
         $.get("abstracts.html", querystring)
         .success(function(result) {
             $("#generank tr.abstracts#a" + gene + " td ul").append(result);
@@ -99,8 +97,6 @@ $(document).ready(function() {
         .error(function() {
             $("#generank a#" + id).hide();
         });
-        
-        if (hidelink == 1) { alert("Yo again!"); $(this).hide();}
     });
 });
     
@@ -117,6 +113,7 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block content %}
+<div id="description"></div>
 <table class="results stripe" id="generank" style="display:none">
     <tr>
         <th></th>

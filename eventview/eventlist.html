@@ -5,7 +5,8 @@
 
 <b>Genes:</b>
 {% for g in e.get_genes %}
-    {{ g.symbol }}{% if not forloop.last %}, {% endif %}
+    <a href="eventsearch?genes={{ g.symbol|urlencode }}{% if q %}&q={{ q|urlencode }}{% endif %}">{{ g.symbol }}</a>
+    {% if not forloop.last %}, {% endif %}
 {% empty %}
     No genes
 {% endfor %}<br />

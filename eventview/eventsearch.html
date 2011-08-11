@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} GADGET: {%if genequery %}{{genequery|safe}}{% endif %} {% if q %}{{q|safe}}{% endif %} {% endblock %}
+{% block title %} GADGET: Events for {%if genesyms %}{{ genesyms|join:', ' }}{% endif %} {% if q %}{{q|safe}}{% endif %} {% endblock %}
 
 {% block head %}
 {% if go %}
@@ -12,13 +12,14 @@ var limit = 20;
 var offset = 0;
 
 $(document).ready(function(){
-    var querystring = "{% if genes %}&genes={{ genes|join:',' }}{% endif %}{% if q %}&q={{ q|escapejs }}{% endif %}&limit=" + initiallimit;
+    var querystring = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&limit=" + initiallimit;
     offset += initiallimit;
     
     // get initial results
     spin();
     $.get('eventlist.html', querystring)
     .success(function(result){
+        $("div#description").html('Showing events{% if genesyms %} for genes <b>{{ genesyms|join:', ' }}</b>{% endif %}{% if q %} in abstracts matching "<b>{{ q|escapejs }}</b>"{% endif %}:')
         $("table#events").append(result).fadeIn(200);
         $("#more").show();
         hideflash();
@@ -26,7 +27,7 @@ $(document).ready(function(){
     .error(function() {flash("No events found!  Please try a different query.")});
     
     $('input#more').click(function(){
-        var querystring = "{% if genes %}&genes={{ genes|join:',' }}{% endif %}{% if q %}&q={{ q|escapejs }}{% endif %}&limit=" + limit + "&offset=" + offset;
+        var querystring = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&limit=" + limit + "&offset=" + offset;
         offset += limit;
         
         spin();
@@ -56,8 +57,7 @@ $(document).ready(function(){
 {% endblock %}
 
 {% block content %}
-<table id="events" style="display:none">
-    
-</table>
+<div id="description"></div>
+<table id="events" style="display:none"></table>
 <input type="button" id="more" value="More..." style="display:none" />
 {% endblock %}

@@ -19,21 +19,16 @@ def get_events(gene=None, genes=None, abstract=None, abstracts=None, mingenes = 
     if abstract:
         abstracts = (abstract,)
     
-    # build query 
-    #events = Event.objects.all()
-    #if genes:
-    #    events = events.filter(allchildren__event__genes__id__in=genes)
-    #if genes and mingenes > 1:
-    #    events = events.annotate(num_genes=Count('allchildren__event__genes__id')).filter(num_genes__gte=mingenes)
-    #if abstracts:
-    #    events = events.filter(allchildren__event__abstracts__pubmed_id__in=abstracts)
-
-    events = Event.objects.distinct()
+    # build query, order by increasing number of events
+    events = Event.objects.distinct().annotate(ev_count=Count('allchildren__event')).order_by('ev_count')
     if genes:
         for g in genes:
             events = events.filter(allchildren__event__genes__id=g)
     if abstracts:
         events = events.filter(allchildren__event__abstracts__pubmed_id__in=abstracts)
+
+    # order by increasing complexity (number of events)
+    #events = events.annotate(ev_count=Count('allchildren__event__id')).order_by('ev_count')
 
     # apply limit and offset
     if offset:

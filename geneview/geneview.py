@@ -68,7 +68,7 @@ def result(request):
     # return either a CSV (if "download" is in the query string,) an HTML page, or a 404
     if (request.GET.get('download')):
         response = HttpResponse(mimetype='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=gadget-results.csv'
+        response['Content-Disposition'] = 'attachment; filename=gadget-{0}.csv'.format(query)
         response.write(makeCSV(genes, pvals))
         return response
     else:
@@ -110,7 +110,6 @@ def abstracts(request):
     if abstracts:
         return render_to_response('abstracts.html', {'abstracts': abstracts})
     else: 
-        #return HttpResponse("<li>yo!")
         raise Http404 # no results
 
 def front(request):

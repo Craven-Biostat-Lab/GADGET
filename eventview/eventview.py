@@ -18,11 +18,13 @@ def search(request):
         q = request.GET.get('q')
         
         if request.GET.get('genes'):
-            genequery = request.GET['genes']
-            genes = gene_lookup(genequery)
+            genes = gene_lookup(request.GET['genes'])
+            geneids = [g.id for g in genes]
+            genesyms = [g.symbol for g in genes]
         else:
             genes = None
-            genequery = None
+            geneids = None
+            genesyms = None
             
     else:
         form = SearchForm()
@@ -32,14 +34,13 @@ def search(request):
         genequery = None
     
     return render_to_response('eventsearch.html', {'form': form, 'go': go, 
-        'q':q, 'genequery': genequery, 'genes':genes})
+        'q':q, 'geneids':geneids, 'genesyms':genesyms})
         
 def gene_lookup(query):
     """Given a string of genes separated by commas, lookup and return
     gene ID's from Entrez ID's and symbols."""
     query = [q.strip().upper() for q in query.split(',')]
-    genes = Gene.objects.filter(symbol__in=query)
-    return [g.id for g in genes]
+    return Gene.objects.filter(symbol__in=query)
 
 def eventlist(request):
     
@@ -68,12 +69,12 @@ def eventlist(request):
     
     events = get_events(genes=genes, abstracts=abstracts, limit=limit, offset=offset)
     
-    #from django.db import connection
-    #with open('queries', 'w') as f:
-    #    f.write(repr(connection.queries))
+    from django.db import connection
+    with open('queries', 'w') as f:
+        f.write(repr(connection.queries))
     
     if events:
-        return render_to_response("eventlist.html", {'events':events})
+        return render_to_response("eventlist.html", {'events':events, 'q':query})
     else:
         raise Http404
     
