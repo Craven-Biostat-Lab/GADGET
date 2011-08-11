@@ -101,3 +101,6 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
+
+# directory where the index of abstracts lives
+ABSTRACT_INDEX_PATH = '/home/genetext/genetext/index'

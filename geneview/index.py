@@ -5,11 +5,11 @@ from whoosh.fields import SchemaClass, TEXT, NUMERIC
 from whoosh.qparser import MultifieldParser
 from whoosh.scoring import Frequency
 
-indexpath = '/home/genetext/genetext/geneview/index' # the directory where the index lives
+from genetext.settings import ABSTRACT_INDEX_PATH
 
 # open or create the index
-if index.exists_in(indexpath):
-    ix = index.open_dir(indexpath)
+if index.exists_in(ABSTRACT_INDEX_PATH):
+    ix = index.open_dir(ABSTRACT_INDEX_PATH)
 else:
     # define the index fields
     class Schema(SchemaClass):
@@ -18,7 +18,7 @@ else:
         abstract = TEXT
         year = NUMERIC
         
-    ix = index.create_in(indexpath, Schema)
+    ix = index.create_in(ABSTRACT_INDEX_PATH, Schema)
 
 def updateIndex():
     """
