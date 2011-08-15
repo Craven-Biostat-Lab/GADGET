@@ -8,6 +8,7 @@ from genetext.eventview.models import Gene
 from genetext.geneview.index import get_abstracts
 
 def search(request):
+    """The event search page.  Creates and reads from the forms."""
     class SearchForm(forms.Form):
         q = forms.CharField(label='Keywords', initial='')
         genes = forms.CharField(label='Genes', initial='')
@@ -30,8 +31,8 @@ def search(request):
         form = SearchForm()
         go = False
         q = None
-        genes = None
-        genequery = None
+        geneids = None
+        genesyms = None
     
     return render_to_response('eventsearch.html', {'form': form, 'go': go, 
         'q':q, 'geneids':geneids, 'genesyms':genesyms})
@@ -67,18 +68,27 @@ def eventlist(request):
     except (KeyError, ValueError):
         offset = 0
     
-    events = get_events(genes=genes, abstracts=abstracts, limit=limit, offset=offset)
-    
-    from django.db import connection
-    with open('queries', 'w') as f:
-        f.write(repr(connection.queries))
-    
-    if events:
-        return render_to_response("eventlist.html", {'events':events, 'q':query})
-    else:
+    # get events, 404 if we don't supply either genes or abstracts
+    try:
+        events = get_events(genes=genes, abstracts=abstracts, limit=limit, offset=offset)
+    except KeyError:
         raise Http404
     
-def plot(request):
+    if events:
+        if request.GET.get('preview'):
+            genesyms = [g.symbol for g in Gene.objects.filter(id__in=genes).only('symbol')]
+            return render_to_response("eventpreview.html", 
+                {'events': events, 'geneids':genes, 'genesyms': genesyms, 'q': query})
+        else:
+            return render_to_response("eventlist.html", {'events':events, 'q':query})
+    else:
+        raise Http404
+
+def thumb(request):
+    """Return a smaller plot of each event"""
+    return plot(request, dpi=35)
+    
+def plot(request, dpi=65):
     try:
         id = int(request.GET['event'])
     except (KeyError, ValueError):
@@ -86,9 +96,7 @@ def plot(request):
         
     ev = EventInfo(id)
     
-    #print dir(ev)
-    
-    canvas = ev.plot()
+    canvas = ev.plot(dpi=dpi)
     response = HttpResponse(content_type='image/png')
-    canvas.print_png(response, dpi = 50)
+    canvas.print_png(response)
     return response

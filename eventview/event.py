@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from pylab import figure, axes
 
 from genetext.eventview.models import Abstract, Event, EventEvent, EventGene, Gene
+from django.core.cache import cache
 
 def get_events(gene=None, genes=None, abstract=None, abstracts=None, mingenes = 1, offset=0, limit=None):
     """Return a list of events given a single gene, a single abstract, a list
@@ -48,7 +49,15 @@ class EventInfo:
     # genes - a list of all genes in the event
     
     def __init__(self, root):
-        self.id = root
+        cached = cache.get('e_' + str(root))
+        if cached:
+            self.__dict__ = cached.__dict__
+        else:
+            self.id = root
+    
+    def save(self):
+        """Save a copy of the event in the cache"""
+        cache.set('e_' + str(self.id), self, 90)
         
     def get_id(self):
         return self.id
@@ -73,7 +82,7 @@ class EventInfo:
         try:
             return self.genes
         except AttributeError:
-            self.genes = Gene.objects.filter(event__roots=self.id)
+            self.genes = Gene.objects.filter(event__roots=self.id).only('id', 'symbol')
             return self.genes
     
     def get_eventgenes(self):
@@ -186,12 +195,12 @@ class EventInfo:
                         queue.append(p)
         return G
         
-    def plot(self):
+    def plot(self, dpi=65):
         G = self.graph()
         
         #fig = Figure()
         #ax = fig.add_subplot(111)
-        fig = figure(figsize=(6, 3), dpi=65)
+        fig = figure(figsize=(6, 3), dpi=dpi)
         ax = axes()
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
         
@@ -215,4 +224,9 @@ class EventInfo:
         
         canvas = FigureCanvas(fig)
         plt.close(fig)
+        
+        from django.db import connection
+        with open('queries', 'w') as f:
+            f.write(repr(connection.queries))
+            
         return canvas

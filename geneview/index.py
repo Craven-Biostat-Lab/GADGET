@@ -6,6 +6,7 @@ from whoosh.qparser import MultifieldParser
 from whoosh.scoring import Frequency
 
 from genetext.settings import ABSTRACT_INDEX_PATH
+from django.core.cache import cache
 
 # open or create the index
 if index.exists_in(ABSTRACT_INDEX_PATH):
@@ -85,14 +86,24 @@ def updateIndex():
 def get_abstracts(query):
     """Return a list of Pubmed ID's for abstracts matching the given query."""
     
-    # parse the user's query
-    parser = MultifieldParser(fieldnames=('title', 'abstract'), schema=ix.schema)
-    q = parser.parse(unicode(query))
-    
-    # get the query results
-    with ix.searcher(weighting=Frequency) as searcher:
-        results = searcher.search(q, limit=None)
-        return [r['pmid'] for r in results]
+    # first check the cache to see if we've done this seach already
+    cached = cache.get('q_' + query)
+    if cached:
+        print 'Found it in the cache!', query, len(cached)
+        
+        return cached
+        
+    else:
+        # parse the user's query
+        parser = MultifieldParser(fieldnames=('title', 'abstract'), schema=ix.schema)
+        q = parser.parse(unicode(query))
+        
+        # get the query results
+        with ix.searcher(weighting=Frequency) as searcher:
+            results = [r['pmid'] for r in searcher.search(q, limit=None)]
+            
+            cache.set('q_' + query, results, 600) # remember the results for 10 * 60 seconds
+            return results
     
 
 def corpus_size():

@@ -1,6 +1,6 @@
 {% autoescape on %}{% for e in events %}
 <tr>
-<td><img class="event" src="/eventplot.png?event={{e.id}}" /></td>
+<td><img class="event" src="eventplot.png?event={{e.id}}" /></td>
 <td>
 
 <b>Genes:</b>
@@ -30,6 +30,6 @@
     </li>
     {% endfor %}
 </ul>
-</td>
+</td>{{ e.save }}
 {% endfor %}{% endautoescape %}
 

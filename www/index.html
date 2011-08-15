@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC
+  "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html>
+<head>
+    <title>GADGET</title>
+    
+    <link rel="stylesheet" type="text/css" href="static/base.css" />
+</head>
+<body>
+    <div id="front">
+        <span id="title">GADGET</span>
+        Genes Associated by Documents, Genes, Events, and Text
+        
+        <br /><br />
+
+        <form action="/gadget/genesearch" method="get">
+            <b>Search for genes by keyword:</b>
+            <table><tr><th><label for="id_q">Keywords:</label></th><td><input type="text" name="q" id="id_q" /></td></tr></table>
+            <input type="submit" value="Search genes" />    
+        </form><br /><br /><br />
+        
+        <form action="/gadget/eventsearch" method="get">
+        <b>Search for events by gene and keyword:</b>
+        <table><tr><th><label for="id_q">Keywords:</label></th><td><input type="text" name="q" id="id_q" /></td></tr>
+
+<tr><th><label for="id_genes">Genes:</label></th><td><input type="text" name="genes" id="id_genes" /></td></tr></table>
+        <input type="submit" value="Search events" />
+        </form>
+    </div>
+</body>
+</html>
+

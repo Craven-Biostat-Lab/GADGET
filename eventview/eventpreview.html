@@ -1,0 +1,7 @@
+{% autoescape on %}
+{% for e in events %}
+    <img class="eventthumb", src="eventthumb.png?event={{ e.id }}" />
+{% endfor %}
+{% if q %}<br /><a href="eventsearch?genes={{ geneids|join:',' }}?q={{ q|urlencode }}">See events{% if genesyms %} for <b>{{ genesyms|join:', ' }}</b>{% endif %}{% if q %} matching "<b>{{ q }}</b>"{% endif %} &rarr;</a>{% endif %}
+{% if genesyms %}<br /><a href="eventsearch?genes={{ geneids|join:',' }}">See all events for <b>{{ genesyms|join:', ' }}</b> &rarr;</a>{% endif %}
+{% endautoescape %}
