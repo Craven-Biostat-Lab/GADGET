@@ -3,7 +3,7 @@ from django.http import HttpResponse, Http404
 from django.db.models import Q
 from django import forms
 
-from genetext.eventview.event import EventInfo, get_events
+from genetext.eventview.event import EventInfo, get_events, get_event_genes
 from genetext.eventview.models import Gene
 from genetext.geneview.index import get_abstracts
 
@@ -84,9 +84,36 @@ def eventlist(request):
     else:
         raise Http404
 
+def eventgenes(request):
+    # get genes out of request
+    try:
+        genes = [int(g) for g in request.GET['genes'].split(',')]
+    except (KeyError, ValueError):
+        genes = None
+    
+    # get abstracts
+    query = request.GET.get('q')
+    if query:
+        abstracts = get_abstracts(query)
+    else:
+        abstracts = None
+        
+    # get genes, 404 if we don't supply either genes or abstracts
+    try:
+        event_genes = get_event_genes(genes=genes, abstracts=abstracts)
+    except KeyError:
+        raise Http404
+
+    return HttpResponse(event_genes)
+    
+    #if event_genes:
+    #    return render_to_response("eventgenes.html", {'event_genes': event_genes})
+    #else:
+    #    raise Http404
+
 def thumb(request):
     """Return a smaller plot of each event"""
-    return plot(request, dpi=35)
+    return plot(request, dpi=40)
     
 def plot(request, dpi=65):
     try:

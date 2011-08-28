@@ -1,0 +1,8 @@
+{% autoescape on %}
+<table class="eventgenes"><tr>
+{% for eg in event_genes %}
+    <td>{{eg.symbol}} ({{eg.ev_count}})</td>
+    {% if forloop.counter|divisibleby:'6' %}</tr><tr>{% endif %}
+{% endfor %}
+</tr></table>
+{% endautoescape %}

@@ -1,24 +1,20 @@
+from matplotlib import use
+use('Agg') # set matplotlib backend
+
 from django.db.models import Count
 import networkx as nx
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-#from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from pylab import figure, axes
 
 from genetext.eventview.models import Abstract, Event, EventEvent, EventGene, Gene
 from django.core.cache import cache
 
-def get_events(gene=None, genes=None, abstract=None, abstracts=None, mingenes = 1, offset=0, limit=None):
-    """Return a list of events given a single gene, a single abstract, a list
-    of genes, or a list of abstracts."""
-    if gene is None and genes is None and abstract is None and abstracts is None:
-        raise KeyError('You must supply either genes or abstracts to fetch events.')
+def get_events(genes=None, abstracts=None, offset=0, limit=None):
+    """Return a list of event ID's given gene ID's and/or abstract ID's"""
     
-    # if we have a single gene or abstract, make them into lists
-    if gene:
-        genes = (gene,)
-    if abstract:
-        abstracts = (abstract,)
+    if genes is None and abstracts is None:
+        raise KeyError('You must supply either genes or abstracts to fetch events.')
     
     # build query, order by increasing number of events
     events = Event.objects.distinct().annotate(ev_count=Count('allchildren__event')).order_by('ev_count')
@@ -28,9 +24,6 @@ def get_events(gene=None, genes=None, abstract=None, abstracts=None, mingenes = 
     if abstracts:
         events = events.filter(allchildren__event__abstracts__pubmed_id__in=abstracts)
 
-    # order by increasing complexity (number of events)
-    #events = events.annotate(ev_count=Count('allchildren__event__id')).order_by('ev_count')
-
     # apply limit and offset
     if offset:
         events = events[offset:]
@@ -39,6 +32,80 @@ def get_events(gene=None, genes=None, abstract=None, abstracts=None, mingenes = 
 
     # execute query and return list of Event classes
     return [EventInfo(e.id) for e in events]
+
+def get_event_genes(genes=None, abstracts=None):
+    """Return genes"""
+    
+    if genes is None and abstracts is None:
+        raise KeyError('You must supply either genes or abstracts to fetch events.')
+    
+    event_genes = Gene.objects.distinct()
+    if genes:
+        #for g in genes:
+            #event_genes = event_genes.filter(event__roots__root__allchildren__event__genes__id=g)
+        event_genes = event_genes.filter(event__roots__root__allchildren__event__genes__id__in=genes)\
+            .annotate(gene_count=Count('event__roots__root__allchildren__event__genes__id'))\
+            .filter(gene_count__gte=len(genes))
+    if abstracts:
+        event_genes = event_genes.filter(event__roots__root__allchildren__event__abstracts__pubmed_id__in=abstracts)
+    
+    def build_sql(genes, abstracts):
+        
+        top = \
+        """
+        select
+        g.id, g.symbol, count(distinct e_root.id) ev_count
+        from gene g
+        inner join event_gene eg
+        on eg.gene = g.id
+        inner join event_root er
+        on er.event = eg.event
+        """
+        
+        genes = \
+        """
+        inner join (
+	        select e_root.id
+	        from event e_root
+	        inner join event_root er
+	        on e_root.id = er.root
+	        inner join event_gene eg
+	        on eg.event = er.event
+	        where eg.gene in ({0})
+	        having count(distinct eg.gene) >= 2
+        ) e_root
+        on e_root.id = er.root
+        """.format(','.join(['%s' for g in genes]))
+        
+        
+        
+    
+    event_genes = event_genes.annotate(ev_count=Count('event__roots__root__id', distinct=True)).order_by('-ev_count')
+    
+    """
+    select
+    g.id, g.symbol, count(distinct e_root.id) ev_count
+    from gene g
+    inner join event_gene eg
+    on eg.gene = g.id
+    inner join event_root er
+    on er.event = eg.event
+    inner join (
+	    select e_root.id
+	    from event e_root
+	    inner join event_root er
+	    on e_root.id = er.root
+	    inner join event_gene eg
+	    on eg.event = er.event
+	    where eg.gene in (5744,850)
+	    having count(distinct eg.gene) >= 2
+    ) e_root
+    on e_root.id = er.root
+    group by g.id
+    order by ev_count desc;
+    """    
+        
+    return event_genes.query
 
 class EventInfo:
     """Represents a complex (root) event.  Event info is lazily fetched from the database."""
@@ -200,7 +267,7 @@ class EventInfo:
         
         #fig = Figure()
         #ax = fig.add_subplot(111)
-        fig = figure(figsize=(6, 3), dpi=dpi)
+        fig = figure(figsize=(6, 3), dpi=dpi, frameon=False)
         ax = axes()
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
         
@@ -224,9 +291,5 @@ class EventInfo:
         
         canvas = FigureCanvas(fig)
         plt.close(fig)
-        
-        from django.db import connection
-        with open('queries', 'w') as f:
-            f.write(repr(connection.queries))
             
         return canvas
