@@ -12,9 +12,16 @@ var offset = 0;
 
 var abstractlimit = 15;
 
+// build the query string and redirect to a page with the new ordering
+function orderby(key)
+{
+    var querystring = "q={{q|urlencode}}&orderby=" + key;
+    window.location = "genesearch?" + querystring;
+}
+
 $(document).ready(function()
 {
-    var queryString = "q={{ q|urlencode }}&limit=" + initialLimit;
+    var queryString = "q={{ q|urlencode }}&orderby={{ orderby|urlencode }}&limit=" + initialLimit;
     offset += initialLimit;
     
     // get initial results
@@ -34,7 +41,7 @@ $(document).ready(function()
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
     {
-        var queryString = "q={{ q|urlencode }}&limit=" + limit + "&offset=" + offset;
+        var queryString = "q={{ q|urlencode }}&orderby={{ orderby|urlencode }}&limit=" + limit + "&offset=" + offset;
         offset += limit;
         
         // get more genes
@@ -163,9 +170,9 @@ $(document).ready(function()
     <tr>
         <th></th>
         <th>Rank</th>
-        <th>Score</th>
+        <th>{% if orderby == 'score' %}<u>Score</u>{% else %}<a href="javascript:orderby('score');">Score</a>{% endif %}</th>
         <th>p value</th>
-        <th>Matching abstracts</th>
+        <th>{% if orderby == 'hits' %}<u>Hits</u>{% else %}<a href="javascript:orderby('hits');">Hits</a>{% endif %}</th>
         <th>Total abstracts</th>
         <th>Symbol</th>
         <th>Name</th>

@@ -92,8 +92,7 @@ def get_abstracts(query):
     # first check the cache to see if we've done this seach already
     cached = cache.get('q_' + query.replace(' ', '_'))
     if cached:
-        print 'Found it in the cache!', query, len(cached)
-        
+        #print 'Found it in the cache!', query, len(cached)
         return cached
         
     else:

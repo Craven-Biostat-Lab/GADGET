@@ -20,7 +20,10 @@ def search(request):
         q = ''
         form = SearchForm()
     
-    return render_to_response('genesearch.html', {'form': form, 'q':q})
+    # get the order from the query string
+    orderby = request.GET.get('orderby', default='score')
+    
+    return render_to_response('genesearch.html', {'form': form, 'q':q, 'orderby':orderby})
 
 def result(request):
     """Does the actual search for the word view.  Given a query (via the query
@@ -46,6 +49,12 @@ def result(request):
     try: limit = int(request.GET.get('limit'))
     except: limit = 18446744073709551615 # arbitrary large number (no better way to do this.)
     
+    # get the order from the query string
+    orderby = request.GET.get('orderby', default='score')
+    # make sure that the order-by option is valid, to prevent SQL injection
+    if orderby not in ('score', 'hits'):
+        orderby = 'score'
+    
     # create a string of '%s,'s to insert into the SQL query to pass the abstracts
     def paramlist(s): 
         for i in xrange(s): yield '%s'
@@ -60,14 +69,14 @@ def result(request):
     ON g.id = a.gene
     WHERE a.`abstract_pmid` in ({paramstring})
     GROUP BY g.id
-    ORDER BY score DESC
+    ORDER BY {orderby} DESC
     LIMIT %s, %s;
-    """.format(paramstring=paramstring)
+    """.format(paramstring=paramstring, orderby=orderby)
     genes = Gene.objects.raw(sqlquery, abstracts + [offset, limit])
     
     # calculate p values
     phyper = robjects.r['phyper']
-    pvals = ['{0:.2e}'.format(1-phyper(g.hits, querycount, size-querycount, g.abstracts)[0]) for g in genes]
+    pvals = ['{0:.2e}'.format(phyper(g.hits-1, querycount, size-querycount, g.abstracts, lower_tail=False)[0]) for g in genes]
     
     # return either a CSV (if "download" is in the query string,) an HTML page, or a 404
     if (request.GET.get('download')):
@@ -77,7 +86,7 @@ def result(request):
         return response
     else:
         if pvals:
-            return render_to_response('genelist.html', {'genes': zip(genes, pvals), 'pvals': pvals, 'offset': offset})
+            return render_to_response('genelist.html', {'genes': zip(genes, pvals), 'pvals': pvals, 'offset': offset, 'orderby':orderby})
         else:
             raise Http404 # no results
         
