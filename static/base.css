@@ -17,6 +17,11 @@ body {
     margin: 0px 3px;
 }
 
+#header a{
+    font-weight: bold;
+    color: #000
+}
+
 #content {
     padding-top: 45px;
 }
@@ -108,8 +113,36 @@ div#description {
     padding-bottom: 5px;
 }
 
+div#description ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
 table#events tr td {
     border-bottom: solid 1px #DCE3E8;
+}
+
+div#eventgenes{
+    padding: 10px;
+}
+
+table#eventgenes{
+    border: solid #FFB057;
+    border-width: 1px 0 0 1px;
+    border-collapse: collapse;
+}
+
+table#eventgenes td{
+    background-color: #FFF4B8;
+    padding: 5px 5px;
+    border: solid #FFB057;
+    border-width: 0 1px 1px 0;
+    margin: 0;
+    text-align: center;
+}
+
+table#eventgenes td a{
+    color: #000;
 }
 
 div#front {

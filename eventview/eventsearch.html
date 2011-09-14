@@ -11,37 +11,71 @@ var initiallimit = 20;
 var limit = 20;
 var offset = 0;
 
-$(document).ready(function(){
+$(document).ready(function()
+{
     var querystring = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&limit=" + initiallimit;
     offset += initiallimit;
     
     // get initial results
     spin();
     $.get('eventlist.html', querystring)
-    .success(function(result){
-        $("div#description").html('Showing events{% if genesyms %} for genes <b>{{ genesyms|join:', ' }}</b>{% endif %}{% if q %} in abstracts matching "<b>{{ q|escapejs }}</b>"{% endif %}:')
+    .success(function(result)
+    {
+        $("div#description").show();
         $("table#events").append(result).fadeIn(200);
         $("#more").show();
         hideflash();
     })
     .error(function() {flash("No events found!  Please try a different query.")});
     
-    $('input#more').click(function(){
+    // fetch and display more events
+    $('input#more').click(function()
+    {
         var querystring = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&limit=" + limit + "&offset=" + offset;
         offset += limit;
         
         spin();
-        $.get("eventlist.html", querystring)
-        .success(function(result) {
+        $.get("eventlist", querystring)
+        .success(function(result) 
+        {
             $("table#events").append(result);
             hideflash();
         })
-        .error(function() {
+        .error(function() 
+        {
             flash("No more events for this query.");
             $("#more").hide();
         });
     });
 });
+
+// fetch and display a table of genes referenced in events for this query
+function eventgenes()
+{
+    if ($("table#eventgenes").length == 0) // make sure the table doesn't already exist
+    {
+        spin();
+        $("div#description a#showeventgenes").parent("li").hide();
+        
+        var querystring = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}";
+        $.get("eventgenes", querystring)
+        .success(function(result)
+        {
+            $("div#eventgenes").append(result).slideDown();
+        })
+        .complete(function()
+        {
+            hideflash();
+        });
+    }
+}
+
+// add the given gene to the search
+function addgene(gene)
+{
+    var querystring = "{% if q %}&q={{ q|urlencode }}{% endif %}&genes={% if genesyms %}{{ genesyms|join:' ,'|urlencode }}, {% endif %}" + gene;
+    window.location = "eventsearch?" + querystring;
+}
 
 </script>
 
@@ -57,7 +91,14 @@ $(document).ready(function(){
 {% endblock %}
 
 {% block content %}
-<div id="description"></div>
+<div id="description" style="display:none">
+    Showing events{% if genesyms %} for genes <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q %} in abstracts matching "<b>{{ q|safe }}</b>"{% endif %}:
+    <ul>
+        <li><a href="genesearch?q={{ q|urlencode }}">Rank genes matching "<b>{{ q|safe }}</b>" &rarr;</li>
+        <li><a href="javascript:eventgenes();" id="showeventgenes">See a list of genes referenced by these events...</a></li>
+    </ul>
+</div>
+<div id="eventgenes" style="display:none"><b>Genes referenced by these events:</b><br />(Click on a gene to add it to the query.)</div>
 <table id="events" style="display:none"></table>
 <input type="button" id="more" value="More..." style="display:none" />
 {% endblock %}

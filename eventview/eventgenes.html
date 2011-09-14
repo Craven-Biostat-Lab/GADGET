@@ -1,8 +1,8 @@
 {% autoescape on %}
-<table class="eventgenes"><tr>
+<table id="eventgenes"><tr>
 {% for eg in event_genes %}
-    <td>{{eg.symbol}} ({{eg.ev_count}})</td>
-    {% if forloop.counter|divisibleby:'6' %}</tr><tr>{% endif %}
+    <td>{% if eg.id in genes %}<b>{{ eg.symbol }}</b>{% else %}<a href="javascript:addgene('{{ eg.symbol }}');">{{eg.symbol}}</a>{% endif %} ({{ eg.ev_count }})</td>
+    {% if forloop.counter|divisibleby:'6' and not forloop.last %}</tr><tr>{% endif %}
 {% endfor %}
 </tr></table>
 {% endautoescape %}

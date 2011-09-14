@@ -104,12 +104,12 @@ def eventgenes(request):
     except KeyError:
         raise Http404
 
-    return HttpResponse(event_genes)
+    #return HttpResponse(event_genes)
     
-    #if event_genes:
-    #    return render_to_response("eventgenes.html", {'event_genes': event_genes})
-    #else:
-    #    raise Http404
+    if event_genes:
+        return render_to_response("eventgenes.html", {'event_genes': event_genes, 'genes':genes})
+    else:
+        raise Http404
 
 def thumb(request):
     """Return a smaller plot of each event"""

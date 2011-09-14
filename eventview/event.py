@@ -16,13 +16,15 @@ def get_events(genes=None, abstracts=None, offset=0, limit=None):
     if genes is None and abstracts is None:
         raise KeyError('You must supply either genes or abstracts to fetch events.')
     
-    # build query, order by increasing number of events
+    # build query, order by increasing compleity (number of sub-events)
     events = Event.objects.distinct().annotate(ev_count=Count('allchildren__event')).order_by('ev_count')
+    
+    # restrict events by matching genes and abstracts
     if genes:
         for g in genes:
             events = events.filter(allchildren__event__genes__id=g)
     if abstracts:
-        events = events.filter(allchildren__event__abstracts__pubmed_id__in=abstracts)
+        events = events.filter(abstracts__pubmed_id__in=abstracts, allchildren__event__isnull=False)
 
     # apply limit and offset
     if offset:
@@ -31,27 +33,34 @@ def get_events(genes=None, abstracts=None, offset=0, limit=None):
         events = events[:limit + offset]
 
     # execute query and return list of Event classes
-    return [EventInfo(e.id) for e in events]
+    events = [EventInfo(e.id) for e in events]
+    
+    #from django.db import connection
+    #queries = connection.queries
+    #raise Exception
+    
+    return events
 
-def get_event_genes(genes=None, abstracts=None):
+def get_event_genes(genes, abstracts):
     """Return genes"""
     
     if genes is None and abstracts is None:
         raise KeyError('You must supply either genes or abstracts to fetch events.')
     
-    event_genes = Gene.objects.distinct()
-    if genes:
-        #for g in genes:
-            #event_genes = event_genes.filter(event__roots__root__allchildren__event__genes__id=g)
-        event_genes = event_genes.filter(event__roots__root__allchildren__event__genes__id__in=genes)\
-            .annotate(gene_count=Count('event__roots__root__allchildren__event__genes__id'))\
-            .filter(gene_count__gte=len(genes))
-    if abstracts:
-        event_genes = event_genes.filter(event__roots__root__allchildren__event__abstracts__pubmed_id__in=abstracts)
-    
-    def build_sql(genes, abstracts):
+    def build_sql(genes=None, abstracts=None):
         
-        top = \
+        params = [] # list of all the parameters we're sending to the server
+        
+        def paramstring(l):
+            """Return a string of comma-separated %s's of length l
+            (faster and more memory-efficient than list comprehensions)"""
+            def slist():
+                for i in xrange(l): yield "%s"
+            return ','.join(slist())
+        
+        # first part of query.  do a subquery of events matching the genes and 
+        # abstracts, then get matching genes.
+        query = \
         """
         select
         g.id, g.symbol, count(distinct e_root.id) ev_count
@@ -60,53 +69,77 @@ def get_event_genes(genes=None, abstracts=None):
         on eg.gene = g.id
         inner join event_root er
         on er.event = eg.event
+        inner join (
+            select e_root.id
+            from event e_root
         """
         
-        genes = \
-        """
-        inner join (
-	        select e_root.id
-	        from event e_root
-	        inner join event_root er
-	        on e_root.id = er.root
-	        inner join event_gene eg
-	        on eg.event = er.event
-	        where eg.gene in ({0})
-	        having count(distinct eg.gene) >= 2
+        # join in abstracts to event subquery
+        if abstracts:
+            query += \
+            """
+            inner join event_abstract ea
+            on ea.event = e_root.id
+            """
+        
+        # join in genes.  only get root events.  if there are abstracts, handle
+        # them in here (because of the order MySQL wants query clauses)
+        if genes:
+            query += \
+            """
+            inner join event_root er
+            on e_root.id = er.root
+            inner join event_gene eg
+            on eg.event = er.event
+            where eg.gene in ({paramstring})
+            """.format(paramstring=paramstring(len(genes)))
+           
+            params += genes
+            
+            # restrict events to matching abstracts
+            if abstracts:
+                query += \
+                """
+                and ea.abstract_pmid in ({paramstring})
+                """.format(paramstring=paramstring(len(abstracts)))
+                params += abstracts
+            
+            # count the matching genes to see if we have all genes in the query
+            # (instead of one join to the event_gene table for each gene)
+            query += \
+            """
+            group by e_root.id
+            having count(distinct eg.gene) >= {0}
+            """.format(len(genes))
+            
+        # restrict events to matching abstracts (if we didn't already do it)
+        if abstracts and not genes:
+            query += \
+            """
+            where ea.abstract_pmid in ({paramstring})
+            group by e_root.id
+            """.format(paramstring=paramstring(len(abstracts)))
+            params += abstracts
+        
+        # join in the subquery of matching events
+        query += \
+        """    
         ) e_root
         on e_root.id = er.root
-        """.format(','.join(['%s' for g in genes]))
-        
-        
-        
+        group by g.id
+        order by ev_count desc, g.symbol asc;
+        """
     
-    event_genes = event_genes.annotate(ev_count=Count('event__roots__root__id', distinct=True)).order_by('-ev_count')
+        return query, params
     
-    """
-    select
-    g.id, g.symbol, count(distinct e_root.id) ev_count
-    from gene g
-    inner join event_gene eg
-    on eg.gene = g.id
-    inner join event_root er
-    on er.event = eg.event
-    inner join (
-	    select e_root.id
-	    from event e_root
-	    inner join event_root er
-	    on e_root.id = er.root
-	    inner join event_gene eg
-	    on eg.event = er.event
-	    where eg.gene in (5744,850)
-	    having count(distinct eg.gene) >= 2
-    ) e_root
-    on e_root.id = er.root
-    group by g.id
-    order by ev_count desc;
-    """    
-        
-    return event_genes.query
+    query, params = build_sql(genes, abstracts)
 
+    #raise Exception    
+    
+    ev_genes = Gene.objects.raw(query, params)
+    return ev_genes
+    
+    
 class EventInfo:
     """Represents a complex (root) event.  Event info is lazily fetched from the database."""
     

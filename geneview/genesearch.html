@@ -30,7 +30,7 @@ $(document).ready(function()
     .success(function(result)
     {
         // append new genes to table, show "more" button
-        $("div#description").html('Showing and scoring genes in abstracts matching "<b>{{ q|escapejs }}</b>":');
+        $("div#description").show();
         $("#generank").append(result).fadeTo(200, 1);
         stripetables();
         $("#more").show();
@@ -104,7 +104,7 @@ $(document).ready(function()
                 $.get("eventlist.html", querystring)
                 .success(function(result)
                 {
-                    $("#generank tr#a" + gene + " td div").prepend(result + "<br /><br />");
+                    $("#generank tr#a" + gene + " td div").prepend(result + "<br><br>");
                 });
             });
         }
@@ -165,15 +165,19 @@ $(document).ready(function()
 {% endblock %}
 
 {% block content %}
-<div id="description"></div>
+<div id="description" style="display:none">
+    Showing and scoring genes in abstracts matching "<b>{{ q|safe }}</b>":<br />
+    <a href="eventsearch?q={{ q|urlencode }}">See events in abstracts matching "<b>{{ q|safe }}</b>" &rarr;</a>
+</div>
 <table class="results stripe" id="generank" style="display:none">
     <tr>
         <th></th>
         <th>Rank</th>
-        <th>{% if orderby == 'score' %}<u>Score</u>{% else %}<a href="javascript:orderby('score');">Score</a>{% endif %}</th>
         <th>p value</th>
-        <th>{% if orderby == 'hits' %}<u>Hits</u>{% else %}<a href="javascript:orderby('hits');">Hits</a>{% endif %}</th>
-        <th>Total abstracts</th>
+        <th>{% if orderby == 'score' %}<u>Adjusted Precision</u>{% else %}<a href="javascript:orderby('score');">Adjusted Precision</a>{% endif %}</th>
+        <th>{% if orderby == 'f1_score' %}<u>F1 Score</u>{% else %}<a href="javascript:orderby('f1_score');">F1 Score</a>{% endif %}</th>
+        <th>{% if orderby == 'hits' %}<u>Matching Abstracts</u>{% else %}<a href="javascript:orderby('hits');">Matching Abstracts</a>{% endif %}</th>
+        <th>{% if orderby == 'abstracts' %}<u>Total Abstracts</u>{% else %}<a href="javascript:orderby('abstracts');">Total Abstracts</a>{% endif %}</th>
         <th>Symbol</th>
         <th>Name</th>
         <th>Entrez ID</th>

@@ -36,11 +36,11 @@ def result(request):
     # get the abstracts matching our query 
     query = request.GET['q']
     abstracts = get_abstracts(query)
-    size = corpus_size()
-    querycount = len(abstracts)
+    total_abstracts = corpus_size()
+    query_abstracts = len(abstracts)
     
     # 404 if there are no abstracts
-    if querycount == 0:
+    if query_abstracts == 0:
         raise Http404
     
     # get limit and offset from query string
@@ -52,18 +52,24 @@ def result(request):
     # get the order from the query string
     orderby = request.GET.get('orderby', default='score')
     # make sure that the order-by option is valid, to prevent SQL injection
-    if orderby not in ('score', 'hits'):
+    if orderby not in ('score', 'hits', 'abstracts', 'f1_score'):
         orderby = 'score'
     
-    # create a string of '%s,'s to insert into the SQL query to pass the abstracts
-    def paramlist(s): 
-        for i in xrange(s): yield '%s'
-    paramstring = ','.join(paramlist(len(abstracts)))
+    def paramstring(l):
+        """Return a string of comma-separated %s's of length l
+        (faster and more memory-efficient than using a list comprehension)"""
+        def slist():
+            for i in xrange(l): yield "%s"
+        return ','.join(slist())
     
     # get genes matching query
     # raw sql: can't figure out how to do this efficiently with the Django API
     sqlquery = """
-    SELECT g.*, COUNT(*) hits, COUNT(*)/ (`abstracts` + 10) score
+    SELECT g.*, 
+        COUNT(*) hits, 
+        COUNT(*)/ (`abstracts` + 10) score,
+        (2 * (COUNT(*) / `abstracts`) * (COUNT(*) / {query_abstracts})) / 
+            ((COUNT(*) / `abstracts`) + (COUNT(*) / {query_abstracts})) f1_score
     FROM `gene_abstract` a
     INNER JOIN `gene` g
     ON g.id = a.gene
@@ -71,12 +77,12 @@ def result(request):
     GROUP BY g.id
     ORDER BY {orderby} DESC
     LIMIT %s, %s;
-    """.format(paramstring=paramstring, orderby=orderby)
+    """.format(paramstring=paramstring(len(abstracts)), orderby=orderby, query_abstracts=query_abstracts)
     genes = Gene.objects.raw(sqlquery, abstracts + [offset, limit])
     
     # calculate p values
     phyper = robjects.r['phyper']
-    pvals = ['{0:.2e}'.format(phyper(g.hits-1, querycount, size-querycount, g.abstracts, lower_tail=False)[0]) for g in genes]
+    pvals = ['{0:.2e}'.format(phyper(g.hits-1, query_abstracts, total_abstracts-query_abstracts, g.abstracts, lower_tail=False)[0]) for g in genes]
     
     # return either a CSV (if "download" is in the query string,) an HTML page, or a 404
     if (request.GET.get('download')):
