@@ -65,7 +65,7 @@ $(document).ready(function()
     // download button
     $("input#download").click(function()
     {
-        window.location = "genelist.csv?q={{ q|urlencode }}&download=true";
+        window.location = "genelist.csv?q={{ q|urlencode }}&orderby={{ orderby|urlencode }}&download=true";
     });
     
     // show / hide abstracts when the + or - gets clicked
@@ -173,11 +173,11 @@ $(document).ready(function()
     <tr>
         <th></th>
         <th>Rank</th>
-        <th>p value</th>
-        <th>{% if orderby == 'score' %}<u>Adjusted Precision</u>{% else %}<a href="javascript:orderby('score');">Adjusted Precision</a>{% endif %}</th>
         <th>{% if orderby == 'f1_score' %}<u>F1 Score</u>{% else %}<a href="javascript:orderby('f1_score');">F1 Score</a>{% endif %}</th>
         <th>{% if orderby == 'hits' %}<u>Matching Abstracts</u>{% else %}<a href="javascript:orderby('hits');">Matching Abstracts</a>{% endif %}</th>
         <th>{% if orderby == 'abstracts' %}<u>Total Abstracts</u>{% else %}<a href="javascript:orderby('abstracts');">Total Abstracts</a>{% endif %}</th>
+        <th>{% if orderby == 'precision' %}<u>Adjusted Precision</u>{% else %}<a href="javascript:orderby('precision');">Adjusted Precision</a>{% endif %}</th>
+        <th>p value</th>
         <th>Symbol</th>
         <th>Name</th>
         <th>Entrez ID</th>

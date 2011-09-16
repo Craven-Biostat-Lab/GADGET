@@ -4,11 +4,11 @@
         <tr id="{{ g.id }}" offset="0" hits="{{ g.hits }}">
             <td><a id="showabs{{ g.id }}" gene="{{ g.id }}" class="showabstracts" href="javascript: void(0);" offset="0">+</a></td>
             <td>{{ forloop.counter|add:offset }}</td>
-            <td>{{ p }}</td>
-            <td>{{ g.score|floatformat:-3 }}</td>
             <td>{{ g.f1_score|floatformat:-3 }}</td>
             <td>{{ g.hits }}</td>
             <td>{{ g.abstracts }}</td>
+            <td>{{ g.precision|floatformat:-3 }}</td>
+            <td>{{ p }}</td>
             <td>{{ g.symbol }}</td>
             <td>{{ g.name }}</td>
             <td><a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}" target="_blank">{{ g.entrez_id }}</a></td>
