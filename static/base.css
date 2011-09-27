@@ -164,3 +164,35 @@ div#front span#title {
     font-size: xx-large;
 }
 
+a.topic {
+    display: block;
+    font-size: x-large;
+    font-weight: bold;
+    margin-top: 40px;
+}
+
+div.example {
+    border-left: solid 2px #426BA2 /*#74C7DC*/;
+    margin-left: 5%;
+    padding-left: 5px;
+    margin-bottom: 5px;
+}
+
+div.example span, span.example, 
+table.instructions tr td:first-child, table.instructions span {
+    font-family: Consolas, mono;
+    color: #426BA2;
+    font-weight: bold;
+    background-color: #DCE8FA;
+    padding: 1px 5px;
+}
+
+table.instructions
+{
+    margin: 0 5%;
+}
+
+table.instructions td
+{
+    padding: 5px 10px;
+}

@@ -86,24 +86,26 @@ def result(request):
     phyper = robjects.r['phyper']
     pvals = ['{0:.2e}'.format(phyper(g.hits-1, query_abstracts, total_abstracts-query_abstracts, g.abstracts, lower_tail=False)[0]) for g in genes]
     
-    # return either a CSV (if "download" is in the query string,) an HTML page, or a 404
-    if (request.GET.get('download')):
-        response = HttpResponse(mimetype='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=gadget-{0}.csv'.format(quote_plus(query))
-        response.write(makeCSV(genes, pvals))
-        return response
-    else:
-        if pvals:
-            return render_to_response('genelist.html', {'genes': zip(genes, pvals), 'pvals': pvals, 'offset': offset, 'orderby':orderby})
+    # return either a CSV (if "download" is in the query string,) an HTML page, or a 404       
+    if pvals:
+        if (request.GET.get('download')):
+            # create, package, and return a CSV file
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=gadget-{0}.csv'.format(quote_plus(query))
+            response.write(makeCSV(genes, pvals, offset))
+            return response
         else:
-            raise Http404 # no results
+            # if no "download", render HTML
+            return render_to_response('genelist.html', {'genes': zip(genes, pvals), 'pvals': pvals, 'offset': offset, 'orderby':orderby})
+    else:
+        raise Http404 # no results
         
-def makeCSV(genes, pvals):
+def makeCSV(genes, pvals, offset):
     """Create a CSV file (returned as a string) given a list of genes and a list of p values."""
     header = 'rank,f1_score,matching_abstracts,total_abstracts,adjusted_precision,p_value,symbol,name,synonyms,entrez_id,hgnc_id,ensembl_id,mim_id,hprd_id,chromosome,map_location\n'
     body = '\n'.join([','.join(['"{0}"'.format(f) for f in 
         (rank, '{0:0.3f}'.format(g.f1_score), g.hits, g.abstracts, '{0:0.3f}'.format(g.precision), p, g.symbol, g.name, g.synonyms, g.entrez_id, g.hgnc_id, g.ensembl_id, g.mim_id, g.hprd_id, g.chromosome, g.maplocation)])
-        for rank, (g, p) in enumerate(zip(genes, pvals))])
+        for rank, (g, p) in enumerate(zip(genes, pvals), start=1+offset)])
     return header + body
 
 def abstracts(request):
