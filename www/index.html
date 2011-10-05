@@ -9,26 +9,48 @@
     <link rel="stylesheet" type="text/css" href="static/base.css" />
 </head>
 <body>
-    <div id="front">
-        <span id="title">GADGET</span>
-        Genes Associated by Documents, Genes, Events, and Text
-        
-        <br /><br />
+<div id="front">
+    <img src="/static/logo-big.png" alt="GADGET: Genes Associated by Documents, Genes, Events, and Text" id="biglogo"/>
+    <table id="links"><tr style="width:100%">
+        <td><a href="/manual.html">User&nbsp;Manual</a></td>
+        <td><a href="/contact.html">Contact</a></td>
+        <td id="last">&nbsp;</td>
+    </tr></table>
+    <p><b>GADGET</b> is a tool that lets you search through literature related to genes.  You can search for genes related to a topic, or find gene interaction events extracted from text.</p>
+    <br />
 
-        <form action="/gadget/genesearch" method="get">
-            <b>Search for genes by keyword:</b>
-            <table><tr><th><label for="id_q">Keywords:</label></th><td><input type="text" name="q" id="id_q" /></td></tr></table>
-            <input type="submit" value="Search genes" />    
-        </form><br /><br /><br />
-        
-        <form action="/gadget/eventsearch" method="get">
-        <b>Search for events by gene and keyword:</b>
-        <table><tr><th><label for="id_q">Keywords:</label></th><td><input type="text" name="q" id="id_q" /></td></tr>
-
-<tr><th><label for="id_genes">Genes:</label></th><td><input type="text" name="genes" id="id_genes" /></td></tr></table>
-        <input type="submit" value="Search events" />
-        </form>
+    <b>Search for genes by keyword:</b>
+    <div id="search">
+        <form action="/gadget/genesearch" method="get"><table><tr>
+            <th><label for="id_q">Keywords:</label></th><td><input type="text" name="q" id="id_q" style="width:100%"/></td><td><input type="submit" value="Search genes" /></td>
+        </tr></table></form>
     </div>
+    <div class="example">
+        <b>Examples:</b><br />
+        <a href="/gadget/genesearch?q=blastema">Find genes related to "blastema"</a><br />
+        <a href="/gadget/genesearch?q=chitin">Find genes related to "chitin"</a>
+    </div>
+    <br />
+    
+    <b>Search for events by gene and keyword:</b>
+    <div id="search">    
+        <form action="/gadget/eventsearch" method="get"><table>
+            <tr>
+                <th><label for="id_q">Keywords:</label></th><td><input type="text" name="q" id="id_q" style="width:100%" /></td>
+                <td rowspan="2" style="verticle-align:center"><input type="submit" value="Search events" /></td>
+            </tr>
+            <tr>
+                <th><label for="id_genes">Genes:</label></th><td><input type="text" name="genes" id="id_genes" style="width:100%" /></td>
+            </tr>
+        </table></form>
+    </div>
+    <div class="example">
+        <b>Examples:</b><br />
+        <a href="/gadget/eventsearch?genes=CDKN1A, TP53">See events for genes CDKN1A and TP53</a><br />
+        <a href="/gadget/eventsearch?q=autophagy">See events in abstracts matching "autophagy"</a><br />
+        <a href="/gadget/eventsearch?&q=nephron&genes=WNK4">See events for gene WNK4 in abstracts matching "nephron"</a></br>
+    </div>
+</div>
 </body>
 </html>
 

@@ -2,6 +2,20 @@ body {
     font-family: sans, sans-serif;
 }
 
+input {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 4px;
+}
+
+form {
+    display: inline;
+}
+
+/*******************************************************************************
+* gene view and event view
+*******************************************************************************/
+
 #header {
     position: fixed;
     top: 0px;
@@ -43,6 +57,24 @@ body {
     font-size: 20px;
     padding-bottom: 8px;
 }
+
+
+input#more {
+    margin-top: 10px;
+}
+
+div#description {
+    padding-bottom: 5px;
+}
+
+div#description ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/*******************************************************************************
+* Gene view
+*******************************************************************************/
 
 table.results th {
     background-color: #D9F4FF;
@@ -90,33 +122,14 @@ table#generank a.moreabstracts {
     font-weight: bold;
 }
 
-input {
-    font-size: 14px;
-    font-weight: bold;
-    padding: 4px;
-}
-
-form {
-    display: inline;
-}
-
 input#download {
     position: absolute;
     right: 10px;
 }
 
-input#more {
-    margin-top: 10px;
-}
-
-div#description {
-    padding-bottom: 5px;
-}
-
-div#description ul {
-    margin: 0;
-    padding-left: 20px;
-}
+/*******************************************************************************
+* Event view
+*******************************************************************************/
 
 table#events tr td {
     border-bottom: solid 1px #DCE3E8;
@@ -145,24 +158,79 @@ table#eventgenes td a{
     color: #000;
 }
 
+/*******************************************************************************
+* Front page
+*******************************************************************************/
 div#front {
-    margin: 50px auto 0 auto;
+    margin: 20px auto 30px auto;
+    width: 60%
+}
+
+div#front p {
+    text-align:center;
+}
+
+div#search {
+    /*margin: 50px auto 0 auto;*/
+    margin: 5px auto;
     border: solid 1px black;
-    width: 50%;
+    /*width: 80%;*/
     text-align: center;
-    padding: 15px 5px;
+    padding: 15px 3px;
     background-color: #e4d9ff; /*#f4ffd9; #E8FAC5;*/
     border: solid 1px #968fa8;
     border-radius: 10px;
 }
 
-div#front table{
-    margin: 0 auto;
+div#search table{
+    width:100%;
 }
 
-div#front span#title {
-    font-size: xx-large;
+img#biglogo {
+    display: block;
+    margin: 20px auto 5px auto;
+    width:100%;
 }
+
+table#links {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+table#links td a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #426BA2;
+}
+
+table#links td:hover a {
+    color: #65a5f7;
+}
+
+table#links td {
+    border-top: solid 2px #426BA2;
+    border-bottom: solid 2px #426BA2;
+    padding: 2px 8px;
+}
+
+table#links td:hover {
+    border-top: solid 2px #65a5f7;
+    border-bottom: solid 2px #65a5f7;
+}
+
+table#links td#last {
+    width: 100%;
+}
+
+table#links td#last:hover {
+    border-top: solid 2px #426BA2;
+    border-bottom: solid 2px #426BA2;
+}
+
+/*******************************************************************************
+* User manual
+*******************************************************************************/
 
 a.topic {
     display: block;
