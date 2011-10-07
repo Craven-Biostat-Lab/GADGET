@@ -16,9 +16,9 @@ urlpatterns = patterns('',
     (r'^gadget/eventplot', ev.plot),
     (r'^gadget/eventthumb', ev.thumb),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
-        {'document_root': '/home/matt/work/gadget/genetext/static'}),
+        {'document_root': '/home/matt/work/gadget/static'}),
     (r'^(?P<path>.*)$', 'django.views.static.serve', 
-        {'document_root': '/home/matt/work/gadget/genetext/www'}),
+        {'document_root': '/home/matt/work/gadget/www'}),
     
     # Example:
     # (r'^genetext/', include('genetext.foo.urls')),
