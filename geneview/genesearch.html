@@ -166,8 +166,8 @@ $(document).ready(function()
 
 {% block content %}
 <div id="description" style="display:none">
-    Showing and scoring genes in abstracts matching "<b>{{ q|safe }}</b>":<br />
-    <a href="eventsearch?q={{ q|urlencode }}">See events in abstracts matching "<b>{{ q|safe }}</b>" &rarr;</a>
+    Showing and scoring genes in abstracts matching <b>{{ q|safe }}</b>:<br />
+    <a href="eventsearch?q={{ q|urlencode }}">See events in abstracts matching <b>{{ q|safe }}</b> &rarr;</a>
 </div>
 <table class="results stripe" id="generank" style="display:none">
     <tr>

@@ -92,9 +92,9 @@ function addgene(gene)
 
 {% block content %}
 <div id="description" style="display:none">
-    Showing events{% if genesyms %} for genes <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q %} in abstracts matching "<b>{{ q|safe }}</b>"{% endif %}:
+    Showing events{% if genesyms %} for genes <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}:
     <ul>
-        {% if q %}<li><a href="genesearch?q={{ q|urlencode }}">Rank genes matching "<b>{{ q|safe }}</b>" &rarr;</li>{% endif %}
+        {% if q %}<li><a href="genesearch?q={{ q|urlencode }}">Rank genes matching <b>{{ q|safe }}</b> &rarr;</li>{% endif %}
         <li><a href="javascript:eventgenes();" id="showeventgenes">See a list of genes referenced by these events...</a></li>
     </ul>
 </div>

@@ -3,7 +3,7 @@ body {
 }
 
 input {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     padding: 4px;
 }
@@ -37,7 +37,7 @@ form {
 }
 
 #content {
-    padding-top: 45px;
+    padding-top: 50px;
 }
 
 #flash {
@@ -70,6 +70,11 @@ div#description {
 div#description ul {
     margin: 0;
     padding-left: 20px;
+    border-left: solid 2px #426BA2;
+}
+
+div#description ul li {
+    color: #426BA2;
 }
 
 /*******************************************************************************
@@ -133,6 +138,7 @@ input#download {
 
 table#events tr td {
     border-bottom: solid 1px #DCE3E8;
+    border-collapse: collapse;
 }
 
 div#eventgenes{
@@ -159,16 +165,49 @@ table#eventgenes td a{
 }
 
 /*******************************************************************************
-* Front page
+* User manual, front page, contact
 *******************************************************************************/
+
 div#front {
     margin: 20px auto 30px auto;
-    width: 60%
+    width: 60%;
+    max-width: 600px;
 }
 
 div#front p {
     text-align:center;
 }
+
+img#biglogo {
+    display: block;
+    margin: 20px auto 5px auto;
+    width: 100%;
+    max-width: 500px;
+}
+
+div.example {
+    border-left: solid 2px #426BA2 /*#74C7DC*/;
+    margin-left: 5%;
+    padding-left: 5px;
+    margin-bottom: 5px;
+}
+
+div.example span, span.example, 
+table.instructions tr td:first-child, table.instructions span {
+    font-family: Consolas, mono;
+    color: #426BA2;
+    font-weight: bold;
+    background-color: #DCE8FA;
+    padding: 1px 5px;
+}
+
+div.example ul {
+    padding-left: 20px;
+}
+
+/*******************************************************************************
+* Front page
+*******************************************************************************/
 
 div#search {
     /*margin: 50px auto 0 auto;*/
@@ -176,19 +215,13 @@ div#search {
     border: solid 1px black;
     /*width: 80%;*/
     text-align: center;
-    padding: 15px 3px;
+    padding: 3px 3px;
     background-color: #e4d9ff; /*#f4ffd9; #E8FAC5;*/
     border: solid 1px #968fa8;
     border-radius: 10px;
 }
 
 div#search table{
-    width:100%;
-}
-
-img#biglogo {
-    display: block;
-    margin: 20px auto 5px auto;
     width:100%;
 }
 
@@ -239,28 +272,15 @@ a.topic {
     margin-top: 40px;
 }
 
-div.example {
-    border-left: solid 2px #426BA2 /*#74C7DC*/;
-    margin-left: 5%;
-    padding-left: 5px;
-    margin-bottom: 5px;
-}
-
-div.example span, span.example, 
-table.instructions tr td:first-child, table.instructions span {
-    font-family: Consolas, mono;
-    color: #426BA2;
-    font-weight: bold;
-    background-color: #DCE8FA;
-    padding: 1px 5px;
-}
-
-table.instructions
-{
+table.instructions {
     margin: 0 5%;
 }
 
-table.instructions td
-{
+table.instructions td {
     padding: 5px 10px;
+}
+
+a.top {
+    display: block;
+    font-size: 80%;
 }
