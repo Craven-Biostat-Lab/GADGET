@@ -134,19 +134,3 @@ def abstracts(request):
         return render_to_response('abstracts.html', {'abstracts': abstracts})
     else: 
         raise Http404 # no results
-
-def front(request):
-    """The front page for the app"""  
-    
-    class GeneForm(forms.Form):
-        q = forms.CharField(label='Keywords', initial='')
-        
-    class EventForm(forms.Form):
-        q = forms.CharField(label='Keywords', initial='')
-        genes = forms.CharField(label='Genes', initial='')    
-        
-    geneform = GeneForm()
-    eventform = EventForm()
-    
-    return render_to_response('front.html', {'geneform': geneform, 'eventform': eventform})
-

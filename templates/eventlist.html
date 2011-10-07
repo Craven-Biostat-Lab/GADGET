@@ -19,16 +19,9 @@
 {% endfor %}<br />
 
 <ul>
-    {% for a in e.get_abstracts %}
-    <li> {% if a.authors %} {{ a.authors }}. {% endif %}
-        {% if a.year %} ({{ a.year }}). {% endif %}
-        {% if a.title %} <b>{{ a.title }}</b>. {% endif %}
-        {% if a.journal %} {{ a.journal }}, {% endif %}
-        {% if a.volume %} {{ a.volume }}, {% endif %}
-        {{ a.pages }}.
-        <a href="http://www.ncbi.nlm.nih.gov/pubmed?term={{ a.pubmed_id }}" target="_blank">Pubmed ID: {{ a.pubmed_id }} &rarr;</a>
-    </li>
-    {% endfor %}
+    {% with e.get_abstracts as abstracts %}
+        {% include "abstracts.html" %}
+    {% endwith %}
 </ul>
 </td>{{ e.save }}
 {% endfor %}{% endautoescape %}
