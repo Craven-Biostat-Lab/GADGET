@@ -4,81 +4,12 @@
 
 {% block head %}
 {% if go %}
-
 <script type="text/javascript">
-
-var initiallimit = 20;
-var limit = 20;
-var offset = 0;
-
-$(document).ready(function()
-{
-    var querystring = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&limit=" + initiallimit;
-    offset += initiallimit;
-    
-    // get initial results
-    spin();
-    $.get('eventlist.html', querystring)
-    .success(function(result)
-    {
-        $("div#description").show();
-        $("table#events").append(result).fadeIn(200);
-        $("#more").show();
-        hideflash();
-    })
-    .error(function() {flash("No events found!  Please try a different query.")});
-    
-    // fetch and display more events
-    $('input#more').click(function()
-    {
-        var querystring = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}&limit=" + limit + "&offset=" + offset;
-        offset += limit;
-        
-        spin();
-        $.get("eventlist", querystring)
-        .success(function(result) 
-        {
-            $("table#events").append(result);
-            hideflash();
-        })
-        .error(function() 
-        {
-            flash("No more events for this query.");
-            $("#more").hide();
-        });
-    });
-});
-
-// fetch and display a table of genes referenced in events for this query
-function eventgenes()
-{
-    if ($("table#eventgenes").length == 0) // make sure the table doesn't already exist
-    {
-        spin();
-        $("div#description a#showeventgenes").parent("li").hide();
-        
-        var querystring = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}";
-        $.get("eventgenes", querystring)
-        .success(function(result)
-        {
-            $("div#eventgenes").append(result).slideDown();
-        })
-        .complete(function()
-        {
-            hideflash();
-        });
-    }
-}
-
-// add the given gene to the search
-function addgene(gene)
-{
-    var querystring = "{% if q %}&q={{ q|urlencode }}{% endif %}&genes={% if genesyms %}{{ genesyms|join:' ,'|urlencode }}, {% endif %}" + gene;
-    window.location = "eventsearch?" + querystring;
-}
-
+    var q_arg = "{% if q %}&q={{ q|urlencode }}{% endif %}";
+    var genes_arg = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}";
+    var genesyms_arg = "{% if genesyms %}&genes{{ genesyms|join:', ' }}{% endif %}";
 </script>
-
+<script type="text/javascript" src="/static/eventsearch.js"></script>
 {% endif %}
 {% endblock %}
 
