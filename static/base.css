@@ -265,6 +265,12 @@ table#links td#last:hover {
 * User manual
 *******************************************************************************/
 
+div#manual {
+    margin: auto;
+    width: 900px;
+    max-width: 100%;
+}
+
 a.topic {
     display: block;
     font-size: x-large;

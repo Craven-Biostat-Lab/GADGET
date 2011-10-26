@@ -7,7 +7,7 @@
 <script type="text/javascript">
     var q_arg = "{% if q %}&q={{ q|urlencode }}{% endif %}";
     var genes_arg = "{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}";
-    var genesyms_arg = "{% if genesyms %}&genes{{ genesyms|join:', ' }}{% endif %}";
+    var genesyms_arg = "{% if genesyms %}&genes={{ genesyms|join:', ' }}{% endif %}";
 </script>
 <script type="text/javascript" src="/static/eventsearch.js"></script>
 {% endif %}

@@ -17,6 +17,8 @@ urlpatterns = patterns('',
     (r'^gadget/eventthumb', ev.thumb),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
         {'document_root': '/home/matt/work/gadget/static'}),
+    (r'^$', 'django.views.static.serve', 
+        {'document_root': '/home/matt/work/gadget/www', 'path':'index.html'}),    
     (r'^(?P<path>.*)$', 'django.views.static.serve', 
         {'document_root': '/home/matt/work/gadget/www'}),
     

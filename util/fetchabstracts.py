@@ -13,7 +13,8 @@ db = MySQLdb.connect(user='root', passwd='password', db='genetext')
 c = db.cursor()
 
 def fetch(idlist):
-    """Fetch and return metadata for a list of Pubmed IDs"""
+    """Fetch and return metadata for a list of Pubmed IDs.  Returns a lists of 
+    dicts, each dict containing data for one abstract."""
     url = """http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id={0}&rettype=abstract&retmode=xml"""
     
     # fetch from entrez
@@ -75,11 +76,13 @@ def fetch(idlist):
     
     
 def ids(size = 200):
-    """get ids with missing abstracts.  an iterator over id lists with the given size"""
+    """Find all pubmed ID's of abstracts with `updated` set to null.  Return an
+    iterator over lists of abstract PMID's with the given size (for fetching
+    multiple abstracts at once.)"""
     c.execute("""
         select `pubmed_id`
         from `abstract`
-        where `title` is null;
+        where `updated` is null;
     """)
     # return [r[0] for r in c.fetchall()]
     
@@ -89,7 +92,8 @@ def ids(size = 200):
 
 
 def update(metadata):
-    """Enter metadata into the table using a given list of dicts"""
+    """Enter metadata into the table using a given list of dicts.  Each dict is
+    one row."""
     
     for m in metadata:
         try:

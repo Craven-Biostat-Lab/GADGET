@@ -8,7 +8,7 @@
     
     <link rel="stylesheet" type="text/css" href="static/base.css" />
 </head>
-<body>
+<body><div id="manual">
     <a name="top"><h1>GADGET User Manual</h1></a>
     <p>GADGET (Genes Associated by Documents, Genes, Events, and Text) is a tool that allows users to search and navigate the biomedical literature that is associated with specific genes.  GADGET can identify the genes that are strongly associated with arbitrary text queries, and it can also show "events" that describe automatically extracted relationships among the genes.</p>
     <p>GADGET has two main views: The <a href="gadget/genesearch">gene search</a> sifts through literature to identify genes associated with user queries.  The <a href="gadget/eventsearch">event search</a> sifts through interactions between genes that have been automatically extracted from biomedical abstracts.</p>
@@ -29,7 +29,7 @@
     </ul>
     
     <a class="topic" name="genesearch">The gene search</a>
-    <p>GADGET's gene search returns genes that are associated with the abstracts in <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> that match a given query.  When you search on a phrase, GADGET will return a list of genes related to that phrase in the literature, ordered by the approximate "importance" of the phrase for each gene: if you search for "<a href="gadget/genesearch?q=surfactant">surfactant</a>," genes for which "blastema" is more strongly associated will appear higher in the list.</b>
+    <p>GADGET's gene search returns genes that are associated with the abstracts in <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> that match a given query.  When you search on a phrase, GADGET will return a list of genes related to that phrase in the literature, ordered by the approximate "importance" of the phrase for each gene: if you search for "<a href="gadget/genesearch?q=surfactant">surfactant</a>," genes for which "surfactant" is more strongly associated will appear higher in the list.</b>
     <p>There are several different scores that GADGET can use to the rank genes that satisfy a given query.  (Read about them <a href="#scores">here</a>.)  To change which score GADGET uses to sort the genes, just click on the name of that score in the result table header.</p>
     <p>To see a list of abstracts for a gene that match your query, click on the plus sign ("+") on the left side of the gene's table row.  You can also see events for the gene this way.</p>
     <a href="#top" class="top">Back to top</a>
@@ -125,5 +125,5 @@
     </table></div>
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
-</body>
+</div></body>
 </html>

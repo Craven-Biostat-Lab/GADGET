@@ -1,0 +1,437 @@
+<html>
+<head>
+    <title>GADGET documentation</title>
+    <style type="text/css">
+    div#content {
+        font-family: sans, sans-serif;
+        margin: auto;
+        width: 1000px;
+        max-width: 100%;
+    }
+
+    a.topic {
+        display: block;
+        font-size: x-large;
+        font-weight: bold;
+        margin-top: 40px;
+    }
+
+    table.instructions {
+        margin: 0 5%;
+    }
+
+    table.instructions td {
+        padding: 5px 10px;
+    }
+
+    a.top {
+        display: block;
+        font-size: 80%;
+    }
+
+    div.example {
+        border-left: solid 2px #426BA2 /*#74C7DC*/;
+        margin-left: 5%;
+        padding-left: 5px;
+        margin-bottom: 5px;
+    }
+
+    div.example span, span.example, div.example pre,
+    table.instructions tr td:first-child, table.instructions span {
+        font-family: Consolas, mono;
+        color: #426BA2;
+        font-weight: bold;
+        background-color: #DCE8FA;
+        padding: 1px 5px;
+    }
+    
+    ol {
+        list-style-type: decimal;
+    }
+    
+    ol ol {
+        list-style-type: lower-alpha;
+    }
+    
+    ol ol ol {
+        list-style-type: lower-roman;
+    }
+    </style>
+</head>
+<body><div id="content">
+    <a name="top"><h1>GADGET documentation</h1></a>
+    <ol>
+        <li><a href="#gadget_overview">GADGET overview</a></li>
+        <li><a href="#running_gadget">Running GADGET</a>
+            <ol>
+                <li><a href="#local_dependencies">Local dependencies</a></li>
+                <li><a href="#local_configuration">Local configuration</a></li>
+            </ol>
+        </li>
+        <li><a href="#deploying_gadget">Deploying GADGET</a>
+            <ol>
+                <li><a href="#deploy_dependencies">Deployment dependencies</a></li>
+                <li><a href="#deploy_configuration">Deployment configuration</a></li>
+                <li><a href="#updates">Making updates</a></li>
+            </ol>
+        </li>
+        <li><a href="#code_notes">Code notes</a></li>
+        <li><a href="#directory_structure">Directory structure</li>
+        <li><a href="#data_overview">Data overview</a>
+            <ol>
+                <li><a href="#data_sources">Data sources</a></li>
+                <li><a href="#database_schema">Database schema</a></li>
+                <li><a href="#build_database">Building the database</a></li>
+                <li><a href="#fetching_abstracts">Fetching abstracts</a></li>
+                <li><a href="#build_index">Building the text index</a></li>
+            </ol>
+        </li>
+    </ol>
+    
+    <a class="topic" name="gadget_overview">GADGET overview</a>
+    <p>GADGET is a system that allows users to search through literature related to genes.  It has two main facets, a gene search which allows users to find genes related to a text query, and an event search which lets users find automatically-extracted "events" related to genes and abstracts.</p>
+    <p>Please read the GADGET user manual for a more general overview before you read this document.  The user manual can be found under <span class="example">www/manual.html</span>.  (To get the page to look nicer, link it to <span class="example">static/base.css</span> or just use the version on the web server.</p>
+    <p>GADGET is written mostly in <a href="http://www.python.org" target="_blank">Python 2.7</a>, using the <a href="https://www.djangoproject.com/" target="_blank">Django</a> framework and a <a href="http://dev.mysql.com/" target="_blank">MySQL database.</a></p>
+    <p>If you make changes to GADGET, please keep this documentation file up-to-date.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a class="topic" name="running_gadget">Running GADGET</a>
+    <p>Run GADGET locally on your computer to develop and test out changes before you push them to the web server.  Django comes with a built-in web server that you can use to easily get GADGET running without installing Apache.  (You should not deploy using the Django server though, because it is inefficient and probably insecure.  You should deploy using Apache.)</p>
+    <p>GADGET and all of its dependencies are (in theory) platform agnostic, so you should be able to run GADGET on any of the popular operating systems.  GADGET was developed on an Ubuntu 10.10 virtual machine, and is deployed on a Linux server.</p>
+    <p>To run GADGET, copy the GADGET directory to your machine, install all of the gadget <a href="#local_dependencies">dependencies</a>.  You will probably need to make some simple edits to the <a href="#local_configuration">configuration files</a>.  In a terminal, move to the <span class="example">genetext</span> folder which contains the Django app, and enter <span class="example">python manage.py runserver</span>.  You should then be able to point your browser to <span class="example">http://localhost:8000/</span> and see the GADGET front page.</p>
+    <p>If you're having problems starting the server, the "manage.py" script has a number of options that might help.  To see them, enter <span class="example">python manage.py</span> or <span class="example">python manage.py help runserver</span>.</p>
+    <p>See <a href="#build_database">here</a> for building the database tables.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a class="topic" name="local_dependencies">Local dependencies</a>
+    <p>To run GADGET in a development environment, the following libraries are required.  Most can be easily installed as <a href="http://docs.python.org/install/index.html" target="_blank">python packages</a>.  If you're using a Linux distribution with package management, most can also be found in distribution repositories.</p>
+    <p>The version numbers listed here were the versions used to initially develop and deploy GADGET, but other versions will work for many dependencies.  (Note that if you use a different version of Whoosh, you will need to <a href="#build_index">re-build the index</a>.)</p>
+    <p>All of the python modules should be added to the python path, so python knows where to find them.</p>
+    <b>GADGET dependencies</b>
+    <ul>
+        <li><a href="http://www.python.org" target="_blank">Python</a> 2.7</li>
+        <li><a href="https://www.djangoproject.com/" target="_blank">Django</a> 1.2.5 &mdash; web framework</li>
+        <li><a href="http://dev.mysql.com/" target="_blank">MySQL Server</a> 5.1</li>
+        <li><a href="http://packages.python.org/Whoosh/" target="_blank">Whoosh</a> 2.0 &mdash; searchable text index</li>
+        <li><a href="http://numpy.scipy.org/" target="_blank">numpy</a> 1.5.1 &mdash; required by Matplotlib and Networkx</li>
+        <li><a href="http://matplotlib.sourceforge.net/" target="_blank">Matplotlib</a> 0.99.3 &mdash; plotting event graphs</li>
+        <li><a href="http://networkx.lanl.gov/" target="_blank">NetworkX</a> 1.1 &mdash; plotting event graphs</li>
+        <li><a href="http://rpy.sourceforge.net/rpy2_documentation.html" target="_blank">rpy2</a> 2.1.9 &mdash; calculating p values in gene search</li>
+        <li><a href="http://mysql-python.sourceforge.net/MySQLdb.html" target="_blank">MySQLdb</a> 1.2.2 &mdash; talking to the database</li>
+        <li><a href="http://memcached.org/">Memcached</a> 1.4.5 &mdash; index search and event caching (optional, see <a href="#local_configuration">local configuration</a>)</li>
+        <li><a href="http://pypi.python.org/pypi/python-memcached">python-memcached</a> 1.45 &mdash; (optional, see <a href="#local_configuration">local configuration</a>)</li>
+    </ul>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="local_configuration" class="topic">Local configuration</a>
+    <p>The settings that you need to edit to run GADGET are collected into 2 files: <span class="example">genetext/settings.py</span> and <span class="example">genetext/urls.py</span>.  Settings.py includes most of the general parameters for the Django application, and you can read about it <a href="https://docs.djangoproject.com/en/dev/ref/settings/" target="_blank">here</a>.  Urls.py tells Django how to rout URLs to functions in the application, and you can read about it <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/" target="_blank">here</a>.</p>
+    <p>There are a couple things you need to do in the settings to run GADGET locally.  (Do not use these settings to deploy GADGET, see <a href="#deploy_configuration">deployment configuration</a>).</p>
+    <p><b>First</b>, in <span class="example">settings.py</span>, make sure that <span class="example">DEBUG</span> and <span class="example">TEMPLATE_DEBUG</span> are set to <span class="example">True</span>.  This will tell Django to show you helpful error pages when something goes wrong, instead of a generic 500 page.</p>
+    <p><b>Second</b>, there are a couple paths to directories that you need to set.  These are required to be absolute paths, so they must be set every time a GADGET instance is created.</p>
+    <p>In <span class="example">settings.py</span>, set the path in <span class="example">TEMPLATE_DIRS</span> to the folder containing the HTML templates.  It should be <span class="example">genetext/templates</span> in the GADGET directory.  Also in settings.py, set <span class="example">ABSTRACT_INDEX_PATH</span> to the directory containing the Whoosh index.  It should be <span class="example">index</span> in the GADGET directory.</p>
+    <p><b>Third</b>, you need to tell <span class="example">urls.py</span> where to find static files.  Urls.py should include the lines:
+    <div class="example"><span>
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
+        {'document_root': '<u>PATH</u>/gadget/static'}),<br />
+    (r'^$', 'django.views.static.serve', 
+        {'document_root': '<u>PATH</u>/gadget/www', 'path':'index.html'}),<br />
+    (r'^(?P<path>.*)$', 'django.views.static.serve', 
+        {'document_root': '<u>PATH</u>/gadget/www'}),
+    </span></div>
+    in the <span class="example">urlpatterns</span> tuple.  (Replace <span class="example"><u>PATH</u></span> with the path to the GADGET directory.)</p>
+    <p><b>Fourth</b>, make sure that all of the URL patterns in the <span class="example">urlpatterns</span> tuple of <span class="example">urls.py</span> have "gadget/" stems.  Eg. the pattern for the geneview.search view should be <span class="example">r'^gadget/genesearch'</span> instead of <span class="example">r'^genesearch'</span>.</p>
+    <p><b>Fifth</b>, set <span class="example">DATABASES</span> in <span class="example">settings.py</span> with information about how to connect to the database.  You need to provide the <span class="example">NAME</span> of the database, <span class="example">USER</span>, <span class="example">PASSWORD</span>, <span class="example">HOST</span>, and <span class="example">PORT</span>.</p>
+    <p><b>Finally</b>, you need to configure the cache.  If you want to enable the cache, (recommended,) set the <span class="example">CACHES</span> dict in <span class="example">settings.py</span> to include:
+    <div class="example"><span>
+    'default': {<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;'LOCATION': '127.0.0.1:11211',<br />
+    }
+    </span></div>
+    If you don't want to bother setting up the cache, set the dict to include only:
+    <div class="example"><span>
+    'default': {<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;'BACKEND': 'django.core.cache.backends.dummy.DummyCache',<br />
+    }
+    </span></div>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="deploying_gadget" class="topic">Deploying GADGET</a>
+    <p>To deploy GADGET, copy the GADGET directory (containing genetext, index, static, and www) directories to the web server.  Set up Apache to serve static files in the "static" folder with the "/static/" stem, and to serve static files from "www" folder as the root.  (E.g. "gadget.biostat.wisc.edu/static/base.css" should point to "static/base.css", and "gadget.biostat.wisc.edu/index.html" should point to "www/static.html".)</p>
+    <p>Set up Apachi and mod-wsgi to serve the Django application in the "genetext" folder using the "/gadget/" stem.  More information about the WSGI configuration can be found in the/web/gadget folder of the file server.  Send an email to the system administration folks for help.</p>
+    <p>The Apache http server should run as its own separate user, so make sure that the user has access to all of the GADGET files.</p>
+    <p>To set up the database, dump the tables <b>abstract_info</b>, <b>event</b>, <b>event_abstract</b>, <b>event_event</b>, <b>event_gene</b>, <b>event_root</b>, <b>gene</b>, and <b>gene_abstract</b>, and re-create them on the server.  Set up a separate user for GADGET with select-only privileges on these tables (GADGET doesn't ever need to write to the database.)  See <a href="#build_database">here</a> for building the database tables.</p>
+    <p>If you are using a different version of Whoosh on the server than on your local copy, you will probably need to <a href="#build_index">re-build the index</a> on the server.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="deploy_dependencies" class="topic">Deployment dependencies</a>
+    <p>A deployment of GADGET on a web server requires all of the dependencies required by a <a href="#local_dependencies">local instance</a>.  Memcached and python-memcached are optional for a local installation, but strongly recommended for a server deployment (they're easy to set up, and will significantly speed everything up.)</p>
+    <p>Two additional dependencies are:</p>
+    <ul>
+        <li><a href="http://httpd.apache.org/" target="_blank">Apache http web server</a></li>
+        <li><a href="http://code.google.com/p/modwsgi/" target="_blank">modwsgi</a> &mdash; python WSGI adapter module for Apache</li>
+    </ul>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="deploy_configuration" class="topic">Deployment configuration</a>
+    <p>To deploy GADGET, some settings in the configuration files (<span class="example">genetext/settings.py</span> and <span class="example">genetext/urls.py</span>) need to be different than for a <a href="local_configuration">local deployment</a>.  There should be separate deployment copies of the config files in the GADGET directory, that you can rename to settings.py and urls.py.</p>
+    <p><b>First</b>, in <span class="example">settings.py</span>, make sure that <span class="example">DEBUG</span> and <span class="example">TEMPLATE_DEBUG</span> are set to <span class="example">False</span>.  This will cause Django to issue a normal 500 page on an error, instead of showing a stack trace (which could be a security risk.)</p>
+    <p><b>Second</b>, there are a couple paths to directories that you need to set.  These are required to be absolute paths, so they must be set every time a GADGET instance is created.</p>
+    <p>In <span class="example">settings.py</span>, set the path in <span class="example">TEMPLATE_DIRS</span> to the folder containing the HTML templates.  It should be <span class="example">genetext/templates</span> in the GADGET directory.  Also in settings.py, set <span class="example">ABSTRACT_INDEX_PATH</span> to the directory containing the Whoosh index.  It should be <span class="example">index</span> in the GADGET directory.</p>
+    <p><b>Third</b>, Django should <b>not</b> be set up to serve static files.  (It's much more efficient and secure to serve static files with the Apache http server.)  In the <span class="example">urlpatterns</span> tuple of <span class="example">urls.py</span>, comment out every line that contains <span class="example">django.views.static.serve</span>.</p>
+    <p><b>Fourth</b>, make sure that the URL patterns in the <span class="example">urlpatterns</span> tuple of <span class="example">urls.py</span> do <b>not</b> have "gadget/" stems.  Eg. the pattern for the geneview.search view should be <span class="example">r'^genesearch'</span> instead of <span class="example">r'^gadget/genesearch'</span>.</p>
+    <p><b>Fifth</b>, set <span class="example">DATABASES</span> in <span class="example">settings.py</span> with information about how to connect to the database.  You need to provide the <span class="example">NAME</span> of the database, <span class="example">USER</span>, <span class="example">PASSWORD</span>, <span class="example">HOST</span>, and <span class="example">PORT</span>.</p>
+    <p><b>Finally</b>, you need to configure the cache.  When deploying GADGET, you <b>should</b> use the cache.  Set the <span class="example">CACHES</span> dict in <span class="example">settings.py</span> to include:
+    <div class="example"><span>
+    'default': {<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;'LOCATION': '127.0.0.1:11211',<br />
+    }
+    </span></div></p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="updates" class="topic">Making updates</a>
+    <p>To make updates to the GADGET server, you need to restart the Apache http server.  To start an update, first shut the server off with:</p>
+    <div class="example"><span>sudo /etc/init.d/httpd stop</span></div>
+    <p>Copy your updates to the server, and re-start the server with:</p>
+    <div class="example"><span>sudo /etc/init.d/httpd start</span></div>
+    <p>The Apache http server runs as its own separate user, so the apache user needs access to all of the GADGET files and folders.  When you copy something into a GADGET directory use <span class="example">ls -l</span> to make sure that the group has read privileges (the 5th character in each row should be an 'r' and not a '-'.)  To grant read privileges on a file or directory to a group, use:</p>
+    <div class="example"><span>chmod o+r <u>name of file or directory</u></span></div>
+    <a href="#top" class="top">Back to top</a>
+
+    <a name="code_notes" class="topic">Code notes</a>
+    <p>The <span class="example">genetext</span> folder in the GADGET directory contains the Django application, which is made up of python code and html/javascript files.  Get familiar with <a href="https://www.djangoproject.com/" target="_blank">Django</a> before making modifications to GADGET.</p>
+    <p>The code that does all the data processing is in the <span class="example">genetext/geneview</span> and <span class="example">genetext/eventview</span> directories.  When an http request is made to GADGET, Django uses <span class="example">genetext/urls.py</span> to map the request to a python function, and then executes the function, which generates and returns a response.</p>
+    <p>The <span class="example">models.py</span> files in <span class="example">genetext/geneview</span> and <span class="example">genetext/eventview</span> define some of the same tables.  If you make changes to any of the database tables, modify the entry for the table in both files.</p>
+    <p>The python module that accesses the text index, <span class="example">genetext/geneview/index.py</span> is part of the "geneview" app, but the "eventview" app uses it as well.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="directory_structure" class="topic">Directory structure</a>
+    <ul>
+        <li>docs &mdash; documentation (including this file)</li>
+        <li>genetext &mdash; Django application
+            <ul>
+                <li>eventview
+                    <ul>
+                        <li>event.py &mdash; functions for fetching events and information about events from the database, event graph plotting</li>
+                        <li>eventview.py &mdash; "views", functions that interact with the web.</li>
+                        <li>__init__.py</li>
+                        <li>models.py &mdash; information about the database schema (some overlap with genetext/geneview/models.py</li>
+                    </ul>
+                </li>
+                <li>geneview
+                    <ul>
+                        <li>geneview.py &mdash; "views", functions that interact with the web.  This file does most of the heavy lifting for the gene search.</li>
+                        <li>index.py &mdash; functions for querying the text index of abstracts.</li>
+                        <li>__init__.py</li>
+                        <li>models.py &mdash; information about the database schema (some overlap with genetext/eventview/models.py</li>
+                    </ul>
+                </li>
+                <li>templates &mdash; used for rendering web pages
+                    <ul>
+                        <li>abstracts.html &mdash; for listing abstract citations, used by both gene search and event search</li>
+                        <li>base.html &mdash; genesearch.html and eventsearch.html extend this template.</li>
+                        <li>eventgenes.html &mdash; table for "genes referenced in these events", used by event search</li>
+                        <li>eventlist.html &mdash; table rows for event search results</li>
+                        <li>eventpreview.html &mdash; event "previews" shown in gene search results in abstract pane</li>
+                        <li>eventsearch.html &mdash; bare event search page, doesn't include results</li>
+                        <li>genelist.html &mdash; table rows for gene search results</li>
+                        <li>genesearch.html &mdash; bare gene search page, doesn't include results</li>
+                    </ul>
+                </li>
+                <li>__init__.py</li>
+                <li>manage.py &mdash; Django-provided utility script</li>
+                <li>settings.py &mdash; configuration for django project.  See <a href="#local_configuration">local configuration</a> or <a href="#deploy_configuration">deployment configuration</a>.</li>
+                <li>urls.py &mdash; routs incoming urls to python functions / Django views.  See <a href="#local_configuration">local configuration</a> or <a href="#deploy_configuration">deployment configuration</a>.</li>
+            </ul>
+        </li>
+        <li>index &mdash; contains the index of abstracts</li>
+        <li>static
+            <ul>
+                <li>events &mdash; example event images</li>
+                <li>base.css &mdash; loaded by all pages</li>
+                <li>base.js &mdash; loaded by base.html template</li>
+                <li>eventsearch.js &mdash; script used by event search</li>
+                <li>genesearch.js &mdash; script used by gene search</li>
+                <li>jquery-1.6.1.min.js &mdash; loaded by base.html template</li>
+                <li>logo-big.png</li>
+                <li>spinner.gif</li>
+                <li>spinner2.gif</li>
+            </ul>
+        </li>
+        <li>util &mdash; not part of the application, useful scripts for setting up the data
+            <ul>
+                <li>buildindex.py &mdash; used for building the abstract index, see <a href="#build_index">here</a></li>
+                <li>drawevents.py &mdash; draw graphs of events in the Turku EVEX dataset</li>
+                <li>fetchabstracts.py &mdash; fetch abstracts from PubMed and put them into a database table, see <a href="#fetching_abstracts">here</a></li>
+                <li>splitlinks.py &mdash; used for setting up "gene" database table, see <a href="#build_database">here</a></li>
+            </ul>
+        </li>
+        <li>www &mdash; static pages to be served from the root directory
+            <ul>
+                <li>contact.html</li>
+                <li>index.html</li>
+                <li>manual.html</li>
+            </ul>
+        </li>
+    </ul>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="data_overview" class="topic">Data overview</a>
+    <p>GADGET uses data about genes, abstracts, and events.  The data lives in 2 places: a MySQL database, and a searchable text index.</p>
+    <p>The MySQL database contains a table of genes with descriptive information, a table of abstract information, and tables containing events.  The actual text of the abstracts is not stored in the database.  The events have tree structures, and the relationships between events are represented by self-joins through an intermediate table.</p>
+    <p>The text index uses the Whoosh library.  The index keeps track of the title, abstract text, year, and PubMed ID of each abstract.  The index returns a list of abstracts which match a given text query.  It is also capable of spell checking, and keyword-finding for a set of abstracts.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="data_sources" class="topic">Data sources</a>
+    <p>Data used by GADGET comes from the NCBI FTP site, Entrez PubMed interface, and Turku EVEX dataset.</p>
+    <ul>
+        <li><a href="ftp://ftp.ncbi.nih.gov/gene/DATA/gene2pubmed.gz">gene2pubmed.gz</a> &ndash; link genes to abstracts</li>
+        <li><a href="ftp://ftp.ncbi.nih.gov/gene/DATA/gene_history.gz">gene_history.gz</a> &ndash; link deprecated gene ID's to current gene ID's</li>
+        <li><a href="ftp://ftp.ncbi.nih.gov/pub/HomoloGene/current/homologene.data">homologene.data</a> &ndash; link human genes to homologous genes in other species</li>
+        <li><a href="ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz">Homo_sapiens.gene_info.gz</a> &ndash; descriptive information about gemes
+    </ul>
+    <p>Event data from the Turku group can be downloaded <a href="http://bionlp.utu.fi/pubmedevents-2011.html" target="_blank">here</a>.  GADGET's database is derived from the Homologene and occurrence databases.  The documentation for the data set can be found <a href="http://bionlp.utu.fi/pubmedevents-2011-mysql.html" target="_blank">here</a>.</p>
+    <p>PubMed abstracts are fetched using a script.  See <a href="#fetching_abstracts">here</a>.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="database_schema" class="topic">Database schema</a>
+    <p>The database keeps track of genes, events, and abstract information.  (In diagram primary keys are bold, all relationships are one-to-many, tick mark on relationship line indicates "many".)</p>
+    <img src="gadget-db.png" style="padding:20px;"/>
+    <br /><b>Table definitions:</b>
+    <div class="example">
+<pre>CREATE TABLE  `gadget`.`abstract_info` (
+  `pubmed_id` int(11) NOT NULL,
+  `title` varchar(300) DEFAULT NULL,
+  `authors` varchar(300) CHARACTER SET utf8 DEFAULT NULL,
+  `year` smallint(6) DEFAULT NULL,
+  `month` char(3) DEFAULT NULL,
+  `journal` varchar(150) DEFAULT NULL,
+  `volume` smallint(6) DEFAULT NULL,
+  `issue` smallint(6) DEFAULT NULL,
+  `pages` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`pubmed_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1</pre>
+    </div><div class="example">
+<pre>CREATE TABLE  `gadget`.`event` (
+  `id` int(20) unsigned NOT NULL DEFAULT '0',
+  `type` enum('Localization','Binding','Gene_expression','Transcription',
+    'Protein_catabolism','Phosphorylation','Regulation','Positive_regulation',
+    'Negative_regulation') CHARACTER SET utf8 NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1</pre>
+    </div><div class="example">
+<pre>CREATE TABLE  `gadget`.`event_abstract` (
+  `event` int(20) unsigned NOT NULL DEFAULT '0',
+  `abstract_pmid` int(20) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`event`,`abstract_pmid`),
+  KEY `event` (`event`),
+  KEY `abstract_pmid` (`abstract_pmid`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1</pre>
+    </div><div class="example">
+<pre>CREATE TABLE  `gadget`.`event_event` (
+  `parent` int(20) unsigned NOT NULL DEFAULT '0',
+  `child` int(20) unsigned NOT NULL DEFAULT '0',
+  `role` enum('Cause','Theme') CHARACTER SET utf8 NOT NULL,
+  PRIMARY KEY (`parent`,`child`,`role`),
+  KEY `parent` (`parent`),
+  KEY `child` (`child`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1</pre>
+    </div><div class="example">
+<pre>CREATE TABLE  `gadget`.`event_gene` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gene` int(11) NOT NULL DEFAULT '0',
+  `homologene_id` mediumint(6) unsigned NOT NULL,
+  `event` int(20) unsigned NOT NULL DEFAULT '0',
+  `role` enum('Cause','Theme') CHARACTER SET utf8 NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `gene` (`gene`),
+  KEY `event` (`event`)
+) ENGINE=MyISAM AUTO_INCREMENT=254738 DEFAULT CHARSET=latin1</pre>
+    </div><div class="example">
+<pre>CREATE TABLE  `gadget`.`event_root` (
+  `event` int(11) unsigned NOT NULL DEFAULT '0',
+  `root` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`root`,`event`),
+  KEY `root` (`root`),
+  KEY `event` (`event`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1</pre>
+    </div><div class="example">
+<pre>CREATE TABLE  `gadget`.`gene` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `entrez_id` int(11) DEFAULT NULL,
+  `symbol` varchar(30) CHARACTER SET utf8 DEFAULT NULL,
+  `name` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
+  `locustag` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
+  `synonyms` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
+  `hgnc_id` int(11) DEFAULT NULL,
+  `mim_id` int(11) DEFAULT NULL,
+  `ensembl_id` int(11) DEFAULT NULL,
+  `hprd_id` int(11) DEFAULT NULL,
+  `chromosome` varchar(7) CHARACTER SET utf8 DEFAULT NULL,
+  `maplocation` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
+  `type` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
+  `other` varchar(800) CHARACTER SET utf8 DEFAULT NULL,
+  `abstracts` bigint(21) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `entrez_id` (`entrez_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30938 DEFAULT CHARSET=latin1</pre>
+    </div><div class="example">
+<pre>CREATE TABLE  `gadget`.`gene_abstract` (
+  `id` int(11) NOT NULL DEFAULT '0',
+  `gene` int(11) NOT NULL DEFAULT '0',
+  `abstract_pmid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `gene` (`gene`),
+  KEY `abstract_pmid` (`abstract_pmid`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1</pre>
+    </div>
+    <p>The <b>gene</b> table contains descriptive information about all of the genes in the GADGET system.  Only genes which are linked to abstracts through the <b>gene2pubmed</b> file are included.</p>
+    <p>The <b>abstract_info</b> table contains metadata about each abstract, but does not contain the actual text of the abstracts.  Only abstracts which are linked to a gene through the <b>gene2pubmed</b> file are included.  Genes are linked to abstracts through the <b>gene_abstract</b> table.</p>
+    <p>Events are stored in the <b>event</b> table.  Events have complex tree-like relationships, which are described in the <b>event_event</b> table.  The <b>event_root</b> table speeds up querying of these complex events, by linking each event to its "root" event in the tree structure.  Many events are sub-events of more than one complex event, so they have more than one root.  Events which are themselves root events have a link to themselves through the <b>event_root</b> table.</p>
+    <p>Events are linked to their component genes through the <b>event_gene</b>, and to their containing abstracts through the <b>event_abstract</b> table.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="build_database" class="topic">Building the database</a>
+    <p>SQL queries for building the GADGET database are located in <span class="example">docs/database setup instructions.txt</span>.</p>
+    <p>Build the <b>gene_abstract</b> table first, so we can later use it to restrict the entries in the <b>gene</b> and <b>abstract_info</b> tables.  The <b>gene_abstract</b> table contains data from the <i>gene2pubmed</i> file (see <a href="#data_sources">above</a>).  Use the <i>gene_history</i> file to link old deprecated gene ID's to current ID's.  Use <i>homologene.data</i> to link non-human homologous genes to human genes.  Remove records for abstracts that refer to more than 1000 genes (to knock out some GWA papers).  Then restrict the records in the table to human genes (tax = 9606).</p>
+    <p>Build the <b>gene</b> table next.  Load the <i>gene_info</i> into a database table, and then restrict the genes to those included in the <b>gene_abstract</b> table.</p>
+    <p>The <i>gene_info</i> file contains a `dbxrefs` field with other database ID's concatenated into a string (the name of this field should be `dbxrefs` in the table.)  To separate them, create integer `hgnc_id`, `mim_id`, `ensembl_id`, and `hprd_id` fields, and a boolean `dbxrefs_split` field which defaults to false.  Open <span class="example">util/splitlinks.py</span> and edit the connection parameters near the top to correctly connect to the database.  Run <span class="example">util/splitlinks.py</span> to split the links into the 4 new fields.</p>
+    <p>The event side of the database is derived from the MySQL tables in the EVEX dataset.  It's a bit complicated to construct, and is documented in more detail in <span class="example">docs/database setup instructions.txt</span> with SQL for building the tables.</p>
+    <p>In a nutshell, start by building the <b>event_event</b> table to keep track of parent-child relationships.  Use <b>event_event</b> to find the root events for each event, and keep track of them in <b>event_root</b>.  Create the <b>event</b> table using only events referenced in <b>event_event</b>.  Link events to abstracts through <b>event_abstract</b>, and remove any events that can't be linked to our abstract set.  Likewise, link genes to abstracts through <b>event_gene</b> and remove events that include genes not in the <b>gene</b> table.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="fetching_abstracts" class="topic">Fetching abstracts</a>
+    <p>Abstracts are fetched from PubMed via Entrez using a python script.  To run the script, you need the <b>MySQLdb</b> python module installed.  The script reads from a database table of abstracts to find abstracts with a null "updated" field, then fetches them from Entrez and updates the table rows.</p>
+    <p>First, set up the <b>abstract</b> table in the database.  After having set up the <b>gene_abstract</b> table, (see <a href="#build_database">above</a>), create a new <b>abstract</b> table by selecting distinct abstract PMID's from <b>gene_abstract</b>.  Then add columns to the table so it matches the following definition:</p>
+    <div class="example">
+<pre>CREATE TABLE  `gadget`.`abstract_info` (
+  `pubmed_id` int(11) NOT NULL,
+  `title` varchar(300) DEFAULT NULL,
+  `abstract` text DEFAULT NULL,
+  `authors` varchar(300) CHARACTER SET utf8 DEFAULT NULL,
+  `year` smallint(6) DEFAULT NULL,
+  `month` char(3) DEFAULT NULL,
+  `journal` varchar(150) DEFAULT NULL,
+  `volume` smallint(6) DEFAULT NULL,
+  `issue` smallint(6) DEFAULT NULL,
+  `pages` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`pubmed_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1</pre>
+    </div>
+    <p>Make sure that the `authors` column has a unicode encoding to avoid garbling authors' names with special characters.</p>
+    <p>Open up <span class="example">util/fetchabstracts.py</span> and edit the connection parameters near the top of the file to connect to the database.  Run the script to fetch abstracts and update the table.  The scripts fetches 200 abstracts at a time, but that rate can be changed by altering the <span class="example">size</span> parameter of the <span class="example">ids</span> function.</p>
+    <p>The script prints a line with the total number of abstracts fetched so far every time it updates the database.  It will probably take a couple hours to grab all of them, but you can kill and re-start the script and it will pick up where it left off.</p>
+    <p>The text of the abstracts takes up a lot of space, so use the <b>abstract</b> table to build the text index, and then create an <b>abstract_info</b> table by selecting every column except for `abstract`.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a name="build_index" class="topic">Building the text index</a>
+    <p>To build the <a href="#data_overview">text index</a>, you need to have first <a href="#fetching_abstracts">fetched the abstracts</a> from PubMed into a database table called <b>abstract</b>.  The text index is built using a python script.</p>
+    <p>The script will index all abstracts in the <b>abstract</b> table which have a non-null `updated` date, and a null `indexed` date or an `updated` date that is more recent than the `indexed` date.</p>
+    <p>Open up <span class="example">util/buildindex.py</span> in a text editor.  Near the top of the file, edit <span class="example">ABSTRACT_INDEX_PATH</span> so it contains the path to the index directory (should be 'gadget/index', can be relative, the directory must already exist).  Right under that, edit the database connection parameters so the script can connect to the database that contains the <b>abstract</b> table.</p>
+    <p>If there is not an index present in the ABSTRACT_INDEX_PATH directory, the script will create a new index.  If there is already an index in the directory, the script will add abstracts to the existing index.</p>
+    <p>Run the script.  If there is a large number of un-indexed abstracts, the script will probably take a couple hours to run.  You can kill the script and re-start it, and it will pick up where it left off.  It commits the index after every 10,000 new articles, and prints a line after each commit.  After adding all of the abstracts, the index merges and optimizes the index, which may take a long time.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+</div></body>
+</html>

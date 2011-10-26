@@ -1,4 +1,4 @@
-Last updated 7/5/2011
+Last updated 10/20/2011
 
 Setting up the genetext database:
 
@@ -113,6 +113,9 @@ CREATE TABLE  `genetext`.`gene_raw` (
   PRIMARY KEY (`entrez_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8
 
+Download ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz,
+load into gene_raw table.
+
 create table gene
 select
 	ga.gene_entrez_id entrez_id,
@@ -174,143 +177,9 @@ ALTER TABLE `genetext`.`gene` ADD COLUMN `dbxrefs_split` BOOLEAN  NOT NULL DEFAU
 -------------------------------------------------------------------------------------
 -- Events
 
--- find all events tied to abstracts in our `abstract` table
--- if you want all events, skip this table and use the "homologene_event"  table
--- instead of this one for the "root_event" and "event_all" tables.
-create table event_with_abstract
-select e.`id`, e.`type`
-from homologene_event e
+-- Get event data from http://bionlp.utu.fi/pubmedevents-2011.html.  Download the 
+-- Homologene and occurrence MySQL databases, and load them into the same schema.
 
-inner join homologene_event_occmap m
-on e.id = m.homologene_event_id
-inner join occurrence_event o
-on m.occurrence_event_id = o.id
-inner join abstract ab
-on ab.pubmed_id = o.pmid
-
-group by e.id;
-
-ALTER TABLE `event_with_abstract` ADD PRIMARY KEY (`id`);
-
--- find all of the top-level events in the set (roots of complex events)
-create table root_event
-select e.`id`, e.`type`
-from event_with_abstract e
-left join homologene_eventargument_event a
-on e.id = a.arg_homologene_event_id
-where a.arg_homologene_event_id is null;
-
-ALTER TABLE `root_event` ADD PRIMARY KEY (`id`);
-
--- create a table of all events
-create table event_all
-select 
-	e.`id`, 
-	e.`type`, 
-	r.`id` `root`,
-	if(r.`id` is null, 0, 1) `is_root`
-from event_with_abstract e
-left join root_event r
-using (id);
-
-ALTER TABLE `event_all` ADD PRIMARY KEY (`id`),
- ADD INDEX `root`(`root`);
-
--- find the root events for each event.  Run this a couple times until "root" 
--- is not null for any row (select count(*) from event_all where root is null;)
-update event_all e
-inner join homologene_eventargument_event a
-on e.id = a.arg_homologene_event_id
-inner join event_all r
-on a.homologene_event_id = r.id
-set e.root := r.root;
-
--- tie genes to events
-create table event_gene_all
-select
-	g.id gene,
-	ea.homologene_event_id event,
-	e.root root,
-	ea.role role
-from homologene_eventargument_ggp ea
-inner join event_all e
-on ea.homologene_event_id = e.id
-inner join homologene_gene h
-using (homologene_id)
-inner join gene g
-on h.entrezgene_id = g.entrez_id
-
-ALTER TABLE `turku`.`event_gene_all` ADD COLUMN `id` INT  NOT NULL AUTO_INCREMENT FIRST,
- ADD PRIMARY KEY (`id`);
-
--- Get complex events with more than one gene (homologene group)
-create table event
-select e.* from event_all e
-inner join event_gene_all eg
-on e.root = eg.root
-group by e.id
-having count(distinct eg.homologene_id) > 1;
-
-ALTER TABLE `event` ADD PRIMARY KEY (`id`),
- ADD INDEX `root`(`root`);
-
--- get corresponding event_genes for new events table
-create table event_gene
-select eg.* from event_gene_all eg
-inner join event e
-on eg.root = e.root
-group by eg.id;
-
-ALTER TABLE `turku`.`event_gene` MODIFY COLUMN `id` INT  NOT NULL AUTO_INCREMENT,
- ADD PRIMARY KEY (`id`),
- ADD INDEX `gene`(`gene`),
- ADD INDEX `event`(`event`);
-
--- link events to abstracts
-create table event_abstract
-select 
-	o.id id,
-	e.id event,
-	o.pmid abstract_pmid,
-	o.confidence_min
-from event e
-inner join homologene_event_occmap m
-on e.id = m.homologene_event_id
-inner join occurrence_event o
-on m.occurrence_event_id = o.id;
-
-ALTER TABLE `turku`.`event_abstract` MODIFY COLUMN `id` INT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
- ADD PRIMARY KEY (`id`),
- ADD INDEX `event`(`event`),
- ADD INDEX `abstract_pmid`(`abstract_pmid`);
-
--- table describing complex event structures
-create table event_event
-select 
-	ee.homologene_event_id parent,
-	ee.arg_homologene_event_id child,
-	ee.role
-from homologene_eventargument_event ee
-inner join event e
-on e.id = ee.homologene_event_id;
-
-ALTER TABLE `event_event` ADD PRIMARY KEY (`parent`, `child`, `role`);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---------------------------------------------------------------------
------ ATTEMPT #2
 
 -- Create a parent-child table describing the event hierarchy (for only events
 -- extracted from abstracts in our `abstract` table.  To include all abstracts,
