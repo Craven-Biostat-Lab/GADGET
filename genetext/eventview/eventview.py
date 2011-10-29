@@ -44,13 +44,24 @@ def gene_lookup(query):
     return Gene.objects.filter(symbol__in=query)
 
 def eventlist(request):
+    """Find and return events matching a query"""
     
-    # get genes out of request
+    maxlimit = 500 # maximum number of events to fetch at once
+    
+    # get genes out of request.  First check for internal gene ids, then entrez
+    # ids, then gene symbols.
     try:
         genes = [int(g) for g in request.GET['genes'].split(',')]
     except (KeyError, ValueError):
-        genes = None
-    
+        try:
+            gene_eids = [int(i.strip()) for i in request.GET['gene_entrez_ids'].split(',')]
+            genes = [g.id for g in Gene.objects.filter(entrez_id__in=gene_eids)]
+        except (KeyError, ValueError):
+            try:
+                genes = [g.id for g in gene_lookup(request.GET['gene_symbols'])]
+            except (KeyError, ValueError):
+                genes = None
+        
     # get abstracts
     query = request.GET.get('q')
     if query:
@@ -61,8 +72,11 @@ def eventlist(request):
     # get limit and offset
     try:
         limit = int(request.GET['limit'])
+        if limit > maxlimit:
+            limit = maxlimit
     except (KeyError, ValueError):
-        limit = None
+        limit = maxlimit
+        
     try:
         offset = int(request.GET['offset'])
     except (KeyError, ValueError):
@@ -74,15 +88,49 @@ def eventlist(request):
     except KeyError:
         raise Http404
     
-    if events:
-        if request.GET.get('preview'):
-            genesyms = [g.symbol for g in Gene.objects.filter(id__in=genes).only('symbol')]
-            return render_to_response("eventpreview.html", 
-                {'events': events, 'geneids':genes, 'genesyms': genesyms, 'q': query})
-        else:
-            return render_to_response("eventlist.html", {'events':events, 'q':query})
-    else:
+    # return the appropriate response
+    
+    # 404 if there were no events
+    if not events: 
         raise Http404
+    
+    if request.GET.get('preview'):
+        genesyms = [g.symbol for g in Gene.objects.filter(id__in=genes).only('symbol')]
+        return render_to_response("eventpreview.html", 
+            {'events': events, 'geneids':genes, 'genesyms': genesyms, 'q': query})
+    
+    dl = request.GET.get('download')
+    if dl:
+        if dl.lower() == 'xml':
+            # return xml file
+            print 'got here', len(events)
+            
+            response = HttpResponse('<?xml version="1.0" ?>\n<!DOCTYPE eventlist SYSTEM "http://gadget.biostat.wisc.edu/static/eventlist.dtd">\n<eventlist>\n')
+            response.write(xmldescription(query=query, genes=genes, limit=limit, offset=offset))
+            for ev in events:
+                try:
+                    # wrap each event in a try block so if something goes wrong,
+                    # we still get all the other events.  take this out when debugging.
+                    response.write('\n')
+                    response.write(ev.xml(indent=2))
+                except:
+                    print "event {0} failed to render XML".format(ev.id)
+            response.write('</eventlist>')
+            
+            response['Content-Type'] = 'text/xml'
+            return response
+        
+        if dl.lower() == 'csv':
+            # create, package, and return a CSV file
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=gadget-events.csv'
+            response.write('event_id,gene_entrez_ids,gene_symbols,event_types,abstract_count\n'
+                + '\n'.join([ev.tablerow() for ev in events]))
+            return response
+    
+    # render HTML    
+    return render_to_response("eventlist.html", {'events':events, 'q':query})
+
 
 def eventgenes(request):
     # get genes out of request
@@ -127,3 +175,34 @@ def plot(request, dpi=65):
     response = HttpResponse(content_type='image/png')
     canvas.print_png(response)
     return response
+
+def xmldescription(**kwargs):
+    """Given keyword arguments, make a description to include in XML results."""
+    desc = '  <description>\n'
+    
+    for k,v in sorted(kwargs.items()):
+        if v:
+            if k == 'genes':
+                # genes get special treatment
+                genes = Gene.objects.filter(id__in=v)
+                desc += '    <genelist>\n'
+                for g in genes:
+                    desc += '      <gene>\n'
+                    desc += '        <entrez_id>{0}</entrez_id>\n'.format(g.entrez_id)
+                    desc += '        <symbol>{0}</symbol>\n'.format(g.symbol)
+                    desc += '      </gene>\n'
+                desc += '    </genelist>\n'
+                
+            else:
+                desc += '    <{0}>{1}</{0}>\n'.format(k,v)
+            
+    return desc + '  </description>'
+    
+def xml(request):
+    try:
+        id = int(request.GET['event'])
+    except (KeyError, ValueError):
+        raise Http404
+    
+    ev = EventInfo(id)
+    return HttpResponse('<?xml version="1.0" ?>\n' + ev.xml())

@@ -155,12 +155,9 @@ class EventInfo:
         else:
             self.id = root
     
-    def save(self):
-        """Save a copy of the event in the cache"""
+    def __del__(self):
+        """Save a copy of the event in the cache when garbage collected."""
         cache.set('e_' + str(self.id), self, 90)
-        
-    def get_id(self):
-        return self.id
     
     def get_events(self):
         """Sub-events in the complex event (including the root event)"""
@@ -174,7 +171,8 @@ class EventInfo:
         try:
             return self.eventevents
         except AttributeError:
-            self.eventevents = EventEvent.objects.filter(parent__in=self.get_events())
+            #self.eventevents = EventEvent.objects.filter(parent__in=self.get_events())
+            self.eventevents = EventEvent.objects.filter(parent__roots=self.id)
             return self.eventevents
         
     def get_genes(self):
@@ -189,7 +187,8 @@ class EventInfo:
         try:
             return self.eventgenes
         except AttributeError:
-            self.eventgenes = EventGene.objects.filter(event__in=self.get_events())
+            #self.eventgenes = EventGene.objects.filter(event__in=self.get_events())
+            self.eventgenes = EventGene.objects.filter(event__roots=self.id)
             return self.eventgenes
             
     def get_abstracts(self):
@@ -197,8 +196,20 @@ class EventInfo:
         try:
             return self.abstracts
         except AttributeError:
-            self.abstracts = Abstract.objects.filter(event = self.id)
+            self.abstracts = Abstract.objects.filter(event=self.id)
             return self.abstracts
+            
+    def get_abstract_count(self):
+        try:
+            return self.abstract_count
+        except AttributeError:
+            try:
+                self.abstract_count = len(self.abstracts)
+                return self.abstract_count
+            except AttributeError:
+                self.abstract_count = Abstract.objects.filter(event=self.id).count()
+                return self.abstract_count
+            
             
     def graph(self):
         """Construct and return a networkx graph of the event"""
@@ -326,3 +337,74 @@ class EventInfo:
         plt.close(fig)
             
         return canvas
+        
+    def xml(self, indent=0, tabwidth=2):
+        """Return an XML representation of the event (as a string).  Indent is 
+        the initial indent for the first element, tabwidth is the amount of 
+        additional indent for each child element."""
+        
+        def print_event(ev, i=0, abstract_count=False):
+            # open event tag
+            x = (' '*i) + '<event id="{0}">\n'.format(ev.id)
+            x += (' ' * (i+tabwidth)) + '<type>{0}</type>\n'.format(ev.type)
+            
+            if abstract_count:
+                x += (' ' * (i+tabwidth)) + '<abstract_count>{0}</abstract_count>\n'.format(self.get_abstract_count())
+            
+            # print eventgenes
+            for eg in self.get_eventgenes():
+                if eg.event == ev:
+                    x += print_eventgene(eg, i + tabwidth)
+            
+            # print eventevents
+            for ee in self.get_eventevents():
+                if ee.parent == ev:
+                    x += print_eventevent(ee, i + tabwidth)
+            
+            # close event tag
+            x += (' '*i) + '</event>\n'
+            return x
+        
+        def print_gene(g, i=0):
+            x = (' '*i) + '<gene>\n'
+            
+            x += (' ' * (i + tabwidth)) + '<entrez_id>{0}</entrez_id>\n'.format(g.entrez_id)
+            x += (' ' * (i + tabwidth)) + '<symbol>{0}</symbol>\n'.format(g.symbol)
+            
+            x += (' '*i) + '</gene>\n'
+            return x
+
+        def print_eventevent(ee, i=0):
+            # open tag
+            x = (' '*i) + '<{0}>\n'.format(ee.role.lower())
+            
+            # find child event
+            ev = [ev for ev in self.get_events() if ev.id == ee.child.id][0]
+            x += print_event(ev, i + tabwidth)
+            
+            # close tag
+            x += (' '*i) + '</{0}>\n'.format(ee.role.lower())
+            return x
+        
+        def print_eventgene(eg, i=0):
+            x = (' '*i) + '<{0}>\n'.format(eg.role.lower())
+            
+            # find gene
+            g = [g for g in self.get_genes() if g.id == eg.gene.id][0]
+            x += print_gene(g, i + tabwidth)
+            
+            x += (' '*i) + '</{0}>\n'.format(eg.role.lower())
+            
+            return x
+            
+        ev, = [ev for ev in self.get_events() if ev.id == self.id]
+        return print_event(ev, i=indent, abstract_count=True)
+        
+    def tablerow(self):
+        """Return a table-row representation of self"""
+        
+        geneids = '|'.join([str(g.entrez_id) for g in self.get_genes()])
+        genesyms = '|'.join([g.symbol for g in self.get_genes()])
+        eventtypes = '|'.join([ev.type for ev in self.get_events()])
+        
+        return ','.join((str(self.id), geneids, genesyms, eventtypes, str(self.get_abstract_count())))

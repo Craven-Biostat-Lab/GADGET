@@ -30,6 +30,7 @@ $(document).ready(function()
         $("div#description").show();
         $("#generank").append(result).fadeTo(200, 1);
         stripetables();
+        $("table#download").fadeIn('slow');
         $("#more").show();
         hideflash();
     })
@@ -57,12 +58,6 @@ $(document).ready(function()
             flash("No more results.");
             $("#more").hide();
         });
-    });
-    
-    // download button
-    $("input#download").click(function()
-    {
-        window.location = "genelist.csv?download=True&q=" + q + "&orderby=" + orderby;
     });
     
     // show / hide abstracts when the + or - gets clicked

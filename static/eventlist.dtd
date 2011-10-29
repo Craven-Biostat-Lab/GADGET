@@ -1,0 +1,21 @@
+<!DOCTYPE eventlist [
+  <!ELEMENT eventlist (description?, event*)>
+  
+  <!ELEMENT description (genelist?, limit?, offset?, query?)>
+  <!ELEMENT genelist (gene*)>
+  <!ELEMENT limit (#PCDATA)>
+  <!ELEMENT offset (#PCDATA)>
+  <!ELEMENT query (#PCDATA)>
+  
+  <!ELEMENT event (type, abstract_count?, (theme|cause)+)>
+  <!ATTLIST event id CDATA #REQUIRED>
+  <!ELEMENT type (#PCDATA)>
+  <!ELEMENT abstract_count (#PCDATA)>
+  
+  <!ELEMENT theme (gene|event)>
+  <!ELEMENT cause (gene|event)>
+  
+  <!ELEMENT gene (entrez_id, symbol)>
+  <!ELEMENT entrez_id (#PCDATA)>
+  <!ELEMENT symbol (#PCDATA)>
+]>

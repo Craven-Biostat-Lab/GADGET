@@ -19,6 +19,14 @@
     {{ form.q.label}}: {{ form.q }}
     <input type="submit" value="Search Events" />
 </form>
+<table id="download" style="display:none">
+    <tr><td colspan="2">Download events:</td></tr>
+    <tr>
+        <td><a href="eventlist?{% if q %}&q={{ q|urlencode }}{% endif %}{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}&download=csv">CSV</a></td>
+        <td><a href="eventlist?{% if q %}&q={{ q|urlencode }}{% endif %}{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}&download=xml" target="_blank">XML</a></td>
+    </tr>
+</table>
+    
 {% endblock %}
 
 {% block content %}

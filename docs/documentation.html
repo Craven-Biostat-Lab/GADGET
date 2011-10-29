@@ -64,6 +64,7 @@
         <li><a href="#gadget_overview">GADGET overview</a></li>
         <li><a href="#running_gadget">Running GADGET</a>
             <ol>
+                <li><a href="#git_repository">Git repository</a></li>
                 <li><a href="#local_dependencies">Local dependencies</a></li>
                 <li><a href="#local_configuration">Local configuration</a></li>
             </ol>
@@ -101,6 +102,11 @@
     <p>To run GADGET, copy the GADGET directory to your machine, install all of the gadget <a href="#local_dependencies">dependencies</a>.  You will probably need to make some simple edits to the <a href="#local_configuration">configuration files</a>.  In a terminal, move to the <span class="example">genetext</span> folder which contains the Django app, and enter <span class="example">python manage.py runserver</span>.  You should then be able to point your browser to <span class="example">http://localhost:8000/</span> and see the GADGET front page.</p>
     <p>If you're having problems starting the server, the "manage.py" script has a number of options that might help.  To see them, enter <span class="example">python manage.py</span> or <span class="example">python manage.py help runserver</span>.</p>
     <p>See <a href="#build_database">here</a> for building the database tables.</p>
+    <a href="#top" class="top">Back to top</a>
+    
+    <a class="topic" name="git_repository">Git repository</a>
+    <p>The GADGET code is tracked in a Git repository on the biostat file server in <b>/u/ml-group/information_extraction/gadget/git</b>.  You can read about Git <a href="http://schacon.github.com/git/gittutorial.html" target="_blank">here</a>.</p>
+    <p>You can create a copy of GADGET on your own machine by running <span class="example">git clone /u/ml-group/information_extraction/gadget/git gadget</span>.  To commit your changes, run <span class="example">git add .</span> followed by <span class="example">git commit</span>.  To push your changes to the repository on the file server, run <span class="example">git push origin master</span> after committing.  If someone else has made changes to the repository on the file server, you can update your copy by running <span class="example">git pull</span>.</p>
     <a href="#top" class="top">Back to top</a>
     
     <a class="topic" name="local_dependencies">Local dependencies</a>
@@ -236,6 +242,7 @@
                         <li>eventpreview.html &mdash; event "previews" shown in gene search results in abstract pane</li>
                         <li>eventsearch.html &mdash; bare event search page, doesn't include results</li>
                         <li>genelist.html &mdash; table rows for gene search results</li>
+                        <li>genelist.xml &mdash; XML representation of gene search results (event search XML does not use a template).
                         <li>genesearch.html &mdash; bare gene search page, doesn't include results</li>
                     </ul>
                 </li>
@@ -251,7 +258,9 @@
                 <li>events &mdash; example event images</li>
                 <li>base.css &mdash; loaded by all pages</li>
                 <li>base.js &mdash; loaded by base.html template</li>
+                <li>eventlist.dtd &mdash; DTD describing event search XML results</li>
                 <li>eventsearch.js &mdash; script used by event search</li>
+                <li>genelist.dtd &mdash; DTD describing gene search XML results</li>
                 <li>genesearch.js &mdash; script used by gene search</li>
                 <li>jquery-1.6.1.min.js &mdash; loaded by base.html template</li>
                 <li>logo-big.png</li>

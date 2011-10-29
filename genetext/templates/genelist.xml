@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<!DOCTYPE genelist SYSTEM "http://gadget.biostat.wisc.edu/static/genelist.dtd">
+<genelist>
+  <description>
+    <query>{{ q }}</query>
+    <orderby>{{ orderby }}</orderby>{% if limit %}
+    <limit>{{ limit }}</limit>{% endif %}{% if offset %}
+    <offset>{{ offset }}</offset>{% endif %}
+  </description>
+{% for g, p in genes %}  <gene>
+    <rank>{{ forloop.counter|add:offset }}</rank>
+    <f1_score>{{ g.f1_score|floatformat:-3 }}</f1_score>
+    <matching_abstracts>{{ g.hits }}</matching_abstracts>
+    <total_abstracts>{{ g.abstracts }}</total_abstracts>
+    <adjusted_precision>{{ g.precision|floatformat:-3 }}</adjusted_precision>
+    <p_value>{{ p }}</p_value>
+    <symbol>{{ g.symbol }}</symbol>
+    <name>{{ g.name }}</name>{% if g.synonyms %}
+    <synonyms>{{ g.synonyms }}</synonyms>{% endif %}
+    <db_refs>
+      <entrez_id>{{ g.entrez_id }}</entrez_id>{% if g.hgnc_id %}
+      <hgnc_id>{{ g.hgnc_id }}</hgnc_id>{% endif %}{% if g.ensembl_id %}
+      <ensembl_id>{{ g.ensembl_id }}</ensembl_id>{% endif %}{% if g.mim_id %}
+      <mim_id>{{ g.mim_id }}</mim_id>{% endif %}{% if g.hprd_id %}
+      <hprd_id>{{ g.hprd_id }}</hprd_id>{% endif %}
+    </db_refs>
+    <chromosome>{{ g.chromosome }}</chromosome>
+    <map_location>{{ g.map_location }}</map_location>
+  </gene>{% endfor %}
+</genelist>

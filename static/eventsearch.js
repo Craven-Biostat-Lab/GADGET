@@ -19,6 +19,7 @@ $(document).ready(function()
     {
         $("div#description").show();
         $("table#events").append(result).fadeIn(200);
+        $("table#download").fadeIn('slow');
         $("#more").show();
         hideflash();
     })

@@ -1,0 +1,29 @@
+<!DOCTYPE genelist [
+  <!ELEMENT genelist (description?, gene*)>
+  
+  <!ELEMENT description (query, orderby, limit?, offset?)>
+  <!ELEMENT query (#PCDATA)>
+  <!ELEMENT orderby (#PCDATA)>
+  <!ELEMENT limit (#PCDATA)>
+  <!ELEMENT offset (#PCDATA)>
+  
+  <!ELEMENT gene (rank, f1_score, matching_abstracts, total_abstracts, adjusted_precision, p_value, symbol, name, synonyms?, db_refs, chromosome, map_location)>
+  <!ELEMENT rank (#PCDATA)>
+  <!ELEMENT f1_score (#PCDATA)>
+  <!ELEMENT matching_abstracts (#PCDATA)>
+  <!ELEMENT total_abstracts (#PCDATA)>
+  <!ELEMENT adjusted_precision (#PCDATA)>
+  <!ELEMENT p_value (#PCDATA)>
+  <!ELEMENT symbol (#PCDATA)>
+  <!ELEMENT name (#PCDATA)>
+  <!ELEMENT synonyms (#PCDATA)>
+  <!ELEMENT chromosome (#PCDATA)>
+  <!ELEMENT map_location (#PCDATA)>
+  
+  <!ELEMENT db_refs (entrez_id, hgnc_id?, ensembl_id?, mim_id?, hprd_id?)>
+  <!ELEMENT entrez_id (#PCDATA)>
+  <!ELEMENT hgnc_id (#PCDATA)>
+  <!ELEMENT ensembl_id (#PCDATA)>
+  <!ELEMENT mim_id (#PCDATA)>
+  <!ELEMENT hprd_id (#PCDATA)>
+]>

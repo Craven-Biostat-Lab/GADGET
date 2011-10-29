@@ -18,13 +18,14 @@
         <ul>
             <li><a href="#queryterms">Entering query terms</a></li>
             <li><a href="#scores">Gene search scores</a></li>
-            <li><a href="#genesearch_via_querystring">Accessing the gene search without a browser</a></li>
+            <li><a href="#genesearch_via_querystring">Using the gene search without a browser</a></li>
         </ul>
         <li><a href="#eventsearch">The event search</a></li>
         <ul>
             <li><a href="#eventqueries">Querying events</a></li>
             <li><a href="#geneentry">Searching for specific genes</a></li>
             <li><a href="#diagrams">Event diagrams</a></li>
+            <li><a href="#eventsearch_via_querystring">Using the event search without a browser</a></li>
         </ul>
     </ul>
     
@@ -32,6 +33,7 @@
     <p>GADGET's gene search returns genes that are associated with the abstracts in <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> that match a given query.  When you search on a phrase, GADGET will return a list of genes related to that phrase in the literature, ordered by the approximate "importance" of the phrase for each gene: if you search for "<a href="gadget/genesearch?q=surfactant">surfactant</a>," genes for which "surfactant" is more strongly associated will appear higher in the list.</b>
     <p>There are several different scores that GADGET can use to the rank genes that satisfy a given query.  (Read about them <a href="#scores">here</a>.)  To change which score GADGET uses to sort the genes, just click on the name of that score in the result table header.</p>
     <p>To see a list of abstracts for a gene that match your query, click on the plus sign ("+") on the left side of the gene's table row.  You can also see events for the gene this way.</p>
+    <p>You can download gene search results as a CSV or XML.  When you download gene search results, the results will contain all of the genes that match your query, not just the genes displayed on the page.  The XML representation uses the DTD found <a href="/static/genelist.dtd" target="_blank">here</a>.
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
 
@@ -72,22 +74,22 @@
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
 
-    <a class="topic" name="genesearch_via_querystring">Accessing the gene search without a browser</a>
-    <p>If you want to automatically access GADGET's gene search without using a web browser, you can download comma-delimited CSV files by fetching <span class="example">http://gadget.biostat.org/gadget/genelist?download=True&</span> and sending arguments via the query string of the URL.</p>
+    <a class="topic" name="genesearch_via_querystring">Using the gene search without a browser</a>
+    <p>If you want to automatically access GADGET's gene search without using a web browser, you can download comma-delimited CSV or XML files by fetching <span class="example">http://gadget.biostat.org/gadget/genelist?</span> and sending arguments via the query string at the end of the URL.  To download data, the query string must include <span class="example">&download=CSV</span> or <span class="example">&download=XML</span>, depending on which format you want.</p>
     <p>To send information to GADGET, just append it to the url.  Aguments are given by the name of the argument, an equals sign (<span class="example">=</span>), and the argument's value, e.g. <span class="example"><u>argument</u>=<u>value</u></span>.  Multiple arguments should be separated by ampersands (<span class="example">&</span>).  Here's a list of the arguments you can send:</p>
     <table class="instructions">
+        <tr><td>download</td><td>This argument is <b>required</b> to download the results as a CSV or XML file.  To download a CSV, use <span>&download=CSV</span>.  To get XML, use <span>&download=XML</span>.  The XML representation uses a DTD file that can be found <a href="/static/genelist.dtd">here</a>.</td></tr>
         <tr><td>q</td><td>The query terms of your search.  This argument <b>must</b> be included.<br /><br />In most browsers, you can include spaces and quotation marks in the URL.  Special characters, like "&" and "/", must be <a href="http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters" target="_blank">percent encoded</a>.</td></tr>
-        <tr><td>orderby</td><td>Which score to use to rank the results.<br /><br />There are 4 possible values for <span>orderby</span>.  The possible values are <span>f1_score</span>, which will order the genes by the F1 score; <span>precision</span>, which will order the genes by the adjusted precision; <span>hits</span>, which will order the genes by the number of abstracts matching your query; and <span>abstracts</span>, which will order the genes by the total number of abstracts for each gene.<br /><br />If the <span>orderby</span> argument is omitted or invalid, GADGET will default to the F1 score.  See <a href="#scores">above</a> for more information about the different scores.</td></tr>
+        <tr><td>orderby</td><td>Which score to use to rank the results.<br /><br />There are 4 possible values for <span>orderby</span>.  The possible values are <span>f1_score</span>, which will order the genes by the F1 score; <span>adjusted_precision</span>, which will order the genes by the adjusted precision; <span>matching_abstracts</span>, which will order the genes by the number of abstracts matching your query; and <span>total_abstracts</span>, which will order the genes by the total number of abstracts for each gene.<br /><br />If the <span>orderby</span> argument is omitted or invalid, GADGET will default to the F1 score.  See <a href="#scores">above</a> for more information about the different scores.</td></tr>
          <tr><td>limit</td><td>The maximum number of genes to return.  This argument should be a number.  If <span>limit</span> is not included or is invalid, GADGET will return all of the genes found in the search.</td></tr>
-         <tr><td>offset</td><td>The rank (minus one) of the first gene to include in the results.  To omit the first 100 genes, include <span>offset=100&</span>.  If <span>offset</span> is omitted or invalid, GADGET will not omit any genes.</td></tr>
-        <tr><td>download</td><td>This argument must be present to download the results as a CSV file.  If <span>download</span> is omitted, the results will be returned as HTML.</td></tr>
+         <tr><td>offset</td><td>The rank (minus one) of the first gene to include in the results.  To omit the first 100 genes, include <span>&offset=100</span>.  If <span>offset</span> is omitted or invalid, GADGET will not omit any genes.</td></tr>
     </table>
     <p>If no abstracts or genes match your query, or if <span class="example">q</span> is omitted or invalid, the GADGET server will issue a 404 error instead of returning a CSV file.</p>
     <p>Examples:</p>
-    <div class="example">Download a CSV of genes matching "arteriole":<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=True&<b>q=arteriole</b></span></div>
-    <div class="example">Download a CSV of genes matching "mesoderm", ranked by adjusted precision:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=True&<b>q=mesoderm&orderby=precision</b></span></div>
-    <div class="example">Download a CSV of the top 150 genes matching "Loop of Henle":<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=True&<b>q=Loop of Henle&limit=150</b></span></div>
-    <div class="example">Download a CSV of the top 80 genes matching "cystic fibrosis", ranked by number of matching abstracts:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=True&q=cystic fibrosis&limit=80&orderby=hits</b></span></div>
+    <div class="example">Download a CSV of genes matching "arteriole":<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&q=arteriole</b></span></div>
+    <div class="example">Download a CSV of genes matching "mesoderm", ranked by adjusted precision:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&q=mesoderm&orderby=adjusted_precision</span></div>
+    <div class="example">Download XML of the top 150 genes matching "Loop of Henle":<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=XML&q=Loop of Henle&limit=150</span></div>
+    <div class="example">Download XML of the top 80 genes matching "cystic fibrosis", ranked by number of matching abstracts:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=XML&q=cystic fibrosis&limit=80&orderby=matching_abstracts</span></div>
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
         
@@ -104,6 +106,7 @@
     <p>You can <a href="#geneentry">enter one or more gene names</a> to display associated events.  <a href="#queryterms">Term queries</a> (entered in the same way as the gene search) first find abstracts that match the query, and then display events from those abstracts.  Gene and keyphrase queries can be used together in combination.</p>
     <p>For each event, GADGET will show you a <a href="#diagrams">diagram</a> of the event, a list of genes referenced in the event, the event type (or types), and a list of abstracts that describe the event.</p>
     <p>To narrow down the list of events, you can add genes to your query.  Click on <i>"See a list of genes referenced by these events..."</i> to see which genes are referenced by events in your query, and how many events each gene is referenced by.  Click on a gene to restrict your results to events that include that gene.</p>
+    <p>You can download event search results in XML or CSV formats.  The XML representation contains more information about the structures of the events, but CSV's are often easier to use.  You can download up to 500 events at a time.  The XML representation uses a DTD file that can be found <a href="/static/eventlist.dtd" target="_blank">here</a>.</p>
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
     
@@ -123,6 +126,26 @@
         <tr><td><img src="/static/events/example2.png" /></td><td>TP53 regulates CDKN1A (directional).</td></tr>
         <tr><td><img src="/static/events/example3.png" /></td><td>BMP2 positively regulates the phosphorylation of SMAD1</td></tr>
     </table></div>
+    <a href="#top" class="top">Back to top</a>
+    <a href="/" class="top">Back to GADGET</a>
+    
+    <a class="topic" name="eventsearch_via_querystring">Using the event search without a browser</a>
+    <p>You can access the event search without a browser by fetching <span class="example">http://gadget.biostat.wisc.edu/gadget/eventlist?</span> and sending arguments via the query string at the end of the URL.  To download data, you must include either <span class="example">&download=CSV</span> or <span class="example">&download=XML</span> in the query string, depending on which format you want.  You can fetch up to 500 events at once.</p>
+    <p>To send information to GADGET, just append it to the url.  Aguments are given by the name of the argument, an equals sign (<span class="example">=</span>), and the argument's value, e.g. <span class="example"><u>argument</u>=<u>value</u></span>.  Multiple arguments should be separated by ampersands (<span class="example">&</span>).  Here's a list of the arguments you can send:</p>
+    <table class="instructions">
+        <tr><td>download</td><td>This argument is <b>required</b> to download the results as a CSV or XML file.  To download a CSV, use <span>&download=CSV</span>.  To get XML, use <span>&download=XML</span>.  The XML representation contains more information about the structure of the events, and uses a DTD file that can be found <a href="/static/eventlist.dtd">here</a>.</td></tr>
+        <tr><td>q</td><td>The query terms of your search.  You need to include either a query or a list of genes (or both).<br /><br />In most browsers, you can include spaces and quotation marks in the URL.  Special characters, like "&" and "/", must be <a href="http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters" target="_blank">percent encoded</a>.</td></tr>
+        <tr><td>gene_entrez_ids</td><td>A list of gene Entrez ID's separated by commas.  GADGET will only return events which include all of these genes.<br /><br />  You must include either a query or a list of genes (or both).  If both <span>gene_entrez_ids</span> and <span>gene_symbols</span> arguments are given, GADGET will ignore <span>gene_symbols</span>.</td></tr>
+        <tr><td>gene_symbols</td><td>A list of gene symbols separated by commas (see <a href="#geneentry">gene entry</a>).  GADGET will only return events which include all of these genes.<br /><br />  You must include either a query or a list of genes (or both).  If both <span>gene_entrez_ids</span> and <span>gene_symbols</span> arguments are given, GADGET will ignore <span>gene_symbols</span>.</td></tr>
+        <tr><td>limit</td><td>The maximum number of events to return.  This argument should be a number.<br /><br />The maximum value for limit is 500.  If no valid <span>limit</span> is specified, the results will be limited to 500 events.  If you need to download more than 500 events, download multiple result sets using the <span>offset</span> argument.</td></tr>
+        <tr><td>offset</td><td>The number of initial results to exclude from the result set.  To omit the first 100 events, include <span>&offset=100</span>.  If <span>offset</span> is omitted or invalid, GADGET will not omit any events.</td></tr>
+    </table>
+        <p>If you do not provide at least one valid text query or gene list, or if no events match your criteria, the GADGET server will issue a 404 error.</p>
+        <p>Examples:</p>
+        <div class="example">Download XML for 10 events referencing SERPINC1:<br /><span>http://gadget.biostat.wisc.edu/gadget/eventlist?download=XML&gene_symbols=SERPINC1&limit=10</span></div>
+        <div class="example">Download a CSV of events in abstracts matching "limb regeneration":<br /><span>http://gadget.biostat.wisc.edu/gadget/eventlist?download=CSV&q=limb regeneration</span></div>
+        <div class="example">Download XML for events referencing BMP2 and SMAD7 (using Entrez ID's):<br /><span>http://gadget.biostat.wisc.edu/gadget/eventlist?download=XML&gene_entrez_ids=650,4092</span></div>
+        <div class="example">Download XML for events referencing SOX9 in abstracts matching "mesenchymal":<br /><span>http://gadget.biostat.wisc.edu/gadget/eventlist?download=XML&gene_symbols=SOX9&q=mesenchymal</span></div>
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
 </div></body>
