@@ -108,7 +108,7 @@ def update(metadata):
                 volume := %s,
                 issue := %s,
                 pages := %s,
-                updated := now(),
+                updated := now()
                 where pubmed_id = %s;
             """,
             (m['title'], m['authors'], m['abstract'], m['year'], m['month'], 
