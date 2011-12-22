@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'gadget',                      # Or path to database file if using sqlite3.
+        'NAME': 'production',                      # Or path to database file if using sqlite3.
         'USER': 'root',                      # Not used with sqlite3.
         'PASSWORD': 'password',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -85,7 +85,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'genetext.urls'
 
 TEMPLATE_DIRS = (
-    '/home/matt/work/gadget/genetext/templates',
+    '/home/genetext/gadget/genetext/templates',
 )
 
 INSTALLED_APPS = (
@@ -103,4 +103,4 @@ INSTALLED_APPS = (
 )
 
 # directory where the index of abstracts lives
-ABSTRACT_INDEX_PATH = '/home/matt/work/gadget/index'
+ABSTRACT_INDEX_PATH = '/home/genetext/gadget/index'

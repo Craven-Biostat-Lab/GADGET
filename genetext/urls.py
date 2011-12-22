@@ -7,8 +7,8 @@ import geneview.geneview as gv
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^gadget/genesearch', gv.search),
-    (r'^gadget/genelist', gv.result),
+    (r'^gadget/genesearch', gv.searchpage),
+    (r'^gadget/genelist', gv.genesearch),
     (r'^gadget/abstract', gv.abstracts),
     (r'^gadget/eventsearch', ev.search),
     (r'^gadget/eventlist', ev.eventlist),
@@ -17,11 +17,11 @@ urlpatterns = patterns('',
     (r'^gadget/eventthumb', ev.thumb),
     (r'^gadget/xml', ev.xml),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
-        {'document_root': '/home/matt/work/gadget/static'}),
+        {'document_root': '/home/genetext/gadget/static'}),
     (r'^$', 'django.views.static.serve', 
-        {'document_root': '/home/matt/work/gadget/www', 'path':'index.html'}),    
+        {'document_root': '/home/genetext/gadget/www', 'path':'index.html'}),    
     (r'^(?P<path>.*)$', 'django.views.static.serve', 
-        {'document_root': '/home/matt/work/gadget/www'}),
+        {'document_root': '/home/genetext/gadget/www'}),
     
     # Example:
     # (r'^genetext/', include('genetext.foo.urls')),
