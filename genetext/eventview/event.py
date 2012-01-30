@@ -309,29 +309,40 @@ class EventInfo:
     def plot(self, dpi=65):
         G = self.graph()
         
-        #fig = Figure()
-        #ax = fig.add_subplot(111)
+        # create the figure and axes
         fig = figure(figsize=(6, 3), dpi=dpi, frameon=False)
         ax = axes()
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
         
-        pos = nx.spectral_layout(G) # node and edge positions
+        pos = nx.spectral_layout(G) # compute node and edge positions
         
+        # create lists of directed and undirected edges
         directed_edges = [e for e in G.edges(data=True) if e[2]['directed']]
         undirected_edges = [e for e in G.edges(data=True) if not e[2]['directed']]
         
-        node_size = [(300, 2000)[n[1]['gene']] for n in G.nodes(data=True)]
-        node_color = [('purple', 'lightsteelblue')[n[1]['gene']] for n in G.nodes(data=True)]
+        # create lists of node properties for plotting
+        node_size = [(100, 2000)[n[1]['gene']] for n in G.nodes(data=True)]
+        node_color = [('mediumpurple', 'lightsteelblue')[n[1]['gene']] for n in G.nodes(data=True)]
         node_labels = dict([ (n[0], n[1]['label']) for n in G.nodes(data=True) ])
         
-        edge_labels = dict([ ((e[0], e[1]), e[2]['label']) for e in G.edges(data=True) ])
+        # create dictionary of edge labels
+        edge_labels = dict([ ((e[0], e[1]), e[2]['label'].replace('_','\n')) for e in G.edges(data=True) ])
         
+        # create an undirected version of the graph
         uG = G.to_undirected()
         
-        nx.draw(G, pos=pos, ax=ax, hold=True, edgelist=directed_edges, node_size=node_size, 
-            node_color=node_color, labels=node_labels)
-        nx.draw_networkx_edges(uG, pos=pos, ax=ax, hold=True, edgelist=undirected_edges)
-        nx.draw_networkx_edge_labels(G, pos=pos, ax=ax, edge_labels=edge_labels)
+        # draw the graph's nodes and directed edges
+        nx.draw(G, pos=pos, ax=ax, hold=True, edgelist=directed_edges, alpha=0.9,
+            node_size=node_size, node_color=node_color, linewidths=0, edge_color='#bbbbbb', width=2,
+            labels=node_labels, font_size=18, font_color='#383838', font_weight='bold')
+        
+        # draw the undirected edges (using the undirected version of the graph)
+        nx.draw_networkx_edges(uG, pos=pos, ax=ax, hold=True, 
+            edgelist=undirected_edges, edge_color='#bbbbbb', width=2)
+        
+        #draw edge labels
+        nx.draw_networkx_edge_labels(G, pos=pos, ax=ax, edge_labels=edge_labels, 
+            font_size=14, font_color='#383838',)
         
         canvas = FigureCanvas(fig)
         plt.close(fig)
