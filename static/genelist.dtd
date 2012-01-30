@@ -1,11 +1,12 @@
 <!DOCTYPE genelist [
   <!ELEMENT genelist (description?, gene*)>
   
-  <!ELEMENT description (query, orderby, limit?, offset?)>
+  <!ELEMENT description (query, orderby?, limit?, offset?, errormessage?)>
   <!ELEMENT query (#PCDATA)>
   <!ELEMENT orderby (#PCDATA)>
   <!ELEMENT limit (#PCDATA)>
   <!ELEMENT offset (#PCDATA)>
+  <!ELEMENT errormessage (#PCDATA)>
   
   <!ELEMENT gene (rank, f1_score, matching_abstracts, total_abstracts, adjusted_precision, p_value, symbol, name, synonyms?, db_refs, chromosome, map_location)>
   <!ELEMENT rank (#PCDATA)>

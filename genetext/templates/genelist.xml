@@ -2,10 +2,11 @@
 <!DOCTYPE genelist SYSTEM "http://gadget.biostat.wisc.edu/static/genelist.dtd">
 <genelist>
   <description>
-    <query>{{ q }}</query>
-    <orderby>{{ orderby }}</orderby>{% if limit %}
+    <query>{{ q }}</query>{% if orderby %}
+    <orderby>{{ orderby }}</orderby>{% endif %}{% if limit %}
     <limit>{{ limit }}</limit>{% endif %}{% if offset %}
-    <offset>{{ offset }}</offset>{% endif %}
+    <offset>{{ offset }}</offset>{% endif %}{% if errmsg %}
+    <errormessage>{{ errmsg }}</errormessage>{% endif %}
   </description>
 {% for g, p in genes %}  <gene>
     <rank>{{ forloop.counter|add:offset }}</rank>

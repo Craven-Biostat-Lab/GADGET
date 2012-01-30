@@ -23,18 +23,26 @@ $(document).ready(function()
     
     // get initial results
     spin();
-    $.get("genelist.html", queryString)
-    .success(function(result)
+    $.getJSON("genelist", queryString)
+    .success(function(data)
     {
-        // append new genes to table, show "more" button
-        $("div#description").show();
-        $("#generank").append(result).fadeTo(200, 1);
-        stripetables();
-        $("table#download").fadeIn('slow');
-        $("#more").show();
-        hideflash();
+        if (data.validresult)
+        {
+            // append new genes to table, show "more" button
+            $("div#description").show();
+            $("#generank").append(data.result).fadeTo(200, 1);
+            stripetables();
+            $("table#download").fadeIn('slow');
+            $("#more").show();
+            hideflash();        
+        }
+        else
+        {
+            // display error message
+            flash(data.errmsg);
+        }
     })
-    .error(function() {flash("No results found!  Please try a different query.")});
+    .error(function() {flasherror();} );
     
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
@@ -44,23 +52,31 @@ $(document).ready(function()
         
         // get more genes
         spin();
-        $.get("genelist.html", queryString)
-        .success(function(result)
+        $.getJSON("genelist", queryString)
+        .success(function(data)
         {
-            // append new genes to table
-            $("#generank").append(result);
-            stripetables();
-            hideflash();
+            if (data.validresult)
+            {
+                // append new genes to table
+                $("#generank").append(data.result);
+                stripetables();
+                hideflash();
+            }
+            else
+            {
+                // If "validresult" is false, we ran out of genes.  (Ot
+                flash("No more genes match your query.");
+                $("#more").hide(); 
+            }
         })
-        .error(function()
-        {
-            // no more genes, hide the button
-            flash("No more results.");
-            $("#more").hide();
+        .error(function() {
+            flasherror();
+            $("#more").hide();    
         });
+        
     });
     
-    // show / hide abstracts when the + or - gets clicked
+    // show / zhide abstracts when the + or - gets clicked
     $("#generank").delegate("a.showabstracts", "click", function()
     {
         var gene = $(this).attr("gene");

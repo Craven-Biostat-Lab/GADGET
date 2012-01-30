@@ -1,8 +1,10 @@
 from urllib import quote_plus
+import json
 
 from django.shortcuts import render_to_response
+from django.template.loader import render_to_string
 from django.http import HttpResponse, Http404
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count
 from django import forms
 
 import rpy2.robjects as robjects
@@ -10,7 +12,7 @@ import rpy2.robjects as robjects
 from genetext.geneview.models import Gene, GeneAbstract, Abstract
 from genetext.geneview.index import get_abstracts, corpus_size
 
-def search(request):
+def searchpage(request):
     """The search page for the word view (makes the forms)"""
     class SearchForm(forms.Form):
         q = forms.CharField(label='Keywords', initial='enter keywords')
@@ -27,13 +29,18 @@ def search(request):
     
     return render_to_response('genesearch.html', {'form': form, 'q':q, 'orderby':orderby})
 
-def result(request):
+
+def genesearch(request):
     """Does the actual search for the word view.  Given a query (via the query
     string,) search the index for abstracts containing those terms, and then find
     and rank genes related to those abstracts."""
     
+    # format to return the results in (blank for JSON to display in the browser)
+    download = request.GET.get('download')
+    
+    # don't do anything if we don't have a query
     if not request.GET.get('q'):
-        raise Http404 # don't do anything if we don't have a query
+        return searchresponse(validresult=False, download=download, errmsg="Please enter a query.")
 
     # get the abstracts matching our query 
     query = request.GET['q']
@@ -41,10 +48,10 @@ def result(request):
     total_abstracts = corpus_size()
     query_abstracts = len(abstracts)
     
-    # 404 if there are no abstracts
+    # error if there are no abstracts
     if query_abstracts == 0:
-        raise Http404
-    
+        return searchresponse(validresult=False, download=download, errmsg="Your query did not match any abstracts.", query=query)
+        
     # get limit and offset from query string
     try: offset = int(request.GET.get('offset'))
     except: offset = 0
@@ -97,31 +104,55 @@ def result(request):
     # calculate p values
     phyper = robjects.r['phyper']
     pvals = ['{0:.2e}'.format(phyper(g.hits-1, query_abstracts, total_abstracts-query_abstracts, g.abstracts, lower_tail=False)[0]) for g in genes]
-    
-    # render and return the appropriate response
 
-    # 404 if no results
+    # error if no results
     if not pvals: 
-        raise Http404
-        
-    if (request.GET.get('download')):
-        if request.GET['download'].lower() == 'csv':
+        return searchresponse(validresult=False, download=download, errmsg="Your query didn't match any genes.", query=query)
+    
+    return searchresponse(validresult=True, download=download, genes=genes, pvals=pvals, offset=offset, orderby=orderby, query=query, limit=limit)
+
+
+def searchresponse(validresult, download=None, errmsg=None, genes=[], pvals=[], offset=0, orderby=None, query=None, limit=None):
+    """Return an HttpResponse object with gene search results, as either JSON, XML,
+    or a CSV depending on the "download" argument.  "validresult" is True if "genes",
+    "pvals", and "offset" represent a valid result, and False otherwise.  "errmsg" 
+    is an error message to display to the user."""
+
+    if download:
+        if not query: 
+            raise Http404 # 404 if we don't have a query
+    
+        if download.lower() == 'csv':
             # create, package, and return a CSV file
             response = HttpResponse(mimetype='text/csv')
             response['Content-Disposition'] = 'attachment; filename=gadget-{0}.csv'.format(quote_plus(query))
             response.write(makeCSV(genes, pvals, offset))
             return response
-        if request.GET['download'].lower() == 'xml':
+            
+        elif download.lower() == 'xml':
             # render the XML template
             response = render_to_response('genelist.xml', 
                 {'genes': zip(genes, pvals), 'pvals': pvals, 'offset': offset, 
-                'orderby':orderby, 'q':query, 'limit':limit})
+                'orderby':orderby, 'q':query, 'limit':limit, 'errmsg': errmsg})
             response['Content-Type'] = 'text/xml'
             return response
+            
+        else:
+            raise Http404 # 404 if invalid "download" argument
+        
+    else: # display results in web browser
+        # render results to html
+        if validresult:
+            resulthtml = render_to_string('genelist.html', {'genes': zip(genes, pvals), 'pvals': pvals, 'offset': offset})
+        else:
+            resulthtml = None
 
-    # if no valid "download", render HTML
-    return render_to_response('genelist.html', {'genes': zip(genes, pvals), 'pvals': pvals, 'offset': offset, 'orderby':orderby})
-    
+        # render and return JSON
+        response = HttpResponse()
+        json.dump({'validresult': validresult, 'errmsg': errmsg, 'result': resulthtml}, response)
+        return response
+
+
 def makeCSV(genes, pvals, offset):
     """Create a CSV file (returned as a string) given a list of genes and a list of p values."""
     header = 'rank,f1_score,matching_abstracts,total_abstracts,adjusted_precision,p_value,symbol,name,synonyms,entrez_id,hgnc_id,ensembl_id,mim_id,hprd_id,chromosome,map_location\n'
@@ -130,17 +161,20 @@ def makeCSV(genes, pvals, offset):
         for rank, (g, p) in enumerate(zip(genes, pvals), start=1+offset)])
     return header + body
 
+
 def abstracts(request):
     """Produce a list of abstracts for a gene and a query (also takes a limit and
     offset).  Render and return the "abstracts.html" template.  404 if bad input
     or no results."""
     
+    # make sure we have the input we need, 404 if we don't
     try:
         query = request.GET['q']
         gene = int(request.GET['gene'])
     except ValueError:
-        raise Http404 # don't do anything if we have bad input
+        raise Http404
     
+    # get optional limit and offset parameters
     try: offset = int(request.GET.get('offset'))
     except: offset = 0
     try: limit = int(request.GET.get('limit'))

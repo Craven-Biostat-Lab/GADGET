@@ -24,6 +24,9 @@ else:
         
     ix = index.create_in(ABSTRACT_INDEX_PATH, Schema)
 
+# query parser
+parser = MultifieldParser(fieldnames=('title', 'abstract'), schema=ix.schema)
+
 def updateIndex():
     """
     Do not expose this method to the web interface.
@@ -97,7 +100,6 @@ def get_abstracts(query):
         
     else:
         # parse the user's query
-        parser = MultifieldParser(fieldnames=('title', 'abstract'), schema=ix.schema)
         q = parser.parse(unicode(query))
         
         # get the query results

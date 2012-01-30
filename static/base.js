@@ -4,6 +4,7 @@ function flash(message)
     $("#flash").html(message).fadeIn(400);
 }
 
+// hide message
 function hideflash()
 {
     $("#flash").fadeOut(300);
@@ -13,6 +14,12 @@ function hideflash()
 function spin()
 {
     flash('<img src="/static/spinner.gif" />');
+}
+
+// show error message
+function flasherror()
+{
+    flash("An error occurred!  Please check your internet connection and try again.  If the problem persists, please <a href='/contact.html'>contact us</a>.");
 }
 
 // zebra stripe result tables
