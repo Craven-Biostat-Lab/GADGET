@@ -22,8 +22,11 @@
     <b>Search for genes by keyword:</b>
     <div id="search">
         <form action="/gadget/genesearch" method="get"><table><tr>
-            <th><label for="id_q">Keywords:</label></th><td><input type="text" name="q" id="id_q" style="width:100%"/></td><td><input type="submit" value="Search genes" /></td>
+            <th><label for="id_q">Keywords:</label></th>
+            <td style="vertical-align:top"><input type="text" name="q" id="id_q" style="width:100%"/></td>
+            <td style="vertical-align:top"><input type="submit" value="Search genes" /></td>
         </tr></table></form>
+        <a class="hint" target="_blank" href="/manual.html#queryterms">Keyword search tips</a>
     </div>
     <div class="example">
         <b>Examples:</b><br />
@@ -32,17 +35,22 @@
     </div>
     <br />
     
-    <b>Search for events by gene and keyword:</b>
+    <b>Search for gene interaction events by gene and keyword:</b>
     <div id="search">    
         <form action="/gadget/eventsearch" method="get"><table>
             <tr>
-                <th><label for="id_q">Keywords:</label></th><td><input type="text" name="q" id="id_q" style="width:100%" /></td>
-                <td rowspan="2" style="verticle-align:center"><input type="submit" value="Search events" /></td>
+                <th><label for="id_q">Keywords:</label></th>
+                <td><input type="text" name="q" id="id_q" style="width:100%" /></td>
+                
+                <td rowspan="2" style="vertical-align:center"><input type="submit" value="Search events" /></td>
             </tr>
             <tr>
-                <th><label for="id_genes">Genes:</label></th><td><input type="text" name="genes" id="id_genes" style="width:100%" /></td>
+                <th><label for="id_genes">Gene symbols:</label></th>
+                <td><input type="text" name="genes" id="id_genes" style="width:100%" /></td>
             </tr>
         </table></form>
+        <a class="hint" target="_blank" href="/manual.html#queryterms">Keyword search tips</a>
+        <a class="hint" target="_blank" href="/manual.html#geneentry">Gene symbol entry</a>
     </div>
     <div class="example">
         <b>Examples:</b><br />

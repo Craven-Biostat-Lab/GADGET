@@ -29,10 +29,13 @@ $(document).ready(function()
         if (data.validresult)
         {
             // append new genes to table, show "more" button
-            $("div#description").show();
-            $("#generank").append(data.result).fadeTo(200, 1);
+            $("#generank").append(data.result);
             stripetables();
+            
+            $("div#description").show();
+            $("#results").fadeTo(200, 1);
             $("table#download").fadeIn('slow');
+            
             $("#more").show();
             hideflash();        
         }
@@ -76,7 +79,7 @@ $(document).ready(function()
         
     });
     
-    // show / zhide abstracts when the + or - gets clicked
+    // show / hide abstracts when the + or - gets clicked
     $("#generank").delegate("a.showabstracts", "click", function()
     {
         var gene = $(this).attr("gene");
@@ -87,7 +90,6 @@ $(document).ready(function()
             var querystring = "q=" + q + "&gene=" + gene + "&limit=" + abstractlimit;
             
             // set up abstract area
-            $(this).html("&ndash;");
             $("#generank tr#" + gene).after('<tr class="abstracts" id="a' + gene + '"><td colspan="100"><img src="/static/spinner2.gif"></td></tr>');
             
             // fetch and display abstracts
@@ -120,7 +122,6 @@ $(document).ready(function()
         {
             // hide the abstract pane
             $("#generank tr#a" + gene + " td div").slideUp('fast', function() {$("#generank tr#a" + gene).remove()});
-            $(this).html("+");
         }
     });
     

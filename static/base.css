@@ -12,6 +12,13 @@ form {
     display: inline;
 }
 
+a.hint {
+    font-size: 12px;
+    text-align: left;
+    padding: 0px 5px;
+    font-weight: normal;
+}
+
 /*******************************************************************************
 * gene view and event view
 *******************************************************************************/
@@ -22,7 +29,7 @@ form {
     left: 0px;
     width: 98.5%;
     background-color: #e4d9ff; /*#f4ffd9; #E8FAC5;*/
-    border: solid 1px #968fa8;
+    /*border: solid 1px #968fa8;*/
     border-top: none;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -33,7 +40,14 @@ form {
 
 #header a{
     font-weight: bold;
-    color: #000
+    color: #000;
+}
+
+#footer {
+    text-align: center;
+    position: relative;
+    bottom: 0px;
+    height: 20px;
 }
 
 #content {
@@ -49,6 +63,7 @@ form {
     padding: 10px;
     border-radius: 10px;
     border: solid 1px #968fa8;
+    max-width: 40%;
 }
 
 #title {
@@ -77,34 +92,64 @@ div#description ul li {
     color: #426BA2;
 }
 
+table#download {
+    position: absolute;
+    right: 0.5%;
+    top: 4px;
+    display: inline;
+    padding: 0;
+
+    display:inline;
+    background-color: #D9F4FF;
+    padding: 2px 8px;
+    
+    font-size: x-small;
+    text-align: center;
+    color: #485154;
+    
+    border-radius: 5px;
+    border-collapse: collapse;
+    border: solid 1px #8fa1a8;
+}
+
+table#download tr:last-child td:first-child {
+    border-right: 1px solid #8fa1a8;
+}
+
+table#download a {
+    font-weight: bold;
+    color: #485154;
+    text-decoration: none;
+}
+
 /*******************************************************************************
 * Gene view
 *******************************************************************************/
 
-table.results th {
+table#generank th {
     background-color: #D9F4FF;
     font-weight: bold;
 }
 
-table.results th a {
+table#generank th a {
     text-decoration: none;
 }
 
-table.results td {
+table#generank td {
     padding: 5px 10px;
     /*border-bottom: 1px solid #000000;*/
     margin: 0px;
 } 
 
-table.results tr {
+table#generank tr {
     background-color: #F5FCFF;
 }
 
-table.results tr.alt {
+table#generank tr.alt {
     background-color: #EBF9FF;
 }
 
-table.results tr.over {
+table#generank tr.over {
     background-color: #D9F4FF;
 }
 
@@ -164,36 +209,6 @@ table#eventgenes td a{
     color: #000;
 }
 
-table#download {
-    position: absolute;
-    right: 0.5%;
-    top: 4px;
-    display: inline;
-    padding: 0;
-
-    display:inline;
-    background-color: #D9F4FF;
-    padding: 2px 8px;
-    
-    font-size: x-small;
-    text-align: center;
-    color: #485154;
-    
-    border-radius: 5px;
-    border-collapse: collapse;
-    border: solid 1px #8fa1a8;
-}
-
-table#download tr:last-child td:first-child {
-    border-right: 1px solid #8fa1a8;
-}
-
-table#download a {
-    font-weight: bold;
-    color: #485154;
-    text-decoration: none;
-}
-
 /*******************************************************************************
 * User manual, front page, contact
 *******************************************************************************/
@@ -240,14 +255,11 @@ div.example ul {
 *******************************************************************************/
 
 div#search {
-    /*margin: 50px auto 0 auto;*/
     margin: 5px auto;
-    border: solid 1px black;
-    /*width: 80%;*/
     text-align: center;
     padding: 3px 3px;
     background-color: #e4d9ff; /*#f4ffd9; #E8FAC5;*/
-    border: solid 1px #968fa8;
+    /*border: solid 1px #968fa8;*/
     border-radius: 10px;
 }
 

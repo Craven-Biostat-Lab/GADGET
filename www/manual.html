@@ -10,7 +10,7 @@
 </head>
 <body><div id="manual">
     <a name="top"><h1>GADGET User Manual</h1></a>
-    <p>GADGET (Genes Associated by Documents, Genes, Events, and Text) is a tool that allows users to search and navigate the biomedical literature that is associated with specific genes.  GADGET can identify the genes that are strongly associated with arbitrary text queries, and it can also show "events" that describe automatically extracted relationships among the genes.</p>
+    <p><a href="/">GADGET</a> (Genes Associated by Documents, Genes, Events, and Text) is a tool that allows users to search and navigate the biomedical literature that is associated with specific genes.  GADGET can identify the genes that are strongly associated with arbitrary text queries, and it can also show "events" that describe automatically extracted relationships among the genes.</p>
     <p>GADGET has two main views: The <a href="gadget/genesearch">gene search</a> sifts through literature to identify genes associated with user queries.  The <a href="gadget/eventsearch">event search</a> sifts through interactions between genes that have been automatically extracted from biomedical abstracts.</p>
     
     <ul>
@@ -70,7 +70,7 @@
         <tr><td>Matching abstracts</td><td>"Matching abstracts" is the number of abstracts for the gene that match your query.  This score is useful for finding genes that have larger amounts of published literature relevant to your query, but genes with more total abstracts tend to be ranked higher even if they are less relevant to your query.</td></tr>
         <tr><td>Total abstracts</td><td>"Total abstracts" shows the total number of abstracts associated with each gene.  This number does not change based upon your query.</td></tr>
     </table>
-    <p>GADGET also computes a p-value for each gene using the <a href="http://en.wikipedia.org/wiki/Hypergeometric_test" target="_blank">hypergeometric test</a>.  The null hypothesis for the test is that the fraction of abstracts that match the query for a given gene is equal to the "background" fraction of abstracts that match the query in the entire corpus of abstracts.  The p-value thus indicates how confident we are that a gene's abstract set is enriched for the query.</p>
+    <p>GADGET also computes a <b>p-value</b> for each gene using the <a href="http://en.wikipedia.org/wiki/Hypergeometric_test" target="_blank">hypergeometric test</a>.  The null hypothesis for the test is that the fraction of abstracts that match the query for a given gene is equal to the "background" fraction of abstracts that match the query in the entire corpus of abstracts.  The p-value thus indicates how confident we are that a gene's abstract set is enriched for the query.</p>
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
 
