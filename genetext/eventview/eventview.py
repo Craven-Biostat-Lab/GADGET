@@ -1,9 +1,11 @@
+import json
 from django.shortcuts import render_to_response
+from django.template.loader import render_to_string
 from django.http import HttpResponse, Http404
 from django.db.models import Q
 from django import forms
 
-from genetext.eventview.event import EventInfo, get_events, get_event_genes
+from genetext.eventview.event import EventInfo, get_events, get_event_genes, get_gene_combinations
 from genetext.eventview.models import Gene
 from genetext.geneview.index import get_abstracts
 
@@ -103,7 +105,6 @@ def eventlist(request):
     if dl:
         if dl.lower() == 'xml':
             # return xml file
-            print 'got here', len(events)
             
             response = HttpResponse('<?xml version="1.0" ?>\n<!DOCTYPE eventlist SYSTEM "http://gadget.biostat.wisc.edu/static/eventlist.dtd">\n<eventlist>\n')
             response.write(xmldescription(query=query, genes=genes, limit=limit, offset=offset))
@@ -158,6 +159,56 @@ def eventgenes(request):
         return render_to_response("eventgenes.html", {'event_genes': event_genes, 'genes':genes})
     else:
         raise Http404
+
+def eventsummary(request):
+    response = HttpResponse()
+    
+    # get genes out of request
+    try:
+        genes = [int(g) for g in request.GET['genes'].split(',')]
+    except (KeyError, ValueError):
+        genes = None
+    
+    # get abstracts
+    query = request.GET.get('q')
+    if query:
+        abstracts = get_abstracts(query)
+    else:
+        abstracts = None
+        
+    # get gene combinations
+    try:
+        outergenes = get_gene_combinations(genes=genes, abstracts=abstracts)
+    except KeyError:
+        # error if no gene or abstracts
+        json.dump({'validresult': False, 'errormsg': 'You must supply either genes or a keyword query'}, response)
+        return response
+    
+    # get sorter function from request
+    orderby = request.GET.get('orderby', 'abstracts').lower()    
+    sorter = {'abstracts': lambda g: -g.count, 'symbol': lambda g: g.symbol}[orderby]
+
+    # sort data structure before rendering it
+    outergenes_sorted = []
+    for og in sorted(outergenes.values(), key=sorter):
+        og.innergenes.sort(key=sorter)
+        outergenes_sorted.append(og)
+   
+    # apply limit
+    try:
+        limit = int(request.GET.get('limit'))
+        outergenes_sorted = outergenes_sorted[:limit]
+    except (TypeError, ValueError):
+        pass
+   
+    # render and return JSON response
+    if outergenes_sorted:
+        json.dump({'validresult': True, 
+            'result': render_to_string("eventsummary.html", 
+            {'outergenes': outergenes_sorted, 'genes': genes, 'orderby': orderby})}, response)
+    else:
+        json.dump({'validresult': False, 'errormsg': 'No genes found'}, response)
+    return response
 
 def thumb(request):
     """Return a smaller plot of each event"""

@@ -37,8 +37,14 @@
         <li><a href="javascript:eventgenes();" id="showeventgenes">See a list of genes referenced by these events...</a></li>
     </ul>
 </div>
-<div id="eventgenes" style="display:none"><b>Genes referenced by these events:</b><br />(Click on a gene to add it to the query.)</div>
+<div id="eventgenes" style="display:none"><b>Genes referenced by these events:</b><br />(Click on a gene symbol to add it to the query.)</div>
+<div id="eventsummarycontainer" style="display:none">
+    <b>Combinations of genes occuring in these events:</b><br />(Click on a gene symbol to add it to the query.)
+    <table id="eventsummary"></table>
+    <a id="moresummary" href="javascript:moresummary();">More...</a>
+</div>
 <div id="results" style="display:none">
+    <h3>Events:</h3>
     <a class="hint" target="_blank" href="/manual.html#eventsearch">About event search results</a>
     <a class="hint" target="_blank" href="/manual.html#diagrams">Event diagrams</a>
     <table id="events"></table>

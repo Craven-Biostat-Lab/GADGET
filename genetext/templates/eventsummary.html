@@ -1,0 +1,21 @@
+{% autoescape on %}
+<tr>
+    <th>{% if orderby == 'symbol' %}<u>Symbol</u>{% else %}<a href="javascript:ordersummary('symbol');">Symbol</a>{% endif %}</th>
+    <th>{% if orderby == 'abstracts' %}<u>Abstracts</u>{% else %}<a href="javascript:ordersummary('abstracts');">Abstracts</a>{% endif %}</th>
+    <th>Related genes</th>
+</tr>
+{% for og in outergenes %}
+<tr>
+    <td>{% if og.id in genes %}<b>{{ og.symbol }}</b>{% else %}<a href="javascript:addgene('{{ og.symbol }}');">{{og.symbol}}</a>{% endif %}</td>
+    <td>{{ og.count }}</td>
+    <td class="innergenescontainer">
+        <table class="innergenes"><tr>
+        {% for ig in og.innergenes %}
+            <td>{% if ig.id in genes %}<b>{{ ig.symbol }}</b>{% else %}<a href="javascript:addgene('{{ og.symbol }}, {{ ig.symbol }}');">{{ig.symbol}}</a>{% endif %} ({{ ig.count }})</td>
+            {% if forloop.counter|divisibleby:'6' and not forloop.last %}</tr><tr>{% endif %}
+        {% endfor %}
+        </tr></table>
+    </td>
+</tr>
+{% endfor %}
+{% endautoescape %}

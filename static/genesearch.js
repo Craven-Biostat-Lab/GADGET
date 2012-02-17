@@ -90,7 +90,7 @@ $(document).ready(function()
             var querystring = "q=" + q + "&gene=" + gene + "&limit=" + abstractlimit;
             
             // set up abstract area
-            $("#generank tr#" + gene).after('<tr class="abstracts" id="a' + gene + '"><td colspan="100"><img src="/static/spinner2.gif"></td></tr>');
+            $("#generank tr#" + gene).after('<tr class="abstracts" id="a' + gene + '"><td colspan="13"><img src="/static/spinner2.gif"></td></tr>');
             
             // fetch and display abstracts
             $.get("abstracts.html", querystring)

@@ -186,17 +186,21 @@ table#events tr td {
     border-collapse: collapse;
 }
 
-div#eventgenes{
+table#events tr td ul.abstracts {
+    font-size: 80%;
+}
+
+div#eventgenes {
     padding: 10px;
 }
 
-table#eventgenes{
+table#eventgenes {
     border: solid #FFB057;
     border-width: 1px 0 0 1px;
     border-collapse: collapse;
 }
 
-table#eventgenes td{
+table#eventgenes td {
     background-color: #FFF4B8;
     padding: 5px 5px;
     border: solid #FFB057;
@@ -205,8 +209,51 @@ table#eventgenes td{
     text-align: center;
 }
 
-table#eventgenes td a{
+table#eventgenes td a {
     color: #000;
+}
+
+div#eventsummarycontainer {
+    padding: 20px 10px;
+}
+
+table#eventsummary {
+    border-spacing: 1px 8px;
+}
+
+table#eventsummary tr td {
+    background: #f4ffd9;
+    border: solid  #a1a88f /*#9ea88a #93a86c #83996d #A7D678*/;
+    border-width: 1px 0px;
+    padding: 0px 5px;
+    text-align: center;
+    margin: 1px 5px;
+}
+
+table#eventsummary td.innergenescontainer {
+    background: none;
+    border: none;
+    padding: none;
+}
+
+table#eventsummary td a {
+    color: #000;
+}
+
+table#eventsummary table.innergenes {
+    border: solid #a1a88f;
+    border-width: 1px 0 0 1px;
+    border-collapse: collapse;
+}
+
+table#eventsummary table.innergenes tr td {
+    border: solid #a1a88f;
+    border-width: 0 1px 1px 0;
+    padding: 2px 5px;
+}
+
+table#eventsummary th a {
+    text-decoration: none;
 }
 
 /*******************************************************************************

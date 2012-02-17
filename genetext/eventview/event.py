@@ -1,14 +1,30 @@
 from matplotlib import use
 use('Agg') # set matplotlib backend
 
-from django.db.models import Count
+from collections import namedtuple
 import networkx as nx
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import matplotlib.pyplot as plt
 from pylab import figure, axes
 
-from genetext.eventview.models import Abstract, Event, EventEvent, EventGene, Gene
+from django.db.models import Count
 from django.core.cache import cache
+from django.db import connection
+
+from genetext.eventview.models import Abstract, Event, EventEvent, EventGene, Gene
+
+def _paramstring(l):
+    """Return a string of comma-separated %s's of length l
+    (faster and more memory-efficient than list comprehensions)"""
+    def slist():
+        for i in xrange(l): yield "%s"
+    return ','.join(slist())
+
+class multidict(dict):
+    """Like a dictionary, but each key can have multiple values.
+    (Each key returns a list of values.)"""
+    def __setitem__(self, key, value):
+        self.setdefault(key, []).append(value)
 
 def get_events(genes=None, abstracts=None, offset=0, limit=None):
     """Return a list of event ID's given gene ID's and/or abstract ID's"""
@@ -17,7 +33,8 @@ def get_events(genes=None, abstracts=None, offset=0, limit=None):
         raise KeyError('You must supply either genes or abstracts to fetch events.')
     
     # build query, order by increasing compleity (number of sub-events)
-    events = Event.objects.distinct().annotate(ev_count=Count('allchildren__event')).order_by('ev_count')
+    events = Event.objects.distinct().order_by().annotate(abs_count=Count('abstracts__pubmed_id')).order_by('-abs_count')
+    #.annotate(ev_count=Count('allchildren__event')).order_by('ev_count')
     
     # restrict events by matching genes and abstracts
     if genes:
@@ -42,7 +59,7 @@ def get_events(genes=None, abstracts=None, offset=0, limit=None):
     return events
 
 def get_event_genes(genes, abstracts):
-    """Return genes"""
+    """Return genes for an event query"""
     
     if genes is None and (abstracts is None or len(abstracts) == 0):
         raise KeyError('You must supply either genes or abstracts to fetch events.')
@@ -50,13 +67,6 @@ def get_event_genes(genes, abstracts):
     def build_sql(genes=None, abstracts=None):
         
         params = [] # list of all the parameters we're sending to the server
-        
-        def paramstring(l):
-            """Return a string of comma-separated %s's of length l
-            (faster and more memory-efficient than list comprehensions)"""
-            def slist():
-                for i in xrange(l): yield "%s"
-            return ','.join(slist())
         
         # first part of query.  do a subquery of events matching the genes and 
         # abstracts, then get matching genes.
@@ -92,7 +102,7 @@ def get_event_genes(genes, abstracts):
             inner join event_gene eg
             on eg.event = er.event
             where eg.gene in ({paramstring})
-            """.format(paramstring=paramstring(len(genes)))
+            """.format(paramstring=_paramstring(len(genes)))
            
             params += genes
             
@@ -101,7 +111,7 @@ def get_event_genes(genes, abstracts):
                 query += \
                 """
                 and ea.abstract_pmid in ({paramstring})
-                """.format(paramstring=paramstring(len(abstracts)))
+                """.format(paramstring=_paramstring(len(abstracts)))
                 params += abstracts
             
             # count the matching genes to see if we have all genes in the query
@@ -118,7 +128,7 @@ def get_event_genes(genes, abstracts):
             """
             where ea.abstract_pmid in ({paramstring})
             group by e_root.id
-            """.format(paramstring=paramstring(len(abstracts)))
+            """.format(paramstring=_paramstring(len(abstracts)))
             params += abstracts
         
         # join in the subquery of matching events
@@ -139,7 +149,102 @@ def get_event_genes(genes, abstracts):
     ev_genes = Gene.objects.raw(query, params)
     return ev_genes
     
+def get_gene_combinations(genes, abstracts):
+    """Returns a data structure with combinations of genes and abstract counts
+    occurring in an event query.  The datastructure is a dict with the first gene
+    ID as a key, and a 'Outergene' (id, symbol, count, innergenes) named tuple 
+    as the value.  'innergenes' is a list of 'Innergene' (id, symbol, count)
+    named tuples, in no particular order."""
+
+    if genes is None and (abstracts is None or len(abstracts) == 0):
+        raise KeyError('You must supply either genes or abstracts to fetch events.')
     
+    def build_sql(genes=None, abstracts=None):
+        params = [] # list of all the parameters we're sending to the server
+        
+        # base query
+        basequery = \
+        """
+        select
+        g1.id, g1.symbol, g2.id, g2.symbol, count(distinct ea.abstract_pmid) abstracts
+        from event_abstract ea
+
+        inner join event_root er1 on ea.event = er1.root
+        inner join event_gene eg1 on eg1.event = er1.event
+        inner join gene g1 on eg1.gene = g1.id
+
+        inner join event_root er2 on ea.event = er2.root
+        inner join event_gene eg2 on eg2.event = er2.event
+        inner join gene g2 on eg2.gene = g2.id
+
+        {geneclause}
+
+        where g1.id != g2.id
+        
+        {abstractclause}
+
+        group by g1.id, g2.id with rollup;
+        """    
+    
+        # optional clause restricting gene set
+        if genes:
+            geneclause = \
+            """
+            inner join (
+                select er.root id from event_root er
+                inner join event_gene eg on er.event = eg.event
+                where eg.gene in ({gene_paramstring})
+                group by er.root
+                having count(distinct eg.gene) >= {lengenes}
+            ) e on e.id = ea.event
+            """.format(gene_paramstring=_paramstring(len(genes)), lengenes=len(genes))
+            params += genes
+        else:
+            geneclause = ''
+        
+        # optional clause restricting abstracts    
+        if abstracts:
+            abstractclause = 'and ea.abstract_pmid in ({abstract_paramstring})'\
+                .format(abstract_paramstring=_paramstring(len(abstracts)))
+            params += abstracts
+        else:
+            abstractclause = ''
+            
+        return basequery.format(geneclause=geneclause, abstractclause=abstractclause), params
+    
+    # build and execute SQL query    
+    query, params = build_sql(genes, abstracts)
+    cursor = connection.cursor()
+    cursor.execute(query, params)
+    
+    Queryrow = namedtuple('Queryrow', ['id1', 'symbol1', 'id2', 'symbol2', 'count'])
+    
+    class Gene:
+        def __init__(self, **kwargs):
+            for k, v in kwargs.iteritems():
+                setattr(self, k, v)
+    
+    # build the data structure        
+    outergenes = dict()
+    for row in cursor:
+        r = Queryrow._make(row)
+        
+        # throw away summary row
+        if r.id1 is None: break
+        
+        # add the gene to the outer dict if it's not already there
+        if r.id1 not in outergenes:
+            outergenes[r.id1] = Gene(id=r.id1, symbol=r.symbol1, innergenes=[])
+                
+        # if id2 is null, this is the summary row for gene #1
+        # otherwise, add gene2 to the list of genes under gene1
+        if r.id2 is None:
+            outergenes[r.id1].count = r.count
+        else: outergenes[r.id1].innergenes.append(Gene(id=r.id2, symbol=r.symbol2, count=r.count))
+            
+    return outergenes
+            
+            
 class EventInfo:
     """Represents a complex (root) event.  Event info is lazily fetched from the database."""
     
@@ -221,12 +326,6 @@ class EventInfo:
         eventtypes = dict([ ('e' + str(e.id), e.type) for e in self.get_events() ])
         
         roles = dict() # remember themes of each relationship (keyed on (parent, child) tuple)
-        
-        class multidict(dict):
-            """Like a dictionary, but each key can have multiple values.
-            (Each key returns a list of values.)"""
-            def __setitem__(self, key, value):
-                self.setdefault(key, []).append(value)
         
         # keep multidicts of children and parents for each event and gene
         children = multidict()
