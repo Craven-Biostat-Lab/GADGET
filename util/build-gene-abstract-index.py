@@ -6,7 +6,7 @@ them in the index.  Optimize the index when we're done.
 
 import MySQLdb
 import whoosh.index as index
-from whoosh.fields import SchemaClass, TEXT, NUMERIC
+from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST
 
 # this is the path to the index directory.
 ABSTRACT_INDEX_PATH = '../index'
@@ -15,7 +15,7 @@ ABSTRACT_INDEX_PATH = '../index'
 db = MySQLdb.connect(user='root', passwd='password', db='new')
 c = db.cursor() # cursor for grabbing abstracts
 c_update = db.cursor() # seperate cursor for updating "indexed" field
-
+c_genes = db.cursor() # cursor for fetching associated genes
 
 # open or create the index
 if index.exists_in(ABSTRACT_INDEX_PATH):
@@ -24,6 +24,8 @@ else:
     # define the index fields
     class Schema(SchemaClass):
         pmid = NUMERIC(stored=True, unique=True, signed=False)
+        genes = IDLIST(stored=True) # Entrez ID's
+        homolog_genes = IDLIST(stored=True) # Entrez ID's
         title = TEXT
         abstract = TEXT
         year = NUMERIC
@@ -56,8 +58,23 @@ for i, article in enumerate(c):
         except UnicodeDecodeError:
             abstract = unicode(abstract, 'latin-1')
     
-    writer.update_document(pmid=pmid, title=title, 
-        abstract=abstract, year=year)
+    # get associated genes
+    c_genes.execute("""
+        SELECT `gene` 
+        from `gene_abstract` 
+        where `abstract` = %s
+        """, (pmid,))
+    genes = u' '.join([unicode(g[0]) for g in c_genes.fetchall()])
+        
+    c_genes.execute("""
+        SELECT `gene` 
+        from `homologene_gene_abstract` 
+        where `abstract` = %s
+        """, (pmid,))
+    homolog_genes = u' '.join([unicode(g[0]) for g in c_genes.fetchall()]) 
+    
+    writer.update_document(pmid=pmid, genes=genes, homolog_genes=homolog_genes,
+        title=title, abstract=abstract, year=year)
     
     # mark the document as indexed
     c_update.execute("""

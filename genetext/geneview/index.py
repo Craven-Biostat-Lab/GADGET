@@ -3,6 +3,7 @@ import atexit
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC
 from whoosh.qparser import MultifieldParser
+from whoosh.query import And, Term, ConstantScoreQuery, NullQuery
 from whoosh.scoring import Frequency
 
 try:
@@ -24,72 +25,11 @@ else:
         
     ix = index.create_in(ABSTRACT_INDEX_PATH, Schema)
 
-# query parser
+# query parser and searcher
 parser = MultifieldParser(fieldnames=('title', 'abstract'), schema=ix.schema)
+searcher = ix.searcher(weighting=Frequency)
 
-def updateIndex():
-    """
-    Do not expose this method to the web interface.
-    
-    Grab rows from the "abstract" database table with no "indexed_date", and put
-    them in the index.  Use MySQLdb instead of the Django database layer, because
-    Django doesn't know about the abstract table. 
-    """
-    
-    # connect to the database
-    import MySQLdb
-    db = MySQLdb.connect(user='root', passwd='password', db='genetext')
-    c = db.cursor() # cursor for grabbing abstracts
-    c_update = db.cursor() # seperate cursor for updating "indexed" field
-    
-    # get unindexed and updated abstracts
-    c.execute("""
-        select `pubmed_id`, `title`, `abstract`, `year`
-        from `abstract`
-        where `updated` is not null
-        and (`indexed` is null or `indexed` < `updated`);
-        """)
-    
-    # update the index with the articles
-    writer = ix.writer()
-    for i, article in enumerate(c):
-        pmid, title, abstract, year = article
-        
-        # For some reason, some of the abstracts are encoded in utf-8, and some 
-        # in latin-1.  This is gross, but it works.
-        if title is not None:
-            try:
-                title = unicode(title, 'utf-8')
-            except UnicodeDecodeError:
-                title = unicode(title, 'latin-1')
-        if abstract is not None:
-            try:
-                abstract = unicode(abstract, 'utf-8')
-            except UnicodeDecodeError:
-                abstract = unicode(abstract, 'latin-1')
-        
-        writer.update_document(pmid=pmid, title=title, 
-            abstract=abstract, year=year)
-        
-        # mark the document as indexed
-        c_update.execute("""
-            update `abstract`
-            set `indexed` := now()
-            where pubmed_id = %s
-            """, (pmid,))
-        
-        # commit the index every 10,000 articles
-        if i % 10000 == 0:
-            writer.commit(merge=False)
-            writer = ix.writer()
-            print 'Commit.  Abstracts:', i
-    writer.commit(optimize=True) # Merge everything.  This will take a long time.
-    
-    c.close()
-    c_update.close()
-    db.close()
-
-def get_abstracts(query):
+def get_abstracts_old(query):
     """Return a list of Pubmed ID's for abstracts matching the given query."""
     
     # first check the cache to see if we've done this seach already
@@ -103,12 +43,68 @@ def get_abstracts(query):
         q = parser.parse(unicode(query))
         
         # get the query results
-        with ix.searcher(weighting=Frequency) as searcher:
-            results = [r['pmid'] for r in searcher.search(q, limit=None)]
-            
-            cache.set('q_' + query.replace(' ', '_'), results, 600) # remember the results for 10 * 60 seconds
-            return results
+        results = [r['pmid'] for r in searcher.search(q, limit=None)]
+        
+        # remember the results for 10 * 60 seconds
+        cache.set('q_' + query.replace(' ', '_'), results, 600) # remember the results for 10 * 60 seconds
+        
+        return results
+
+
+def cachekey(keywords='', genes=[], genehomologs=True):
+    """Return a key to use for cached query results"""
     
+    if genes is None:
+        genes = []
+    
+    return 'query_k:{0}_g:{1}_h:{2}'.format(
+        keywords.replace(' ', '_'),
+        ','.join(str(g) for g in genes),
+        genehomologs)
+
+
+def buildquery(keywords=None, genes=None, genehomologs=True):
+    """Return a whoosh query object for searching the index"""
+    
+    # decide which index field to use for genes, based upon whether we're
+    # using homologs
+    genefield = 'homolog_genes' if genehomologs else 'genes'
+    
+    # build gene branch of query
+    if genes is not None:   
+        genebranch = And([Term(genefield, unicode(g)) for g in genes])
+    else:
+        genebranch = NullQuery()
+        
+    # get keyword branch of query
+    keywordbranch = parser.parse(unicode(keywords))
+
+    # return query, don't score each abstract
+    return ConstantScoreQuery(genebranch & keywordbranch)
+
+def get_abstracts(keywords=None, genes=None, genehomologs=True):
+    
+    # return an empty list if we don't have a query or list of genes
+    if keywords is None and genes is None:
+        return []
+    
+    # check to see if we've done this search already
+    # return the cached results if the query is in the cache
+    key = cachekey(keywords, genes, genehomologs)
+    cached = cache.get(key)
+    if cached:
+        return cached
+    
+    query = buildquery(keywords, genes, genehomologs)
+    
+    # search the index
+    results = [r['pmid'] for r in searcher.search(query, limit=None)]
+    
+    # remember the results for 10 * 60 seconds
+    #cache.set('q_' + query.replace(' ', '_'), results, 600) # remember the results for 10 * 60 seconds
+    cache.set(key, results, 600)
+    
+    return results
 
 def corpus_size():
     """Return the number of abstracts in the corpus"""

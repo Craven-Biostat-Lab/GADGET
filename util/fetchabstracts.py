@@ -9,7 +9,7 @@ import MySQLdb
 from xml.etree import ElementTree as ET
 
 # connect to database
-db = MySQLdb.connect(user='root', passwd='password', db='genetext')
+db = MySQLdb.connect(user='root', passwd='password', db='new')
 c = db.cursor()
 
 def fetch(idlist):

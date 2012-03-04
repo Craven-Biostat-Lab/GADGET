@@ -156,12 +156,18 @@ table#generank tr.over {
 a.showabstracts {
     font-weight: bold;
     text-decoration: none;
+    border: none;
+}
+
+a.showabstracts img {
+    border: none;
 }
 
 table#generank tr.abstracts td {
     background-color: #F0EBFF;
     padding: 0px 10% 5px 10%;
     font-size: 80%;
+    width: 100%;
 }
 
 table#generank tr.abstracts ul li {

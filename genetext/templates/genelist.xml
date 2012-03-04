@@ -1,18 +1,22 @@
 <?xml version="1.0" ?>
 <!DOCTYPE genelist SYSTEM "http://gadget.biostat.wisc.edu/static/genelist.dtd">
 <genelist>
-  <description>
-    <query>{{ q }}</query>{% if orderby %}
+  <description>{% if q %}
+    <query>{{ q|safe }}</query>{% endif %}{% if genes %}
+    <input_genes>
+{% for ig in genes %}        <input_gene entrez_id="{{ ig }}" />{% endfor %}
+    </input_genes>{% endif %}
+    <using_homology>{{ usehomology }}</using_homology>{% if orderby %}
     <orderby>{{ orderby }}</orderby>{% endif %}{% if limit %}
     <limit>{{ limit }}</limit>{% endif %}{% if offset %}
     <offset>{{ offset }}</offset>{% endif %}{% if errmsg %}
     <errormessage>{{ errmsg }}</errormessage>{% endif %}
   </description>
-{% for g, p in genes %}  <gene>
+{% for g, p in results %}  <gene>
     <rank>{{ forloop.counter|add:offset }}</rank>
     <f1_score>{{ g.f1_score|floatformat:-3 }}</f1_score>
     <matching_abstracts>{{ g.hits }}</matching_abstracts>
-    <total_abstracts>{{ g.abstracts }}</total_abstracts>
+    <total_abstracts>{{ g.abstracts_display }}</total_abstracts>
     <adjusted_precision>{{ g.precision|floatformat:-3 }}</adjusted_precision>
     <p_value>{{ p }}</p_value>
     <symbol>{{ g.symbol }}</symbol>
