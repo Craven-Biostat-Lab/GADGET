@@ -6,7 +6,8 @@
     <input_genes>
 {% for ig in genes %}        <input_gene entrez_id="{{ ig }}" />{% endfor %}
     </input_genes>{% endif %}
-    <using_homology>{{ usehomology }}</using_homology>{% if orderby %}
+    <species>{{ species }}</species>
+    <using_homologs>{{ usehomologs }}</using_homologs>{% if orderby %}
     <orderby>{{ orderby }}</orderby>{% endif %}{% if limit %}
     <limit>{{ limit }}</limit>{% endif %}{% if offset %}
     <offset>{{ offset }}</offset>{% endif %}{% if errmsg %}

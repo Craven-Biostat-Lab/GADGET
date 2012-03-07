@@ -74,7 +74,7 @@ def get_event_genes(genes, abstracts):
         """
         select
         g.id, g.symbol, count(distinct e_root.id) ev_count
-        from gene g
+        from gene_old g
         inner join event_gene eg
         on eg.gene = g.id
         inner join event_root er
@@ -171,11 +171,11 @@ def get_gene_combinations(genes, abstracts):
 
         inner join event_root er1 on ea.event = er1.root
         inner join event_gene eg1 on eg1.event = er1.event
-        inner join gene g1 on eg1.gene = g1.id
+        inner join gene_old g1 on eg1.gene = g1.id
 
         inner join event_root er2 on ea.event = er2.root
         inner join event_gene eg2 on eg2.event = er2.event
-        inner join gene g2 on eg2.gene = g2.id
+        inner join gene_old g2 on eg2.gene = g2.id
 
         {geneclause}
 

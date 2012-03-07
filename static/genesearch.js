@@ -1,7 +1,8 @@
 // script for gene search page
 // requires jquery
 
-// string variables "q" and "orderby" declared on html page (query string arguments)
+// string variables "q", "genes", "species", "usehomologs" and "orderby"
+// declared on html page (from query string arguments)
 
 var initialLimit = 100;
 var limit = 100;
@@ -12,13 +13,13 @@ var abstractlimit = 15;
 // build the query string and redirect to a page with the new ordering
 function order(key)
 {
-    var querystring = "q=" + q + "&orderby=" + key;
+    var querystring = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key;
     window.location = "genesearch?" + querystring;
 }
 
 $(document).ready(function()
 {
-    var queryString = "q=" + q + "&orderby=" + orderby + "&limit=" + initialLimit;
+    var queryString = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit;
     offset += initialLimit;
     
     // get initial results
@@ -50,7 +51,7 @@ $(document).ready(function()
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
     {
-        var queryString = "q=" + q + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
+        var queryString = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
         offset += limit;
         
         // get more genes
@@ -84,44 +85,51 @@ $(document).ready(function()
     {
         var gene = $(this).attr("gene");
         
-        if ($("#generank tr#a" + gene).length == 0) // see if the tr for absracts exists
+        if ($("#generank tr#abstracts" + gene).length == 0) // see if the tr for absracts exists
         {
             // assemble querystring
-            var querystring = "q=" + q + "&gene=" + gene + "&limit=" + abstractlimit;
+            var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&species=" + species + "&usehomologs=" + usehomologs + "&limit=" + abstractlimit;
             
             // set up abstract area
-            $("#generank tr#" + gene).after('<tr class="abstracts" id="a' + gene + '"><td colspan="13"><img src="/static/spinner2.gif"></td></tr>');
+            $("#generank tr#gene" + gene).after('<tr class="abstracts" id="abstracts' + gene + '"><td colspan="13"><img src="/static/spinner2.gif"></td></tr>');
             
             // fetch and display abstracts
-            $.get("abstracts.html", querystring)
-            .success(function(result)
+            $.getJSON("abstracts.html", querystring)
+            .success(function(data)
             {
-                // append abstracts to td
-                $("#generank tr#a" + gene + " td img").remove(); // hide spinner
-                $("#generank tr#a" + gene + " td").append('<div style="display:none; padding-top:5px;"><b>Abstracts:</b><ul>' + result + '</ul></div>')
-                
-                // if there are more abstracts, show a "more" link
-                var hits = parseInt($("#generank tr#" + gene).attr("hits"));
-                if (hits > abstractlimit)
+                if (data.validresult)
                 {
-                    $("#generank tr#a" + gene + " td div").append('<a id="more' + gene + '" gene="' + gene + '" class="moreabstracts" href="javascript: void(0);" offset="' + abstractlimit + '">More abstracts...</a>');
+                    // append abstracts to td
+                    $("#generank tr#abstracts" + gene + " td img").remove(); // hide spinner
+                    $("#generank tr#abstracts" + gene + " td").append('<div style="display:none; padding-top:5px;"><b>Abstracts:</b><ul>' + data.result + '</ul></div>')
+                    
+                    // if there are more abstracts, show a "more" link
+                    var hits = parseInt($("#generank tr#gene" + gene).attr("hits"));
+                    if (hits > abstractlimit)
+                    {
+                        $("#generank tr#abstracts" + gene + " td div").append('<a id="more' + gene + '" gene="' + gene + '" class="moreabstracts" href="javascript: void(0);" offset="' + abstractlimit + '">More abstracts...</a>');
+                    }
+                    
+                    $("#generank tr#abstracts" + gene + " td div").slideDown();
+                    
+                    // get event preview
+                    var querystring = "q=" + q + "&gene_entrez_ids=" + genes + ',' + gene + "&limit=3&preview=1";
+                    $.get("eventlist.html", querystring)
+                    .success(function(result)
+                    {
+                        $("#generank tr#abstracts" + gene + " td div").prepend(result + "<br><br>");
+                    });
                 }
                 
-                $("#generank tr#a" + gene + " td div").slideDown();
-                
-                // get event preview
-                var querystring = "q=" + q + "&genes=" + gene + "&limit=3&preview=1";
-                $.get("eventlist.html", querystring)
-                .success(function(result)
-                {
-                    $("#generank tr#a" + gene + " td div").prepend(result + "<br><br>");
-                });
+            })
+            .error(function() {
+                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
             });
         }
         else
         {
             // hide the abstract pane
-            $("#generank tr#a" + gene + " td div").slideUp('fast', function() {$("#generank tr#a" + gene).remove()});
+            $("#generank tr#abstracts" + gene + " td div").slideUp('fast', function() {$("#generank tr#abstracts" + gene).remove()});
         }
     });
     
@@ -133,28 +141,36 @@ $(document).ready(function()
         var id = $(this).attr("id");
         var gene = $(this).attr("gene");
         var offset = parseInt($(this).attr("offset"));
-        var hits = parseInt($("#generank tr#" + gene).attr("hits"));
+        var hits = parseInt($("#generank tr#gene" + gene).attr("hits"));
         
         // update offset
         $(this).attr("offset", offset + abstractlimit);
         
         // fetch and display abstracts
-        var querystring = "q=" + q + "&gene=" + gene + "&limit=" + abstractlimit + "&offset=" + offset;
-        $.get("abstracts.html", querystring)
-        .success(function(result)
+        var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&species=" + species + "&usehomologs=" + usehomologs + "&limit=" + abstractlimit + "&offset=" + offset;
+        $.getJSON("abstracts.html", querystring)
+        .success(function(data)
         {
-            $("#generank tr.abstracts#a" + gene + " td div ul").append(result);
-            
-            // hide the "more" link if there are no more abstracts
-            if (offset + abstractlimit > hits)
+            if (data.validresult)
+            {
+                $("#generank tr.abstracts#abstracts" + gene + " td div ul").append(data.result);
+                
+                // hide the "more" link if there are no more abstracts
+                if (offset + abstractlimit > hits)
+                {
+                    $("#generank a#" + id).hide();
+                }
+            }
+            else
             {
                 $("#generank a#" + id).hide();
+                flash(data.errmsg);
             }
         })
         .error(function()
         {
             $("#generank a#" + id).hide();
-            flash("No more abstracts for this gene!");
+            flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
         });
         
         hideflash();

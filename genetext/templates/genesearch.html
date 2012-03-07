@@ -3,9 +3,12 @@
 {% block title %} GADGET: Genes for {{q|safe}} {% endblock %}
 
 {% block head %}
-{% if q %}
+{% if q or genes %}
 <script type="text/javascript">
     var q = "{{ q|urlencode }}";
+    var genes = "{{ genes|join:','|urlencode }}";
+    var species = "{{ species|urlencode }}";
+    var usehomologs = "{{ usehomologs|urlencode }}";
     var orderby = "{{ orderby|urlencode }}";
 </script>
 <script type="text/javascript" src="/static/genesearch.js"></script>
@@ -13,25 +16,37 @@
 {% endblock %}
 
 {% block header %}
+<a href="/"><img src="/static/logo-small.png" id="smalllogo" border="0" style="vertical-align:baseline"/></a>
 <form name="search" action="" method="get">
-    {{ form.q.label }}: {{ form.q }}        
-    <input type="submit" value="Search Genes" />
+    <table> <!style="display:inline; text-align:right">
+        <tr>
+            <td>{{ form.q.label }}: {{ form.q }}</td>
+            <td>{{ form.genes.label }}: {{ form.genes }}</td>
+            
+            <td rowspan="2"><input type="submit" value="Search Genes" /></td>
+        </tr>
+        <tr>
+            <td>{{ form.species.label }}: {{ form.species }}</td>
+            <td style="text-align:left">{{ form.usehomologs.label }}: {{ form.usehomologs }}</td>
+        </tr>
+    </table>
 </form>
 
 <table id="download" style="display:none">
     <tr><td colspan="2">Download results:</td></tr>
     <tr>
-        <td><a href="genelist?q={{ q|urlencode }}&orderby={{ orderby|urlencode }}&download=csv">CSV</a></td>
-        <td><a href="genelist?q={{ q|urlencode }}&orderby={{ orderby|urlencode }}&download=xml" target="_blank">XML</a></td>
+        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}&download=csv">CSV</a></td>
+        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}&download=xml" target="_blank">XML</a></td>
     </tr>
 </table>
 {% endblock %}
 
 {% block content %}
 <div id="description" style="display:none">
-    Showing and scoring genes in abstracts matching <b>{{ q|safe }}</b>:<br />
-    <a href="eventsearch?q={{ q|urlencode }}">See events in abstracts matching <b>{{ q|safe }}</b> &rarr;</a>
-</div>
+    Showing and scoring genes in abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} containing genes <b>{{ genesyms|join:', ' }}</b>{% endif %}<br />
+    For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
+    <a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:','|urlencode }}{% endif %}">See events{% if genesyms %} for genes <b>{{ genesyms|join:',' }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}</a>
+</div><br />
 <div id="results" style="display:none">
     <a class="hint" target="_blank" href="/manual.html#genesearch">About gene search results</a>
     <a class="hint" target="_blank" href="/manual.html#scores">Gene search scores</a>
@@ -47,7 +62,6 @@
             <th>Symbol</th>
             <th>Name</th>
             <th>Entrez ID</th>
-            <th>HGNC ID</th>
             <th>Synonyms</th>
             <th>Map Location</th>
         </tr>

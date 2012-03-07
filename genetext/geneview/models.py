@@ -30,7 +30,7 @@ class Abstract(models.Model):
     pages = models.CharField(max_length=90, blank=True)
     
     class Meta:
-        db_table = u'abstract_info'
+        db_table = u'abstract'
         managed = False
         
 class GeneAbstract(models.Model):

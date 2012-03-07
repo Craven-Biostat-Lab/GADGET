@@ -2,23 +2,26 @@
 -- set up and populate gene table
 
 CREATE TABLE  `gene` (
-  `tax_id` int(11) unsigned DEFAULT NULL,
-  `entrez_id` int(11) NOT NULL,
-  `symbol` varchar(30) DEFAULT NULL,
-  `name` varchar(150) DEFAULT NULL,
-  `locustag` varchar(100) DEFAULT NULL,
-  `synonyms` varchar(250) DEFAULT NULL,
-  `dbXrefs` varchar(250) DEFAULT NULL,
-  `chromosome` varchar(7) DEFAULT NULL,
-  `maplocation` varchar(100) DEFAULT NULL,
-  `description` varchar(250) DEFAULT NULL,
-  `abstracts` int(11) DEFAULT NULL,
-  `homolog_abstracts` int(11) DEFAULT NULL,
-  PRIMARY KEY (`entrez_id`),
-  KEY `symbol` (`symbol`,`tax_id`) USING BTREE,
-  KEY `gene_tax` (`entrez_id`,`tax_id`),
-  KEY `tax_gene` (`tax_id`,`entrez_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `entrez_id` int(11) DEFAULT NULL,
+  `symbol` varchar(30) CHARACTER SET utf8 DEFAULT NULL,
+  `name` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
+  `locustag` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
+  `synonyms` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
+  `dbxrefs` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
+  `dbxrefs_split` tinyint(1) NOT NULL DEFAULT '0',
+  `hgnc_id` int(11) DEFAULT NULL,
+  `mim_id` int(11) DEFAULT NULL,
+  `ensembl_id` int(11) DEFAULT NULL,
+  `hprd_id` int(11) DEFAULT NULL,
+  `chromosome` varchar(7) CHARACTER SET utf8 DEFAULT NULL,
+  `maplocation` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
+  `type` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
+  `other` varchar(800) CHARACTER SET utf8 DEFAULT NULL,
+  `abstracts` bigint(21) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `entrez_id` (`entrez_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30938 DEFAULT CHARSET=latin1
 
 -- files for humans, mice, and yeast
 ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz

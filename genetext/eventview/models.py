@@ -12,7 +12,7 @@ class Abstract(models.Model):
     pages = models.CharField(max_length=90, blank=True)
     
     class Meta:
-        db_table = u'abstract_info'
+        db_table = u'abstract'
         managed = False
 
 class Gene(models.Model):
@@ -31,7 +31,7 @@ class Gene(models.Model):
     abstracts = models.BigIntegerField()
     
     class Meta:
-        db_table = u'gene'
+        db_table = u'gene_old'
         managed = False
 
 class Event(models.Model):

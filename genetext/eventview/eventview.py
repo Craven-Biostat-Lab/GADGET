@@ -56,8 +56,12 @@ def eventlist(request):
         genes = [int(g) for g in request.GET['genes'].split(',')]
     except (KeyError, ValueError):
         try:
-            gene_eids = [int(i.strip()) for i in request.GET['gene_entrez_ids'].split(',')]
+            gene_eids = [int(i.strip()) for i in request.GET['gene_entrez_ids'].split(',') if i != '']
             genes = [g.id for g in Gene.objects.filter(entrez_id__in=gene_eids)]
+            
+            # workaround for database mess
+            if genes == []:
+                raise Http404
         except (KeyError, ValueError):
             try:
                 genes = [g.id for g in gene_lookup(request.GET['gene_symbols'])]

@@ -38,9 +38,18 @@ a.hint {
     margin: 0px 3px;
 }
 
-#header a{
-    font-weight: bold;
-    color: #000;
+#header form table {
+    display: inline; 
+    text-align: right;
+}
+
+#header form table td {
+    padding: 3px 5px;
+}
+
+#header img#smalllogo {
+    vertical-align:middle;
+    border:0;
 }
 
 #footer {
@@ -51,7 +60,7 @@ a.hint {
 }
 
 #content {
-    padding-top: 50px;
+    padding-top: 85px;
 }
 
 #flash {
@@ -310,7 +319,7 @@ div.example ul {
 div#search {
     margin: 5px auto;
     text-align: center;
-    padding: 3px 3px;
+    padding: 10px 3px;
     background-color: #e4d9ff; /*#f4ffd9; #E8FAC5;*/
     /*border: solid 1px #968fa8;*/
     border-radius: 10px;

@@ -14,9 +14,10 @@
 {% endblock %}
 
 {% block header %}
+<a href="/"><img src="/static/logo-small.png" id="smalllogo" border="0" style="vertical-align:middle"/></a>
 <form name="search" action="" method="get">
-    {{ form.genes.label }}: {{ form.genes }}
     {{ form.q.label}}: {{ form.q }}
+    {{ form.genes.label }}: {{ form.genes }}
     <input type="submit" value="Search Events" />
 </form>
 <table id="download" style="display:none">
@@ -33,7 +34,7 @@
 <div id="description" style="display:none">
     Showing events{% if genesyms %} for genes <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}:
     <ul>
-        {% if q %}<li><a href="genesearch?q={{ q|urlencode }}">Rank genes matching <b>{{ q|safe }}</b> &rarr;</li>{% endif %}
+        {% if q or genesyms %}<li><a href="genesearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}">Rank genes matching{% if q %} <b>{{ q|safe }}</b>{% endif %}{% if genesyms and q %} and{% endif %}{% if genesyms %} <b>{{ genesyms|join:', ' }}</b>{% endif %}</li>{% endif %}
         <li><a href="javascript:eventgenes();" id="showeventgenes">See a list of genes referenced by these events...</a></li>
     </ul>
 </div>

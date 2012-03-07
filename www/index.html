@@ -19,21 +19,45 @@
     <p><b>GADGET</b> is a tool that lets you search through literature related to genes.  You can search for genes related to a topic, or find gene interaction events extracted from text.</p>
     <br />
 
-    <b>Search for genes by keyword:</b>
+    <b>Search the literature for genes associated with keywords and gene symbols:</b>
     <div id="search">
-        <form action="/gadget/genesearch" method="get"><table><tr>
-            <th><label for="id_q">Keywords:</label></th>
-            <td style="vertical-align:top"><input type="text" name="q" id="id_q" style="width:100%"/></td>
-            <td style="vertical-align:top"><input type="submit" value="Search genes" /></td>
-        </tr></table></form>
+        <form action="/gadget/genesearch" method="get"><table>
+            <tr>
+                <th><label for="id_q">Keywords:</label></th>
+                <td style="vertical-align:top"><input type="text" name="q" id="id_q" style="width:85%"/></td>
+                
+                <td rowspan="3" style="vertical-align:center"><input type="submit" value="Search genes" /></td>
+            </tr>
+            <tr>
+                <th><label for="id_genes">Gene symbols:</label></th>
+                <td><input type="text" name="genes" id="id_genes" style="width:85%" /></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="padding: 5px 0">
+                    <label for="id_species">Species:</label> <select name="species" id="id_species">
+                        <option value="9606">Homo sapiens</option>
+                        <option value="10090">Mus musculus</option>
+                        <option value="559292">Saccharomyces cerevisiae</option>
+                    </select>&nbsp;
+                    <label for="id_usehomologs">Use homologs:</label> <input type="checkbox" checked="checked" name="usehomologs" id="id_usehomologs" />
+                </td>
+            </tr>
+            <!--<tr><td style="vertical-align:top"><input type="submit" value="Search genes" /></td></tr>-->
+        </table></form>
         <a class="hint" target="_blank" href="/manual.html#queryterms">Keyword search tips</a>
+        <a class="hint" target="_blank" href="/manual.html#geneentry">Gene symbol entry</a>
     </div>
     <div class="example">
-        <b>Examples:</b><br />
-        <a href="/gadget/genesearch?q=chitin">Find genes related to <b>chitin</b></a><br />
-        <a href="/gadget/genesearch?q=%22limb bud%22">Find genes related to <b>"limb bud"</b></a>
+        <b>Examples:</b>
+        <ul style="margin:0">
+            <li><a href="/gadget/genesearch?q=%22limb bud%22">Find genes related to <b>"limb bud"</b></a></li>
+            <li><a href="/gadget/genesearch?q=primitive+streak&species=10090">Find <b>mouse</b> genes related to <b>primative streak</b></a></li>
+            <li><a href="/gadget/genesearch?q=liver+enzymes&genes=CYP2E1&usehomologs=1">Find genes that are <b>liver enzymes</b> associated with <b>CYP2E1</b></a></li>
+            <li><a href="/gadget/genesearch?q=common+myeloid+progenitor+receptor&usehomologs=1">Find genes that are <b>receptors</b> associated with <b>common myeloid progenitor</b> cells</a></li>
+            <li><a href="/gadget/genesearch?q=vasculogenesis+AND+angiogenesis&usehomologs=1">Find genes related to <b>vasculogenesis AND angiogenesis</b></a></li>
+        </ul>
     </div>
-    <br />
+    <br /><br />
     
     <b>Search for gene interaction events by gene and keyword:</b>
     <div id="search">    
@@ -53,10 +77,14 @@
         <a class="hint" target="_blank" href="/manual.html#geneentry">Gene symbol entry</a>
     </div>
     <div class="example">
-        <b>Examples:</b><br />
-        <a href="/gadget/eventsearch?genes=CDKN1A, TP53">See events for genes <b>CDKN1A</b> and <b>TP53</b></a><br />
-        <a href="/gadget/eventsearch?q=autophagy">See events in abstracts matching <b>autophagy</b></a><br />
-        <a href="/gadget/eventsearch?&q=nephron&genes=WNK4">See events for gene <b>WNK4</b> in abstracts matching <b>nephron</b></a></br>
+        <b>Examples:</b>
+        <ul style="margin:0">
+            <li><a href="/gadget/eventsearch?genes=CDKN1A, TP53">See events for <b>CDKN1A</b> and <b>TP53</b></a><br /></li>
+            <li><a href="/gadget/eventsearch?q=autophagy">See events in abstracts matching <b>autophagy</b></a><br /></li>
+            <li><a href="/gadget/eventsearch?q=nephron&genes=WNK4">See events for <b>WNK4</b> in abstracts matching <b>nephron</b></a></br></li>
+            <li><a href="/gadget/eventsearch?q=%22embryonic stem cell%22&genes=SOX2">See events for <b>SOX2</b> in abstracts containing <b>"embryonic stem cell"</b></a></li>
+            <li><a href="/gadget/eventsearch?q=%22hematopoietic stem cell%22&genes=TAL1">See events for <b>TAL1</b> in abstracts containing <b>"hematopoietic stem cell"</b></a></li>
+        </ul>
     </div>
 </div>
 </body>
