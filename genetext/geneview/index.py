@@ -56,6 +56,9 @@ def cachekey(keywords='', genes=[], genehomologs=True):
     
     if genes is None:
         genes = []
+        
+    if keywords is None:
+        keywords=''
     
     return 'query_k:{0}_g:{1}_h:{2}'.format(
         keywords.replace(' ', '_'),

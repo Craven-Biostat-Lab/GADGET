@@ -3,8 +3,11 @@
 <genelist>
   <description>{% if q %}
     <query>{{ q|safe }}</query>{% endif %}{% if genes %}
-    <input_genes>
-{% for ig in genes %}        <input_gene entrez_id="{{ ig }}" />{% endfor %}
+    <input_genes>{% for ig in genes %}
+      <input_gene>
+        <entrez_id>{{ ig.entrez_id }}</entrez_id>
+        <symbol>{{ ig.symbol }}</symbol>
+      </input_gene>{% endfor %}
     </input_genes>{% endif %}
     <species>{{ species }}</species>
     <using_homologs>{{ usehomologs }}</using_homologs>{% if orderby %}
@@ -12,8 +15,8 @@
     <limit>{{ limit }}</limit>{% endif %}{% if offset %}
     <offset>{{ offset }}</offset>{% endif %}{% if errmsg %}
     <errormessage>{{ errmsg }}</errormessage>{% endif %}
-  </description>
-{% for g, p in results %}  <gene>
+  </description>{% for g, p in results %}
+  <gene>
     <rank>{{ forloop.counter|add:offset }}</rank>
     <f1_score>{{ g.f1_score|floatformat:-3 }}</f1_score>
     <matching_abstracts>{{ g.hits }}</matching_abstracts>
@@ -31,6 +34,6 @@
       <hprd_id>{{ g.hprd_id }}</hprd_id>{% endif %}
     </db_refs>
     <chromosome>{{ g.chromosome }}</chromosome>
-    <map_location>{{ g.map_location }}</map_location>
+    <map_location>{{ g.maplocation }}</map_location>
   </gene>{% endfor %}
 </genelist>

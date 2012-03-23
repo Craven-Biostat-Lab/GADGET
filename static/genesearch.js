@@ -13,7 +13,7 @@ var abstractlimit = 15;
 // build the query string and redirect to a page with the new ordering
 function order(key)
 {
-    var querystring = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key;
+    var querystring = "q=" + q + "&genes=" + genesyms + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key;
     window.location = "genesearch?" + querystring;
 }
 

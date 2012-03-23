@@ -11,33 +11,38 @@
 <body><div id="manual">
     <a name="top"><h1>GADGET User Manual</h1></a>
     <p><a href="/">GADGET</a> (Genes Associated by Documents, Genes, Events, and Text) is a tool that allows users to search and navigate the biomedical literature that is associated with specific genes.  GADGET can identify the genes that are strongly associated with arbitrary text queries, and it can also show "events" that describe automatically extracted relationships among the genes.</p>
-    <p>GADGET has two main views: The <a href="gadget/genesearch">gene search</a> sifts through literature to identify genes associated with user queries.  The <a href="gadget/eventsearch">event search</a> sifts through interactions between genes that have been automatically extracted from biomedical abstracts.</p>
+    <p>GADGET has two main views: The <a href="gadget/genesearch">gene search</a> sifts through literature to identify genes associated with a particular topic.  The <a href="gadget/eventsearch">event search</a> sifts through interactions between genes that have been automatically extracted from biomedical abstracts.</p>
     
     <ul>
         <li><a href="#genesearch">The gene search</a></li>
         <ul>
-            <li><a href="#queryterms">Entering query terms</a></li>
+            <li><a href="#queryterms">Keyword queries</a></li>
+            <li><a href="#geneentry">Searching by gene symbol</a></li>
             <li><a href="#scores">Gene search scores</a></li>
+            <li><a href="#species">Selecting a species</a></li>
+            <li><a href="#usehomologs">Optional inclusion of homologs</a></li>
             <li><a href="#genesearch_via_querystring">Using the gene search without a browser</a></li>
         </ul>
         <li><a href="#eventsearch">The event search</a></li>
         <ul>
             <li><a href="#eventqueries">Querying events</a></li>
-            <li><a href="#geneentry">Searching for specific genes</a></li>
             <li><a href="#diagrams">Event diagrams</a></li>
             <li><a href="#eventsearch_via_querystring">Using the event search without a browser</a></li>
         </ul>
     </ul>
     
+    
     <a class="topic" name="genesearch">The gene search</a>
-    <p>GADGET's gene search returns genes that are associated with the abstracts in <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> that match a given query.  When you search on a phrase, GADGET will return a list of genes related to that phrase in the literature, ordered by the approximate "importance" of the phrase for each gene: if you search for "<a href="gadget/genesearch?q=surfactant">surfactant</a>," genes for which "surfactant" is more strongly associated will appear higher in the list.</b>
+    <p>GADGET's gene search returns genes that are associated with the abstracts in <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> that match a given query.  When you supply GADGET with a query, GADGET will return a list of genes related to your query in the literature, ordered by the approximate "importance" of the query for each gene: if you search for "<a href="gadget/genesearch?q=surfactant">surfactant</a>," genes for which "surfactant" is more strongly associated will appear higher in the list.</b>
+    <p>GADGET gene search queries can include <a href="#queryterms">keyword searches</a>, lists of <a href="#geneentry">gene symbols</a>, a <a href="#species">species</a>, and an option to include <a href="#usehomologs">homologs</a>.  GADGET will find PubMed abstracts that match your keyword query and refer to all of the genes that you specify, and then return genes found in those abstracts.</p>
     <p>There are several different scores that GADGET can use to the rank genes that satisfy a given query.  (Read about them <a href="#scores">here</a>.)  To change which score GADGET uses to sort the genes, just click on the name of that score in the result table header.</p>
-    <p>To see a list of abstracts for a gene that match your query, click on the plus sign ("+") on the left side of the gene's table row.  You can also see events for the gene this way.</p>
-    <p>You can download gene search results as a CSV or XML.  When you download gene search results, the results will contain all of the genes that match your query, not just the genes displayed on the page.  The XML representation uses the DTD found <a href="/static/genelist.dtd" target="_blank">here</a>.
+    <p>To see a list of abstracts for a gene that match your query, click on the "abstracts" icon (<img src="/static/document.png" />) on the left side of the gene's table row.  You can also see events for the gene this way.</p>
+    <p>You can download gene search results as a CSV or XML.  When you download gene search results, the results will contain all of the genes that match your query, not just the genes displayed on the page.  The XML representation uses the DTD found <a href="/static/genelist.dtd" target="_blank">here</a>.</p>
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
 
-    <a class="topic" name="queryterms">Entering query terms</a>
+
+    <a class="topic" name="queryterms">Keyword queries</a>
     <p>To search for genes or events, you can enter one or more key terms.  GADGET searches for abstracts that contain your query terms, and then links them to genes or events.  Query terms in GADGET are not case sensitive (although Boolean operators are).</p>
     <p>You will often get better results by using more specific terms in your searches.  Avoid using common terms like "gene" in your query; they don't usually add much value to the results, and they can slow down GADGET.</p>
     <p>GADGET supports Boolean queries for more specific searches.  Terms can be separated with <span class="example">AND</span> and <span class="example">OR</span>.  An <span class="example">AND</span> query will match abstracts that contain both terms, while an <span class="example">OR</span> query will match abstracts that contain either term.  Terms separated by spaces are automatically treated as an <span class="example">AND</span> query.  You can also exclude terms from your query by using <span class="example">NOT</span> followed by the term.  You can use parentheses to make complex Boolean queries.</p>
@@ -60,8 +65,17 @@
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
 
+
+    <a class="topic" name="geneentry">Searching by gene symbol</a>
+    <p>GADGET allows you to supply a list of genes for <a href="#genesearch">gene search</a> and <a href="#eventsearch">event search</a> queries.  When you supply a list of genes to GADGET's gene search, GADGET will show you a list of genes that co-occur with your input genes in PubMed abstracts.  When you provide a list of genes to GADGET's event search, GADGET will show you gene-interaction events that relate your input genes to each other and to other genes.</p>
+    <p>Genes should be entered using their <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene" target="_blank">Entrez Gene</a> symbols.  Use commas to separate multiple genes.  Gene symbols are not case sensitive.</p>
+    <p>For the gene search, GADGET will use your provided gene symbols to find genes for the selected species.  In the event search, GADGET finds human genes that match your gene symbols.</p>
+    <a href="#top" class="top">Back to top</a>
+    <a href="/" class="top">Back to GADGET</a>  
+
+
 <a class="topic" name="scores">Gene search scores</a>
-    <p>In the gene-search, GADGET can use different scores to determine which genes are most important to your query.</p>
+    <p>In the <a href="#genesearch">gene search</a>, GADGET can use different scores to determine which genes are most important to your query.</p>
     <p>When you do a search, GADGET finds all of the abstracts that match your query, and then finds genes that are mentioned in those abstracts.  GADGET computes scores for each gene based upon: the number of abstracts matching the query for each gene, the total number of abstracts associated with each gene, and the total number of abstracts matching the query.</p>
     <p>Each of the available scores takes some of these factors into account in different ways.  You can rank the genes by a score by clicking on the score's name in the table header.</p>
     <table class="instructions">
@@ -74,24 +88,50 @@
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
 
+
+    <a class="topic" name="species">Selecting a species</a>
+    <p>When you do a GADGET gene search, all of the genes in your results will be from a particular species.  GADGET allows you to select from several species to view genes for.  The currently-supported species are:
+    <table>
+        <tr><th>NCBI Taxonomy ID</th><th>Name</th></tr>
+        <tr><td>9606</td><td>Homo Sapiens (default)</td></tr>
+        <tr><td>10090</td><td>Mus musculus</td></tr>
+        <tr><td>559292</td><td>Saccharomyces cerevisiae</td></tr>
+    </table></p>
+    <p>For gene search queries, when you provide a list of <a href="#geneentry">gene symbols</a>, GADGET will match them to genes from your selected species.</p>
+    <p>GADGET's <a href="#eventsearch">event search</a> does not take a species as input.  GADGET's event search currently uses only human genes (and homologs.)</p>
+    <a href="#top" class="top">Back to top</a>
+    <a href="/" class="top">Back to GADGET</a>
+
+
+    <a class="topic" name="usehomologs">Optional inclusion of homologs</a>
+    <p>When finding and <a href="#scores">scoring</a> genes that match your query, GADGET's gene search can optionally take homologs into account.  To calculate scores for each gene, GADGET counts the number of abstracts matching your query that each gene appears in.  If you choose to include homologs, GADGET will also count abstracts that refer to homologs of each gene.</p>
+    <p>The groups of homologs that GADGET uses come from <a href="http://www.ncbi.nlm.nih.gov/homologene" target="_blank">Homologene</a>.  Homologs can be either from the same species as each gene, or from different species.</p>
+    <a href="#top" class="top">Back to top</a>
+    <a href="/" class="top">Back to GADGET</a>
+    
+
     <a class="topic" name="genesearch_via_querystring">Using the gene search without a browser</a>
     <p>If you want to automatically access GADGET's gene search without using a web browser, you can download comma-delimited CSV or XML files by fetching <span class="example">http://gadget.biostat.org/gadget/genelist?</span> and sending arguments via the query string at the end of the URL.  To download data, the query string must include <span class="example">&download=CSV</span> or <span class="example">&download=XML</span>, depending on which format you want.</p>
     <p>To send information to GADGET, just append it to the url.  Aguments are given by the name of the argument, an equals sign (<span class="example">=</span>), and the argument's value, e.g. <span class="example"><u>argument</u>=<u>value</u></span>.  Multiple arguments should be separated by ampersands (<span class="example">&</span>).  Here's a list of the arguments you can send:</p>
     <table class="instructions">
         <tr><td>download</td><td>This argument is <b>required</b> to download the results as a CSV or XML file.  To download a CSV, use <span>&download=CSV</span>.  To get XML, use <span>&download=XML</span>.  The XML representation uses a DTD file that can be found <a href="/static/genelist.dtd">here</a>.</td></tr>
-        <tr><td>q</td><td>The query terms of your search.  This argument <b>must</b> be included.<br /><br />In most browsers, you can include spaces and quotation marks in the URL.  Special characters, like "&" and "/", must be <a href="http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters" target="_blank">percent encoded</a>.</td></tr>
+        <tr><td>q</td><td>The keyword query terms of your search.<br /><br />In most browsers, you can include spaces and quotation marks in the URL.  Special characters, like "&" and "/", must be <a href="http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters" target="_blank">percent encoded</a>.<br /><br />Either <span>q</span> or <span>genes</span> (or both) is <b>required</b> for GADGET gene search queries.</td></tr>
+        <tr><td>genes</td><td>A list of gene symbols and/or Entrez Gene IDs to search for.  To search for multiple genes, separate entries with commas.  You can mix gene symbols and Entrez Gene IDs within a query.<br /><br />If you provide gene symbols, GADGET will match them to genes for your selected <span>species</span><br /><br />Either <span>q</span> or <span>genes</span> (or both) is <b>required</b> for GADGET gene search queries.</td></tr>
+        <tr><td>species</td><td>The species to use for your gene search.  All of the genes in your gene search results will belong to this species.<br /><br />To specify a species, use the species's NCBI taxonomy ID, (e.g. <span>&species=9606</span> for humans).  See <a href="#species">here</a> for a list of currently available species and taxonomy IDs.  If you don't specify a species, <b>homo sapiens will be used by default.</b></td></tr>
+        <tr><td>usehomologs</td><td>Whether or not to include homologs when calculating scores for each gene.  (See <a href="#usehomologs">here</a>.)  To include homologs, include <span>&usehomologs=1</span> in your query string.  If <span>usehomologs</span> is omitted, homologs will not be included by default.</td></tr>
         <tr><td>orderby</td><td>Which score to use to rank the results.<br /><br />There are 4 possible values for <span>orderby</span>.  The possible values are <span>f1_score</span>, which will order the genes by the F1 score; <span>adjusted_precision</span>, which will order the genes by the adjusted precision; <span>matching_abstracts</span>, which will order the genes by the number of abstracts matching your query; and <span>total_abstracts</span>, which will order the genes by the total number of abstracts for each gene.<br /><br />If the <span>orderby</span> argument is omitted or invalid, GADGET will default to the F1 score.  See <a href="#scores">above</a> for more information about the different scores.</td></tr>
          <tr><td>limit</td><td>The maximum number of genes to return.  This argument should be a number.  If <span>limit</span> is not included or is invalid, GADGET will return all of the genes found in the search.</td></tr>
          <tr><td>offset</td><td>The rank (minus one) of the first gene to include in the results.  To omit the first 100 genes, include <span>&offset=100</span>.  If <span>offset</span> is omitted or invalid, GADGET will not omit any genes.</td></tr>
     </table>
     <p>If no abstracts or genes match your query, or if <span class="example">q</span> is omitted or invalid, the GADGET server will issue a 404 error instead of returning a CSV file.</p>
     <p>Examples:</p>
-    <div class="example">Download a CSV of genes matching "arteriole":<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&q=arteriole</b></span></div>
-    <div class="example">Download a CSV of genes matching "mesoderm", ranked by adjusted precision:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&q=mesoderm&orderby=adjusted_precision</span></div>
-    <div class="example">Download XML of the top 150 genes matching "Loop of Henle":<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=XML&q=Loop of Henle&limit=150</span></div>
-    <div class="example">Download XML of the top 80 genes matching "cystic fibrosis", ranked by number of matching abstracts:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=XML&q=cystic fibrosis&limit=80&orderby=matching_abstracts</span></div>
+    <div class="example">Download a CSV of genes matching "arteriole", using homologs:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&usehomologs=1&q=arteriole</b></span></div>
+    <div class="example">Download a CSV of mouse genes matching "mesoderm", ranked by adjusted precision:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&q=mesoderm&orderby=adjusted_precision</span></div>
+    <div class="example">Download XML of the top 150 genes for mice matching "Loop of Henle", using homologs:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=XML&species=10090&q=Loop of Henle&limit=150&usehomologs=1</span></div>
+    <div class="example">Download XML of the top 80 genes related to CFTR matching "cystic fibrosis", ranked by number of matching abstracts:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=XML&q=cystic fibrosis&genes=CFTR&limit=80&orderby=matching_abstracts</span></div>
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
+        
         
     <a class="topic" name="eventsearch">The event search</a>
     <p>The GADGET <a href="/gadget/eventsearch">event search</a> allows you to browse through events describing interactions among genes.  Events are changes in states of biomolecules, and are automatically extracted from abstracts using natural language processing algorithms.  Using the event search, you can learn about other genes that interact with a given gene, or gene interactions that are relevant to a keyword query.</p>
@@ -102,19 +142,15 @@
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
 
+
 <a class="topic" name="eventqueries">Querying events</a>
     <p>You can <a href="#geneentry">enter one or more gene names</a> to display associated events.  <a href="#queryterms">Term queries</a> (entered in the same way as the gene search) first find abstracts that match the query, and then display events from those abstracts.  Gene and keyphrase queries can be used together in combination.</p>
     <p>For each event, GADGET will show you a <a href="#diagrams">diagram</a> of the event, a list of genes referenced in the event, the event type (or types), and a list of abstracts that describe the event.</p>
     <p>To narrow down the list of events, you can add genes to your query.  Click on <i>"See a list of genes referenced by these events..."</i> to see which genes are referenced by events in your query, and how many events each gene is referenced by.  Click on a gene to restrict your results to events that include that gene.</p>
     <p>You can download event search results in XML or CSV formats.  The XML representation contains more information about the structures of the events, but CSV's are often easier to use.  You can download up to 500 events at a time.  The XML representation uses a DTD file that can be found <a href="/static/eventlist.dtd" target="_blank">here</a>.</p>
     <a href="#top" class="top">Back to top</a>
-    <a href="/" class="top">Back to GADGET</a>
-    
-    <a class="topic" name="geneentry">Searching for specific genes</a>
-    <p>In the event search, you can search for events tied to specific genes.  Genes should be entered using their <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene" target="_blank">Entrez Gene</a> symbols.  Use commas to separate multiple genes.  Gene symbols are not case sensitive.</p>
-    <p>You can also see events for specific genes by clicking on a gene symbol in the event search or the gene search.  In the event search, you can see a list of genes referenced by events in your search, and click on one to see only events that reference that gene.</p>
-    <a href="#top" class="top">Back to top</a>
-    <a href="/" class="top">Back to GADGET</a>    
+    <a href="/" class="top">Back to GADGET</a>  
+
 
     <a class="topic" name="diagrams">Event diagrams</a>
     <p>When you do an event search, GADGET displays diagrams of the events using a <a href="http://en.wikipedia.org/wiki/Factor_graph" target="_blank">factor-graph</a>-like representation.  In the diagram, blue circles (nodes) represent genes, and lines between circles (edges) represent events.</p>
@@ -129,13 +165,14 @@
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>
     
+    
     <a class="topic" name="eventsearch_via_querystring">Using the event search without a browser</a>
     <p>You can access the event search without a browser by fetching <span class="example">http://gadget.biostat.wisc.edu/gadget/eventlist?</span> and sending arguments via the query string at the end of the URL.  To download data, you must include either <span class="example">&download=CSV</span> or <span class="example">&download=XML</span> in the query string, depending on which format you want.  You can fetch up to 500 events at once.</p>
     <p>To send information to GADGET, just append it to the url.  Aguments are given by the name of the argument, an equals sign (<span class="example">=</span>), and the argument's value, e.g. <span class="example"><u>argument</u>=<u>value</u></span>.  Multiple arguments should be separated by ampersands (<span class="example">&</span>).  Here's a list of the arguments you can send:</p>
     <table class="instructions">
         <tr><td>download</td><td>This argument is <b>required</b> to download the results as a CSV or XML file.  To download a CSV, use <span>&download=CSV</span>.  To get XML, use <span>&download=XML</span>.  The XML representation contains more information about the structure of the events, and uses a DTD file that can be found <a href="/static/eventlist.dtd">here</a>.</td></tr>
         <tr><td>q</td><td>The query terms of your search.  You need to include either a query or a list of genes (or both).<br /><br />In most browsers, you can include spaces and quotation marks in the URL.  Special characters, like "&" and "/", must be <a href="http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters" target="_blank">percent encoded</a>.</td></tr>
-        <tr><td>gene_entrez_ids</td><td>A list of gene Entrez ID's separated by commas.  GADGET will only return events which include all of these genes.<br /><br />  You must include either a query or a list of genes (or both).  If both <span>gene_entrez_ids</span> and <span>gene_symbols</span> arguments are given, GADGET will ignore <span>gene_symbols</span>.</td></tr>
+        <tr><td>gene_entrez_ids</td><td>A list of gene Entrez IDs separated by commas.  GADGET will only return events which include all of these genes.<br /><br />  You must include either a query or a list of genes (or both).  If both <span>gene_entrez_ids</span> and <span>gene_symbols</span> arguments are given, GADGET will ignore <span>gene_symbols</span>.</td></tr>
         <tr><td>gene_symbols</td><td>A list of gene symbols separated by commas (see <a href="#geneentry">gene entry</a>).  GADGET will only return events which include all of these genes.<br /><br />  You must include either a query or a list of genes (or both).  If both <span>gene_entrez_ids</span> and <span>gene_symbols</span> arguments are given, GADGET will ignore <span>gene_symbols</span>.</td></tr>
         <tr><td>limit</td><td>The maximum number of events to return.  This argument should be a number.<br /><br />The maximum value for limit is 500.  If no valid <span>limit</span> is specified, the results will be limited to 500 events.  If you need to download more than 500 events, download multiple result sets using the <span>offset</span> argument.</td></tr>
         <tr><td>offset</td><td>The number of initial results to exclude from the result set.  To omit the first 100 events, include <span>&offset=100</span>.  If <span>offset</span> is omitted or invalid, GADGET will not omit any events.</td></tr>
@@ -144,7 +181,7 @@
         <p>Examples:</p>
         <div class="example">Download XML for 10 events referencing SERPINC1:<br /><span>http://gadget.biostat.wisc.edu/gadget/eventlist?download=XML&gene_symbols=SERPINC1&limit=10</span></div>
         <div class="example">Download a CSV of events in abstracts matching "limb regeneration":<br /><span>http://gadget.biostat.wisc.edu/gadget/eventlist?download=CSV&q=limb regeneration</span></div>
-        <div class="example">Download XML for events referencing BMP2 and SMAD7 (using Entrez ID's):<br /><span>http://gadget.biostat.wisc.edu/gadget/eventlist?download=XML&gene_entrez_ids=650,4092</span></div>
+        <div class="example">Download XML for events referencing BMP2 and SMAD7 (using Entrez IDs):<br /><span>http://gadget.biostat.wisc.edu/gadget/eventlist?download=XML&gene_entrez_ids=650,4092</span></div>
         <div class="example">Download XML for events referencing SOX9 in abstracts matching "mesenchymal":<br /><span>http://gadget.biostat.wisc.edu/gadget/eventlist?download=XML&gene_symbols=SOX9&q=mesenchymal</span></div>
     <a href="#top" class="top">Back to top</a>
     <a href="/" class="top">Back to GADGET</a>

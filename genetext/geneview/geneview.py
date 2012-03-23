@@ -25,20 +25,14 @@ def searchpage(request):
         species = forms.ChoiceField(label='Species', choices=specieschoices, initial='9606')
         usehomologs = forms.BooleanField(label='Use homologs', widget=forms.CheckboxInput(check_test=parseboolean))
     
+    form = SearchForm(request.GET)
+    
     # get form arguments from the query string
     q = request.GET.get('q', default='')
     genes_input = request.GET.get('genes', default='')
     species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     orderby = request.GET.get('orderby', default='f1_score')
-    
-    # look up gene Entrez ID's and symbols
-    if genes_input:
-        genes = gene_lookup(genes_input, species)
-        genesyms = [g.symbol for g in Gene.objects.filter(entrez_id__in=genes)]
-    else:
-        genes = ''
-        genesyms = ''
     
     # validate species and look up name    
     if species in speciesnames:
@@ -47,9 +41,22 @@ def searchpage(request):
         species = '9606'
         speciesname = 'Homo sapiens'
     
+    # look up gene Entrez ID's and symbols
+    if genes_input:
+        try:
+            genes = gene_lookup(genes_input, species)
+        except KeyError as (e,):
+            # we couldn't find a gene symbol
+            return render_to_response('genesearch.html', {'form': form, 'errormsg': 'No genes match "{0}" for {1}'.format(e, speciesname)})
+        
+        genesyms = [g.symbol for g in Gene.objects.filter(entrez_id__in=genes)]
+    else:
+        genes = ''
+        genesyms = ''
+    
     usehomologs = parseboolean(usehomologs_input)
     
-    form = SearchForm(request.GET)
+    
     
     return render_to_response('genesearch.html', {'form': form, 'q': q, 
         'genes': map(str, genes), 'genesyms': genesyms, 'species': species, 'speciesname': speciesname,
@@ -66,19 +73,37 @@ def gene_lookup(genes_input, species=None):
     genes = []
     for i in genes_input.split(','):
         g = i.strip()
+        
+        if g == '':
+            continue
+        
         try:
             genes.append(int(g))
         except ValueError:
+        
+            # switch to MySQL wildcard matching
+            g = g.replace('*', '%').replace('?', '_')
+        
             if species:
-                genes.extend([r.entrez_id for r in Gene.objects.filter(symbol__iexact=g, tax_id=species)])
+                newgenes = [r.entrez_id for r in Gene.objects.filter(symbol__iexact=g, tax_id=species)]
+                newgenes = [r.entrez_id for r in Gene.objects.filter(tax_id=species).extra(where=['`symbol` LIKE %s'], params=[g])]
             else:
-                genes.extend([r.entrez_id for r in Gene.objects.filter(symbol__iexact=g)])
+                newgenes = [r.entrez_id for r in Gene.objects.extra(where=['`symbol` LIKE %s'], params=[g])]
+            
+            if newgenes:
+                genes.extend(newgenes)
+            else:
+                raise KeyError(g) # we couldn't find a match for one of the genes
                 
     return genes
 
 
 def parseboolean(s):
     """Get a boolean argument from the query string, and decide if it's true or false"""
+    
+    if type(s) is bool:
+        return s
+    
     if s.isdigit():
         return int(s)
     
@@ -122,7 +147,10 @@ def genesearch(request):
     # get genes
     geneinput = request.GET.get('genes')
     if geneinput:
-        genes = gene_lookup(geneinput, species)
+        try:
+            genes = gene_lookup(geneinput, species)
+        except KeyError as (e,):
+            return searchresponse(validresult=False, download=download, errmsg='No genes match "{0}" for species {1}'.format(e, species))
     else:
         genes = None
     
@@ -225,16 +253,18 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
             # create, package, and return a CSV file
             response = HttpResponse(mimetype='text/csv')
             response['Content-Disposition'] = \
-                'attachment; filename=gadget-{0}-{1}.csv'.format(quote(query), ','.join([str(g) for g in genes]))
+                'attachment; filename=gadget-{0}-{1}.csv'.format(quote(query), ','.join([str(g) for g in genes]) if genes else '')
             response.write(makeCSV(results, pvals, offset))
             return response
             
         elif download.lower() == 'xml':
             # render the XML template
+            # look up gene symbols in database
+            generecs = Gene.objects.filter(entrez_id__in=genes).only('entrez_id', 'symbol') if genes else []
             response = render_to_response('genelist.xml', 
                 {'results': zip(results, pvals), 'pvals': pvals, 'offset': offset, 
                 'orderby':orderby, 'q':query, 'limit':limit, 'errmsg': errmsg,
-                'genes': genes, 'usehomologs': usehomologs, 'species':species})
+                'genes': generecs, 'usehomologs': usehomologs, 'species':species})
             response['Content-Type'] = 'text/xml'
             return response
             
@@ -275,11 +305,15 @@ def abstracts(request):
     
     # get query arguments from query string
     keywords = request.GET.get('q')
-    genes = gene_lookup(request.GET.get('genes'), species)
+    try:
+        genes = gene_lookup(request.GET.get('genes'), species)
+    except KeyError:
+        # bad gene query
+        raise Http404
     
     # figure out if we should include homologs
     try:
-        usehomologs = int(request.GET['usehomologs'])
+        usehomologs = parseboolean(request.GET['usehomologs'])
     except (KeyError, ValueError):
         usehomologs = False
     

@@ -1,22 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %} GADGET: Genes for {{q|safe}} {% endblock %}
+{% block title %}GADGET{% if q or genes %}: genes for{% if q %} {{ q|safe }}{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} {{ genesyms|join:', ' }}{% endif %}{% endif %}{% endblock %}
 
 {% block head %}
 {% if q or genes %}
 <script type="text/javascript">
     var q = "{{ q|urlencode }}";
     var genes = "{{ genes|join:','|urlencode }}";
+    var genesyms = "{{ genesyms|join:', '|urlencode }}";
     var species = "{{ species|urlencode }}";
     var usehomologs = "{{ usehomologs|urlencode }}";
     var orderby = "{{ orderby|urlencode }}";
 </script>
 <script type="text/javascript" src="/static/genesearch.js"></script>
 {% endif %}
+{% if errormsg %}
+<script type="text/javascript">
+$(document).ready(function()
+{
+    flash("{{ errormsg|escapejs }} ");
+});
+</script>
+{% endif %}
 {% endblock %}
 
 {% block header %}
-<a href="/"><img src="/static/logo-small.png" id="smalllogo" border="0" style="vertical-align:baseline"/></a>
+<a href="/"><img src="/static/logo-small.png" id="smalllogo" border="0" style="display:inline; float:left; padding-top:20px"/></a>
 <form name="search" action="" method="get">
     <table> <!style="display:inline; text-align:right">
         <tr>

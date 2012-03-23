@@ -34,7 +34,7 @@
 <div id="description" style="display:none">
     Showing events{% if genesyms %} for genes <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}:
     <ul>
-        {% if q or genesyms %}<li><a href="genesearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}">Rank genes matching{% if q %} <b>{{ q|safe }}</b>{% endif %}{% if genesyms and q %} and{% endif %}{% if genesyms %} <b>{{ genesyms|join:', ' }}</b>{% endif %}</li>{% endif %}
+        {% if q or genesyms %}<li><a href="genesearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}&usehomologs=1">Rank genes matching{% if q %} <b>{{ q|safe }}</b>{% endif %}{% if genesyms and q %} and{% endif %}{% if genesyms %} <b>{{ genesyms|join:', ' }}</b>{% endif %}</a></li>{% endif %}
         <li><a href="javascript:eventgenes();" id="showeventgenes">See a list of genes referenced by these events...</a></li>
     </ul>
 </div>
