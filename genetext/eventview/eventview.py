@@ -42,6 +42,7 @@ def search(request):
 def gene_lookup(query):
     """Given a string of genes separated by commas, lookup and return
     gene ID's from Entrez ID's and symbols."""
+    if query is None: return None
     query = [q.strip().upper() for q in query.split(',')]
     return Gene.objects.filter(symbol__in=query)
 
@@ -96,14 +97,24 @@ def eventlist(request):
     
     # return the appropriate response
     
+    if request.GET.get('preview'):
+        genesyms = [g.symbol for g in Gene.objects.filter(id__in=genes).only('symbol')] if genes else []
+        
+        # show more information about a specific gene
+        # TODO: clean this up during the next re-organization of the event search
+        detail = gene_lookup(request.GET.get('detail'))
+        if len(detail) > 0:
+            summaryrow = get_gene_combinations(genes=genes, abstracts=abstracts).get(detail[0].id)
+            summaryrow.innergenes.sort(key=lambda g: -g.count)
+        else:
+            summaryrow = None    
+        
+        return render_to_response("eventpreview.html", 
+            {'events': events, 'geneids':genes, 'genesyms': genesyms, 'q': query, 'summaryrow':summaryrow})
+    
     # 404 if there were no events
     if not events: 
         raise Http404
-    
-    if request.GET.get('preview'):
-        genesyms = [g.symbol for g in Gene.objects.filter(id__in=genes).only('symbol')]
-        return render_to_response("eventpreview.html", 
-            {'events': events, 'geneids':genes, 'genesyms': genesyms, 'q': query})
     
     dl = request.GET.get('download')
     if dl:

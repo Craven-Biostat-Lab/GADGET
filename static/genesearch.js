@@ -17,6 +17,14 @@ function order(key)
     window.location = "genesearch?" + querystring;
 }
 
+// collapse the slider panes in the gene results table for a specific gene
+function hidepanes(gene)
+{
+    $("#generank tr#abstracts" + gene + " td div").slideUp('fast', function() { $("#generank tr#abstracts" + gene).hide(); });
+    $("#generank tr#eventpreview" + gene + " td div").slideUp('fast', function() { $("#generank tr#eventpreview" + gene).hide(); });
+    
+}
+
 $(document).ready(function()
 {
     var queryString = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit;
@@ -73,25 +81,30 @@ $(document).ready(function()
                 $("#more").hide(); 
             }
         })
-        .error(function() {
+        .error(function() 
+        {
             flasherror();
             $("#more").hide();    
         });
         
     });
     
-    // show / hide abstracts when the + or - gets clicked
+    
+    // show / hide abstracts when abstracts icon gets clicked
     $("#generank").delegate("a.showabstracts", "click", function()
     {
         var gene = $(this).attr("gene");
         
         if ($("#generank tr#abstracts" + gene).length == 0) // see if the tr for absracts exists
         {
+            // the abstracts pane doesn't exist.
+            hidepanes(gene); // hide other panes
+            
             // assemble querystring
             var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&species=" + species + "&usehomologs=" + usehomologs + "&limit=" + abstractlimit;
             
-            // set up abstract area
-            $("#generank tr#gene" + gene).after('<tr class="abstracts" id="abstracts' + gene + '"><td colspan="13"><img src="/static/spinner2.gif"></td></tr>');
+            // set up abstract pane
+            $("#generank tr#gene" + gene).after('<tr class="pane abstracts" id="abstracts' + gene + '"><td colspan="13"><img src="/static/spinner2.gif"></td></tr>');
             
             // fetch and display abstracts
             $.getJSON("abstracts.html", querystring)
@@ -101,7 +114,7 @@ $(document).ready(function()
                 {
                     // append abstracts to td
                     $("#generank tr#abstracts" + gene + " td img").remove(); // hide spinner
-                    $("#generank tr#abstracts" + gene + " td").append('<div style="display:none; padding-top:5px;"><b>Abstracts:</b><ul>' + data.result + '</ul></div>')
+                    $("#generank tr#abstracts" + gene + " td").append('<div style="display:none; padding-top:5px;"><b>Abstracts:</b><ul>' + data.result + '</ul></div>');
                     
                     // if there are more abstracts, show a "more" link
                     var hits = parseInt($("#generank tr#gene" + gene).attr("hits"));
@@ -111,27 +124,34 @@ $(document).ready(function()
                     }
                     
                     $("#generank tr#abstracts" + gene + " td div").slideDown();
-                    
-                    // get event preview
-                    var querystring = "q=" + q + "&gene_entrez_ids=" + genes + ',' + gene + "&limit=3&preview=1";
-                    $.get("eventlist.html", querystring)
-                    .success(function(result)
-                    {
-                        $("#generank tr#abstracts" + gene + " td div").prepend(result + "<br><br>");
-                    });
                 }
                 
             })
-            .error(function() {
+            .error(function() 
+            {
                 flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
             });
         }
-        else
+        else // the abstract pane exists
         {
-            // hide the abstract pane
-            $("#generank tr#abstracts" + gene + " td div").slideUp('fast', function() {$("#generank tr#abstracts" + gene).remove()});
+            // is the abstracts pane hidden?
+            if (!$("#generank tr#abstracts" + gene).is(":visible"))
+            {
+                // the abstract pane exists but is hidden
+                // show the abstract pane
+                hidepanes(gene);
+                $("#generank tr#abstracts" + gene).show();
+                $("#generank tr#abstracts" + gene + " td div").slideDown();
+            }
+            else
+            {
+                // the abstract exists and is visible
+                // hide the abstract pane
+                hidepanes(gene);
+            }
         }
     });
+    
     
     // show more abstracts when the "more abstracts" link gets clicked
     $("#generank").delegate("a.moreabstracts", "click", function() 
@@ -174,5 +194,58 @@ $(document).ready(function()
         });
         
         hideflash();
+    });
+    
+    
+    // show or hide events when the events button gets clicked
+    $("#generank").delegate("a.showeventpreview", "click", function()
+    {
+        var gene = $(this).attr("gene");
+        var sym = $(this).attr("genesymbol");
+        
+        if ($("#generank tr#eventpreview" + gene).length == 0) // see if the tr for events exists
+        {
+            // hide other panes
+            hidepanes(gene);
+        
+            // the tr for events doesn't exist, so make one
+            $("#generank tr#gene" + gene).after('<tr class="pane eventpreview" id="eventpreview' + gene + '"><td colspan="13"><div><img src="/static/spinner2.gif"></div></td></tr>');
+        
+            // assemble querystring
+            var querystring = "q=" + q + "&gene_symbols=" + genesyms + ',' + sym + "&detail=" + sym + "&limit=3&preview=1";
+            
+            // fetch and display event preview
+            $.get("eventlist.html", querystring)
+            .success(function(result)
+            {
+                $("#generank tr#eventpreview" + gene + " td div").remove(); // hide spinner
+                $("#generank tr#eventpreview" + gene + " td").html('<div style="display:none; padding-top:5px;">' + result + '</div>');
+                $("#generank tr#eventpreview" + gene + " td div").slideDown();
+            })
+            .error(function()
+            {
+                $("#generank tr#eventpreview" + gene + " td div").remove(); // hide spinner
+                $("#generank tr#eventpreview" + gene + " td").html('<div></div>');
+                hidepanes(gene);
+                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+            });
+        }
+        else // the tr for events exists
+        {
+            // is the events pane hidden?
+            if (!$("#generank tr#eventpreview" + gene).is(":visible"))
+            {
+                // the events pane exists but is hidden
+                // show the events pane
+                hidepanes(gene);
+                $("#generank tr#eventpreview" + gene).show();
+                $("#generank tr#eventpreview" + gene + " td div").slideDown();
+            }
+            else
+            {
+                // the events pane is visible
+                hidepanes(gene);
+            }
+        }
     });
 });

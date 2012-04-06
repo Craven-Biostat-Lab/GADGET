@@ -179,15 +179,22 @@ a.showabstracts img {
     border: none;
 }
 
-table#generank tr.abstracts td {
-    background-color: #F0EBFF;
+table#generank tr.pane td {
     padding: 0px 10% 5px 10%;
     font-size: 80%;
     width: 100%;
 }
 
+table#generank tr.abstracts td {
+    background-color: #F0EBFF;
+}
+
 table#generank tr.abstracts ul li {
     padding-top: 5px;
+}
+
+table#generank tr.eventpreview td {
+    background-color: #f4ffd9;
 }
 
 table#generank a.moreabstracts {

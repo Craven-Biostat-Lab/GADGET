@@ -1,8 +1,18 @@
 {% autoescape on %}
-<b>Events:</b><br />
+<b>Events</b><br />
+Gene interaction events for{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}:<br /><br />
 {% for e in events %}
     <img class="eventthumb", src="eventthumb.png?event={{ e.id }}" />
-{% endfor %}
-{% if q %}<br /><a href="eventsearch?genes={{ genesyms|join:','|urlencode }}&q={{ q|urlencode }}">See events{% if genesyms %} for <b>{{ genesyms|join:', ' }}</b>{% endif %}{% if q %} matching <b>{{ q }}</b>{% endif %} &rarr;</a>{% endif %}
-{% if genesyms %}<br /><a href="eventsearch?genes={{ genesyms|join:','|urlencode }}">See all events for <b>{{ genesyms|join:', ' }}</b> &rarr;</a>{% endif %}
+{% empty %}No events found for{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}!<br />{% endfor %}
+
+{% if summaryrow %}<br /><br />Genes interacting with <b>{{ summaryrow.symbol }}</b>:<br /> 
+    {% for ig in summaryrow.innergenes %}
+        <a href="eventsearch?genes={{ genesyms|join:' ,'|urlencode }},{{ ig.symbol|urlencode }}{% if q %}&q={{ q|urlencode }}{% endif %}">{{ ig.symbol }}</a>
+        ({{ ig.count }}{% if forloop.first %} abstracts{% endif %}){% if not forloop.last %}, {% endif %}
+    {% endfor %}
+<br /><br />{% endif %}
+
+{% if events %}{% if q and genesyms %}<br /><a href="eventsearch?genes={{ genesyms|join:','|urlencode }}&q={{ q|urlencode }}">See events for <b>{{ genesyms|join:', '|safe }}</b> matching <b>{{ q|safe }}</b> &rarr;</a>{% endif %}{% endif %}
+{% if genesyms %}<br /><a href="eventsearch?genes={{ genesyms|join:','|urlencode }}">See all events for <b>{{ genesyms|join:', '|safe }}</b> &rarr;</a>{% endif %}
+{% if q %}<br /><a href="eventsearch?q={{ q|urlencode }}">See all events for <b>{{ q|safe }}</b> &rarr;</a>{% endif %}
 {% endautoescape %}
