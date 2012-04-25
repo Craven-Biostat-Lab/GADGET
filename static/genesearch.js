@@ -314,6 +314,9 @@ $(document).ready(function()
 });
 
 
+// preserve initial form values so the form matches the results on page load
+// (without this, the form values get messed up when the user presses the back button.)
+
 var initialquery = null;
 var initialgenes = null;
 var initialspecies = null;
@@ -326,7 +329,6 @@ $(window).bind('pageshow', function() {
     if (initialgenes == null) {initialgenes = $("input#id_genes").val();}
     else {$("input#id_genes").val(initialgenes);}
     
-    //alert($("input#id_species").val());
     if (initialspecies == null) {initialspecies = $("select#id_species").val();}
     else {$("select#id_species").val(initialspecies);}
     

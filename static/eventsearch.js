@@ -121,3 +121,17 @@ function moresummary()
     summarylimit = null;
     eventsummary();
 }
+
+// preserve initial form values so the form matches the results on page load
+// (without this, the form values get messed up when the user presses the back button.)
+
+var initialquery = null;
+var initialgenes = null;
+
+$(window).bind('pageshow', function() {
+    if (initialquery == null) {initialquery = $("input#id_q").val();}
+    else {$("input#id_q").val(initialquery);}
+    
+    if (initialgenes == null) {initialgenes = $("input#id_genes").val();}
+    else {$("input#id_genes").val(initialgenes);}
+});
