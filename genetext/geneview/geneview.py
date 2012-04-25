@@ -56,8 +56,6 @@ def searchpage(request):
     
     usehomologs = parseboolean(usehomologs_input)
     
-    
-    
     return render_to_response('genesearch.html', {'form': form, 'q': q, 
         'genes': map(str, genes), 'genesyms': genesyms, 'species': species, 'speciesname': speciesname,
         'usehomologs': usehomologs, 'orderby': orderby})

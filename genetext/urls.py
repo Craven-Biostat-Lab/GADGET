@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import *
 import eventview.eventview as ev
 import geneview.geneview as gv
+import geneview.genecrossrefs as gxr
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -9,6 +10,7 @@ import geneview.geneview as gv
 urlpatterns = patterns('',
     (r'^gadget/genesearch', gv.searchpage),
     (r'^gadget/genelist', gv.genesearch),
+    (r'^gadget/genecrossrefs', gxr.genecrossrefs),
     (r'^gadget/abstract', gv.abstracts),
     (r'^gadget/eventsearch', ev.search),
     (r'^gadget/eventlist', ev.eventlist),

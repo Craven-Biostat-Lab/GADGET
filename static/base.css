@@ -175,14 +175,14 @@ a.showabstracts {
     border: none;
 }
 
-a.showabstracts img {
-    border: none;
-}
-
 table#generank tr.pane td {
     padding: 0px 10% 5px 10%;
     font-size: 80%;
     width: 100%;
+}
+
+table#generank tr.pane td ul li {
+    padding-bottom: 5px;
 }
 
 table#generank tr.abstracts td {
@@ -197,8 +197,23 @@ table#generank tr.eventpreview td {
     background-color: #f4ffd9;
 }
 
+table#generank tr.crossrefs td {
+    background-color: #fff8e3 /*#fff7de #fff5de #fff9d1 #FFFAD4 #FFF8D4*/
+}
+
 table#generank a.moreabstracts {
     font-weight: bold;
+}
+
+div#buttoncontainer {
+    height: 22px;
+    width: 72px;
+    padding: 0;
+    margin: 0;
+}
+
+div#buttoncontainer img {
+    padding: 0 1px;
 }
 
 input#download {

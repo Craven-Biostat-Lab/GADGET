@@ -2,10 +2,9 @@
 {% if results %}
     {% for g, p in results %}
         <tr id="gene{{ g.entrez_id }}" offset="0" hits="{{ g.hits }}">
-            <td>
-                <a id="showabs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showabstracts" href="javascript: void(0);" offset="0"><img src="/static/document.png" border="0" /></a>
-                <a id="showeventpreview{{ g.entrez_id }}" gene="{{ g.entrez_id }}" genesymbol="{{ g.symbol|urlencode }}" class="showeventpreview" href="javascript: void(0);">events</a>
-            </td>
+            <td><div id="buttoncontainer">
+                <a id="showabs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showabstracts" href="javascript: void(0);" offset="0"><img src="/static/document.png" alt="See abstracts" title="See abstracts" border="0" /></a><a id="showeventpreview{{ g.entrez_id }}" gene="{{ g.entrez_id }}" genesymbol="{{ g.symbol|urlencode }}" class="showeventpreview" href="javascript: void(0);"><img src="/static/interaction.png" alt="See interactions" title="See interactions" border="0" /></a><a id="showcrossrefs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showcrossrefs" href="javascript: void(0);"><img src="/static/links.png" alt="See external links" title="See external links" border="0" /></a>
+            </div></td>
             <td>{{ forloop.counter|add:offset }}</td>
             <td>{{ g.f1_score|floatformat:-3 }}</td>
             <td>{{ g.hits }}</td>

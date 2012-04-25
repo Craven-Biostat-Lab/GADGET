@@ -105,7 +105,8 @@ def eventlist(request):
         detail = gene_lookup(request.GET.get('detail'))
         if len(detail) > 0:
             summaryrow = get_gene_combinations(genes=genes, abstracts=abstracts).get(detail[0].id)
-            summaryrow.innergenes.sort(key=lambda g: -g.count)
+            if summaryrow:
+                summaryrow.innergenes.sort(key=lambda g: -g.count)
         else:
             summaryrow = None    
         

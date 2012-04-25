@@ -22,7 +22,7 @@ function hidepanes(gene)
 {
     $("#generank tr#abstracts" + gene + " td div").slideUp('fast', function() { $("#generank tr#abstracts" + gene).hide(); });
     $("#generank tr#eventpreview" + gene + " td div").slideUp('fast', function() { $("#generank tr#eventpreview" + gene).hide(); });
-    
+$("#generank tr#crossrefs" + gene + " td div").slideUp('fast', function() { $("#generank tr#crossrefs" + gene).hide(); });
 }
 
 $(document).ready(function()
@@ -114,7 +114,7 @@ $(document).ready(function()
                 {
                     // append abstracts to td
                     $("#generank tr#abstracts" + gene + " td img").remove(); // hide spinner
-                    $("#generank tr#abstracts" + gene + " td").append('<div style="display:none; padding-top:5px;"><b>Abstracts:</b><ul>' + data.result + '</ul></div>');
+                    $("#generank tr#abstracts" + gene + " td").append('<div style="display:none; padding-top:5px;"><b>Abstracts</b><ul>' + data.result + '</ul></div>');
                     
                     // if there are more abstracts, show a "more" link
                     var hits = parseInt($("#generank tr#gene" + gene).attr("hits"));
@@ -243,9 +243,93 @@ $(document).ready(function()
             }
             else
             {
-                // the events pane is visible
+                // the events pane is visible, so hide it
                 hidepanes(gene);
             }
         }
     });
+    
+    
+    // show or hide external links (cross references) when the button gets clicked
+    $("#generank").delegate("a.showcrossrefs", "click", function()
+    {
+        var gene = $(this).attr("gene");
+        
+        if ($("#generank tr#crossrefs" + gene).length == 0) // see if the tr for crossrefs exists
+        {
+            hidepanes(gene); // hide other panes
+            
+            // the tr for crossrefs doesn't exist, so make one
+            $("#generank tr#gene" + gene).after('<tr class="pane crossrefs" id="crossrefs' + gene + '"><td colspan="13"><div><img src="/static/spinner2.gif"></div></td></tr>');
+        
+            // assemble querystring
+            var querystring = "gene=" + gene;
+            
+            // fetch and display crossrefs
+            $.getJSON("genecrossrefs", querystring)
+            .success(function(data)
+            {
+                $("#generank tr#crossrefs" + gene + " td div").remove(); // hide spinner
+                if (data.validresult)
+                {
+                    // display the cross references 
+                    $("#generank tr#crossrefs" + gene + " td").html('<div style="display:none; padding-top:5px;">' + data.result + '</div>');
+                    $("#generank tr#crossrefs" + gene + " td div").slideDown();
+                }
+                else
+                {
+                    // collapse the pane, show an error message
+                    $("#generank tr#crossrefs" + gene + " td").html('<div></div>');
+                    hidepanes(gene);
+                    flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                }
+            })
+            .error(function()
+            {
+                $("#generank tr#crossrefs" + gene + " td div").remove(); // hide spinner
+                $("#generank tr#crossrefs" + gene + " td").html('<div></div>');
+                hidepanes(gene);
+                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+            });
+            
+        }
+        else // the tr for crossrefs exists
+        {
+            // is the crossrefs pane hidden?
+            if (!$("#generank tr#crossrefs" + gene).is(":visible"))
+            {
+                // the crossrefs pane exists but is hidden
+                // show the crossrefs pane
+                hidepanes(gene);
+                $("#generank tr#crossrefs" + gene).show();
+                $("#generank tr#crossrefs" + gene + " td div").slideDown();
+            }
+            else
+            {
+                // the crossrefs pane is visible, so hide it
+                hidepanes(gene);
+            }
+        }
+    });
+});
+
+
+var initialquery = null;
+var initialgenes = null;
+var initialspecies = null;
+var initialhomologs = null;
+
+$(window).bind('pageshow', function() {
+    if (initialquery == null) {initialquery = $("input#id_q").val();}
+    else {$("input#id_q").val(initialquery);}
+    
+    if (initialgenes == null) {initialgenes = $("input#id_genes").val();}
+    else {$("input#id_genes").val(initialgenes);}
+    
+    //alert($("input#id_species").val());
+    if (initialspecies == null) {initialspecies = $("select#id_species").val();}
+    else {$("select#id_species").val(initialspecies);}
+    
+    if (initialhomologs == null) {initialhomologs = $("input#id_usehomologs").attr("checked");}
+    else {$("input#id_usehomologs").attr("checked", initialhomologs);}
 });

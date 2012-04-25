@@ -1,9 +1,9 @@
 {% autoescape on %}
-<b>Events</b><br />
-Gene interaction events for{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}:<br /><br />
+<b>Interactions</b><br />
+{% if events %}Gene interactions for{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}:<br /><br />{% endif %}
 {% for e in events %}
     <img class="eventthumb", src="eventthumb.png?event={{ e.id }}" />
-{% empty %}No events found for{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}!<br />{% endfor %}
+{% empty %}No interactions found for{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}!<br />{% endfor %}
 
 {% if summaryrow %}<br /><br />Genes interacting with <b>{{ summaryrow.symbol }}</b>:<br /> 
     {% for ig in summaryrow.innergenes %}
@@ -12,7 +12,7 @@ Gene interaction events for{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b
     {% endfor %}
 <br /><br />{% endif %}
 
-{% if events %}{% if q and genesyms %}<br /><a href="eventsearch?genes={{ genesyms|join:','|urlencode }}&q={{ q|urlencode }}">See events for <b>{{ genesyms|join:', '|safe }}</b> matching <b>{{ q|safe }}</b> &rarr;</a>{% endif %}{% endif %}
-{% if genesyms %}<br /><a href="eventsearch?genes={{ genesyms|join:','|urlencode }}">See all events for <b>{{ genesyms|join:', '|safe }}</b> &rarr;</a>{% endif %}
-{% if q %}<br /><a href="eventsearch?q={{ q|urlencode }}">See all events for <b>{{ q|safe }}</b> &rarr;</a>{% endif %}
+{% if events %}{% if q and genesyms %}<br /><a href="eventsearch?genes={{ genesyms|join:','|urlencode }}&q={{ q|urlencode }}">See interactions for <b>{{ genesyms|join:', '|safe }}</b> matching <b>{{ q|safe }}</b> &rarr;</a>{% endif %}{% endif %}
+{% if genesyms %}<br /><a href="eventsearch?genes={{ genesyms|join:','|urlencode }}">See all interactions for <b>{{ genesyms|join:', '|safe }}</b> &rarr;</a>{% endif %}
+{% if q %}<br /><a href="eventsearch?q={{ q|urlencode }}">See all interactions for <b>{{ q|safe }}</b> &rarr;</a>{% endif %}
 {% endautoescape %}

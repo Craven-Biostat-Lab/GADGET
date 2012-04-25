@@ -143,7 +143,7 @@ CREATE TABLE  `new`.`homologene_gene` (
   `gene` int(11) NOT NULL,
   PRIMARY KEY (`homologene_id`,`gene`),
   KEY `gene` (`gene`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 load data local infile '~/Downloads/homologene.data'
 into table `homologene_gene`
@@ -211,5 +211,49 @@ CREATE TABLE  `abstract` (
 insert ignore into `abstract` (`pubmed_id`)
 select `abstract` from `gene_abstract`;
 
+--------------------------------------------------------------------------------
+-- get uniprot crossreferences
+
+-- for each species
+ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/HUMAN_9606_idmapping.dat.gz
+ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/MOUSE_10090_idmapping.dat.gz
+ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/by_organism/YEAST_559292_idmapping.dat.gz
+
+CREATE TABLE  `uniprot_idrefs` (
+  `uniprotKB_AC` varchar(8) DEFAULT NULL,
+  `idtype` varchar(20) DEFAULT NULL,
+  `id` varchar(50) DEFAULT NULL,
+  KEY `uniprotKBAC_idtype` (`uniprotKB_AC`,`idtype`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- for each species
+load data local infile '~/Downloads/uniprot-idmaps/HUMAN_9606_idmapping.dat'
+into table `uniprot_idrefs`
+fields terminated by '\t';
+
+-- re-arrange the table to use the entrez ID as the key instead of the uniprot id
+-- takes a couple minutes to run because of the "distinct"
+create table gene_crossrefs
+select distinct cast(ui1.id as unsigned) `entrez_id`, ui2.`idtype`, ui2.`id` `crossref_id`
+from uniprot_idrefs ui1
+inner join uniprot_idrefs ui2
+using (uniprotKB_AC)
+where ui1.idtype = "GeneID";
+
+ALTER TABLE  `gene_crossrefs` ADD INDEX `entrez_id_idtype`(`entrez_id`, `idtype`);
+
+-- insert UniprotKB-AC numbers back into table (lost in previous query)
+insert into gene_crossrefs
+select `id` entrez_id, 'UniProtKB-AC' idtype, uniprotKB_AC `crossref_id`
+from uniprot_idrefs
+where idtype="GeneID";
+
+-- delete crossrefs for genes that aren't in our set
+delete from gene_crossrefs
+where entrez_id not in (select entrez_id from gene);
+
+-- add a primary key to make Django happy
+ALTER TABLE `production`.`gene_crossrefs` ADD COLUMN `id` INT  NOT NULL AUTO_INCREMENT FIRST,
+ ADD PRIMARY KEY (`id`);
 
 

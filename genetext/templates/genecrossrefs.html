@@ -1,0 +1,8 @@
+<b>External links</b>
+{% if xrefgroups %}<ul>
+{% for xrefgroup in xrefgroups %}  <li>{% if xrefgroup.1 %}{{ xrefgroup.1 }}{% else %}{{ xrefgroup.0 }}{% endif %}:
+  {% for xref in xrefgroup.2 %}{% if xref.url %}<a href="{{ xref.url }}" target="_blank">{{ xref.crossref_id }}</a>{% else %}{{ xref.crossref_id }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}
+  </li>{% endfor%}
+</ul>{% else %}
+<br />No external links for this gene!
+{% endif %}

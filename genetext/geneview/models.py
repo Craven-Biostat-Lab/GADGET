@@ -41,3 +41,13 @@ class GeneAbstract(models.Model):
     class Meta:
         db_table = 'gene_abstract'
         managed = False
+        
+class GeneCrossref(models.Model):
+    id = models.IntegerField(primary_key=True)
+    entrez_id = models.IntegerField()
+    idtype = models.CharField(max_length=20)
+    crossref_id = models.CharField(max_length=50)
+    
+    class Meta:
+        db_table = 'gene_crossrefs'
+        managed = False

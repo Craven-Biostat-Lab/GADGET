@@ -54,7 +54,7 @@ $(document).ready(function()
 <div id="description" style="display:none">
     Showing and scoring genes in abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} containing genes <b>{{ genesyms|join:', ' }}</b>{% endif %}<br />
     For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
-    <a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:','|urlencode }}{% endif %}">See events{% if genesyms %} for genes <b>{{ genesyms|join:',' }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}</a>
+    <a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:','|urlencode }}{% endif %}">See interactions{% if genesyms %} for genes <b>{{ genesyms|join:',' }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}</a>
 </div><br />
 <div id="results" style="display:none">
     <a class="hint" target="_blank" href="/manual.html#genesearch">About gene search results</a>

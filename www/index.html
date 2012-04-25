@@ -16,7 +16,7 @@
         <td><a href="/contact.html">Contact</a></td>
         <td id="last">&nbsp;</td>
     </tr></table>
-    <p><b>GADGET</b> is a tool that lets you search through literature related to genes.  You can search for genes related to a topic, or find gene interaction events extracted from text.</p>
+    <p><b>GADGET</b> is a tool that lets you search through literature related to genes.  You can search for genes related to a topic, or find gene interactions extracted from text.</p>
     <br />
 
     <b>Search the literature for genes associated with keywords and gene symbols:</b>
@@ -59,14 +59,14 @@
     </div>
     <br /><br />
     
-    <b>Search for gene interaction events by gene and keyword:</b>
+    <b>Search the literature for gene interactions by gene and keyword:</b>
     <div id="search">    
         <form action="/gadget/eventsearch" method="get"><table>
             <tr>
                 <th><label for="id_q">Keywords:</label></th>
                 <td><input type="text" name="q" id="id_q" style="width:100%" /></td>
                 
-                <td rowspan="2" style="vertical-align:center"><input type="submit" value="Search events" /></td>
+                <td rowspan="2" style="vertical-align:center"><input type="submit" value="Search interactions" /></td>
             </tr>
             <tr>
                 <th><label for="id_genes">Gene symbols:</label></th>
@@ -79,11 +79,11 @@
     <div class="example">
         <b>Examples:</b>
         <ul style="margin:0">
-            <li><a href="/gadget/eventsearch?genes=CDKN1A, TP53">See events for <b>CDKN1A</b> and <b>TP53</b></a><br /></li>
-            <li><a href="/gadget/eventsearch?q=autophagy">See events in abstracts matching <b>autophagy</b></a><br /></li>
-            <li><a href="/gadget/eventsearch?q=nephron&genes=WNK4">See events for <b>WNK4</b> in abstracts matching <b>nephron</b></a></br></li>
-            <li><a href="/gadget/eventsearch?q=%22embryonic stem cell%22&genes=SOX2">See events for <b>SOX2</b> in abstracts containing <b>"embryonic stem cell"</b></a></li>
-            <li><a href="/gadget/eventsearch?q=%22hematopoietic stem cell%22&genes=TAL1">See events for <b>TAL1</b> in abstracts containing <b>"hematopoietic stem cell"</b></a></li>
+            <li><a href="/gadget/eventsearch?genes=CDKN1A, TP53">See interactions for <b>CDKN1A</b> and <b>TP53</b></a><br /></li>
+            <li><a href="/gadget/eventsearch?q=autophagy">See interactions in abstracts matching <b>autophagy</b></a><br /></li>
+            <li><a href="/gadget/eventsearch?q=nephron&genes=WNK4">See interactions for <b>WNK4</b> in abstracts matching <b>nephron</b></a></br></li>
+            <li><a href="/gadget/eventsearch?q=%22embryonic stem cell%22&genes=SOX2">See interactions for <b>SOX2</b> in abstracts containing <b>"embryonic stem cell"</b></a></li>
+            <li><a href="/gadget/eventsearch?q=%22hematopoietic stem cell%22&genes=TAL1">See interactions for <b>TAL1</b> in abstracts containing <b>"hematopoietic stem cell"</b></a></li>
         </ul>
     </div>
 </div>
