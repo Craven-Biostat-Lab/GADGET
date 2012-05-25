@@ -256,4 +256,7 @@ where entrez_id not in (select entrez_id from gene);
 ALTER TABLE `production`.`gene_crossrefs` ADD COLUMN `id` INT  NOT NULL AUTO_INCREMENT FIRST,
  ADD PRIMARY KEY (`id`);
 
-
+-- add keys for BioGPS (use Entrez Gene ID)
+insert into gene_crossrefs
+select null, g.entrez_id, 'BioGPS', g.entrez_id
+from gene g;

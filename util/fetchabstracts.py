@@ -46,6 +46,7 @@ def fetch(idlist):
         issue = get('Journal', 'JournalIssue', 'Issue') #
         year = get('Journal', 'JournalIssue', 'PubDate', 'Year') #
         month = get('Journal', 'JournalIssue', 'PubDate', 'Month') #
+        day = get('Journal', 'JournalIssue', 'PubDate', 'Day')
         
         # article
         title = get('ArticleTitle', default='')

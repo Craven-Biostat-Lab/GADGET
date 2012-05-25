@@ -10,7 +10,7 @@ import geneview.genecrossrefs as gxr
 urlpatterns = patterns('',
     (r'^gadget/genesearch', gv.searchpage),
     (r'^gadget/genelist', gv.genesearch),
-    (r'^gadget/genecrossrefs', gxr.genecrossrefs),
+    (r'^gadget/genecrossrefs', gxr.genecrossrefs2),
     (r'^gadget/abstract', gv.abstracts),
     (r'^gadget/eventsearch', ev.search),
     (r'^gadget/eventlist', ev.eventlist),

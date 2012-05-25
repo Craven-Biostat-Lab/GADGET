@@ -28,7 +28,7 @@ a.hint {
 }
 
 /*******************************************************************************
-* gene view and event view
+* Gene search and interaction search
 *******************************************************************************/
 
 #header {
@@ -139,7 +139,7 @@ table#download a {
 }
 
 /*******************************************************************************
-* Gene view
+* Gene search
 *******************************************************************************/
 
 table#generank th {
@@ -179,6 +179,11 @@ table#generank tr.pane td {
     padding: 0px 10% 5px 10%;
     font-size: 80%;
     width: 100%;
+}
+
+table#generank tr.pane td ul {
+    margin-top: 3px;
+    margin-bottom: 0px;
 }
 
 table#generank tr.pane td ul li {
@@ -222,7 +227,7 @@ input#download {
 }
 
 /*******************************************************************************
-* Event view
+* Interaction search
 *******************************************************************************/
 
 table#events tr td {
