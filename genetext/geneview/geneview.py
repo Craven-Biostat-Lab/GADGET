@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from urllib import quote
 import json
 
@@ -10,7 +11,7 @@ from django import forms
 import rpy2.robjects as robjects
 
 from genetext.geneview.models import Gene, GeneAbstract, Abstract
-from genetext.geneview.index import get_abstracts, corpus_size
+from genetext.abstracts.index import get_abstracts, corpus_size
 
 # allowable species (specieschoices should be in order, with the default first)
 speciesnames = {'9606': 'Homo sapiens', '10090': 'Mus musculus', '559292': 'Saccharomyces cerevisiae'}
@@ -105,7 +106,7 @@ def parseboolean(s):
     if s.isdigit():
         return int(s)
     
-    if s.lower() in ('', 'off','f','false','no'):
+    if s.lower() in ('', 'off','f','false','no','none','undefined'):
         return False
     else:
         return True

@@ -12,6 +12,25 @@ from xml.etree import ElementTree as ET
 db = MySQLdb.connect(user='root', passwd='password', db='new')
 c = db.cursor()
 
+# unicode stuff
+db.set_character_set('utf8')
+c.execute('SET NAMES utf8;')
+c.execute('SET CHARACTER SET utf8;')
+c.execute('SET character_set_connection=utf8;')
+
+def convertmonth(m):
+    """Months are stored in PubMed in a couple different forms.
+    Convert them all to numeric representations (return a string.)"""
+    months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    
+    if m is None: return '0'
+    elif m.isdigit(): return m
+    elif m.lower() in months: return str(months.index(m.lower()) + 1)
+    else:
+        print 'invalid month:', m
+        return '0'
+
+
 def fetch(idlist):
     """Fetch and return metadata for a list of Pubmed IDs.  Returns a lists of 
     dicts, each dict containing data for one abstract."""
@@ -20,7 +39,7 @@ def fetch(idlist):
     # fetch from entrez
     idstring = ','.join([str(i) for i in idlist])
     u = urllib.urlopen(url.format(idstring))
-    root = ET.parse(u).getroot()
+    root = ET.parse(u, parser=ET.XMLParser(encoding='utf-8')).getroot()
     u.close()
     
     # parse XML for each abstract
@@ -44,19 +63,25 @@ def fetch(idlist):
         journal = get('Journal', 'Title') #
         volume = get('Journal', 'JournalIssue', 'Volume') #
         issue = get('Journal', 'JournalIssue', 'Issue') #
-        year = get('Journal', 'JournalIssue', 'PubDate', 'Year') #
-        month = get('Journal', 'JournalIssue', 'PubDate', 'Month') #
-        day = get('Journal', 'JournalIssue', 'PubDate', 'Day')
+        year = get('Journal', 'JournalIssue', 'PubDate', 'Year', default='0') #
+        month = convertmonth(get('Journal', 'JournalIssue', 'PubDate', 'Month')) #
+        day = get('Journal', 'JournalIssue', 'PubDate', 'Day', default='0')
         
         # article
         title = get('ArticleTitle', default='')
         pages = get('Pagination', 'MedlinePgn')
         abstract = get('Abstract', 'AbstractText')
         
+        # figure out if this article is a review
+        try:
+            review = 'review' in [pt.text.lower() for pt in art.find('PublicationTypeList').findall('PublicationType')]
+        except AttributeError:
+            review = False
+
         try:
             # author list (concatenate into a string)
-            authors = ', '.join([
-                " ".join((a.find('LastName').text, a.find('ForeName').text)) 
+            authors = u', '.join([
+                u" ".join((a.find('LastName').text, a.find('ForeName').text)) 
                 for a in art.find('AuthorList') ]).encode('utf-8') #
         except (AttributeError, TypeError):
             authors = None
@@ -68,14 +93,16 @@ def fetch(idlist):
             issue=issue,
             year=year,
             month=month,
+            day=day,
             title=title,
             pages=pages,
             abstract=abstract,
+            review=review,
             authors=authors))
 
     return results
-    
-    
+
+
 def ids(size = 200):
     """Find all pubmed ID's of abstracts with `updated` set to null.  Return an
     iterator over lists of abstract PMID's with the given size (for fetching
@@ -103,17 +130,17 @@ def update(metadata):
                 set title := %s,
                 authors := %s,
                 abstract := %s,
-                year := %s,
-                month := %s,
+                pubdate := %s,
                 journal := %s,
                 volume := %s,
                 issue := %s,
                 pages := %s,
+                review := %s,
                 updated := now()
                 where pubmed_id = %s;
             """,
-            (m['title'], m['authors'], m['abstract'], m['year'], m['month'], 
-            m['journal'], m['volume'], m['issue'], m['pages'], m['id'])
+            (m['title'], m['authors'], m['abstract'], (m['year'] +'-'+ m['month'] +'-'+m['day']), 
+            m['journal'], m['volume'], m['issue'], m['pages'], m['review'], m['id'])
             )
         except: print m; raise
     

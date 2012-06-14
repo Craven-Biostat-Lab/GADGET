@@ -6,7 +6,8 @@ them in the index.  Optimize the index when we're done.
 
 import MySQLdb
 import whoosh.index as index
-from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST
+from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST, DATETIME, STORED, BOOLEAN
+from datetime import datetime
 
 # this is the path to the index directory.
 ABSTRACT_INDEX_PATH = '../index'
@@ -17,6 +18,13 @@ c = db.cursor() # cursor for grabbing abstracts
 c_update = db.cursor() # seperate cursor for updating "indexed" field
 c_genes = db.cursor() # cursor for fetching associated genes
 
+# unicode stuff
+db.set_character_set('utf8')
+c.execute('SET NAMES utf8;')
+c.execute('SET CHARACTER SET utf8;')
+c.execute('SET character_set_connection=utf8;')
+
+
 # open or create the index
 if index.exists_in(ABSTRACT_INDEX_PATH):
     ix = index.open_dir(ABSTRACT_INDEX_PATH)
@@ -26,15 +34,21 @@ else:
         pmid = NUMERIC(stored=True, unique=True, signed=False)
         genes = IDLIST(stored=True) # Entrez ID's
         homolog_genes = IDLIST(stored=True) # Entrez ID's
-        title = TEXT
+        title = TEXT(stored=True)
         abstract = TEXT
-        year = NUMERIC
+        authors = TEXT(stored=True)
+        pubdate = DATETIME(stored=True)
+        year = NUMERIC(stored=True)
+        review = BOOLEAN(stored=True)
+        journal = STORED
+        volume = STORED
+        pages = STORED
         
     ix = index.create_in(ABSTRACT_INDEX_PATH, Schema)
 
 # get unindexed and updated abstracts
 c.execute("""
-    select `pubmed_id`, `title`, `abstract`, `year`
+    select `pubmed_id`, `title`, `abstract`, `authors`, `pubdate`, year(`pubdate`), `journal`, `volume`, `pages`, `review`
     from `abstract`
     where `updated` is not null
     and (`indexed` is null or `indexed` < `updated`);
@@ -43,20 +57,18 @@ c.execute("""
 # update the index with the articles
 writer = ix.writer()
 for i, article in enumerate(c):
-    pmid, title, abstract, year = article
+    pmid, title, abstract, authors, pubdate, year, journal, volume, pages, review = article
     
-    # For some reason, some of the abstracts are encoded in utf-8, and some 
-    # in latin-1.  This is gross, but it works.
+
+    # make text fields unicode
     if title is not None:
-        try:
-            title = unicode(title, 'utf-8')
-        except UnicodeDecodeError:
-            title = unicode(title, 'latin-1')
+        title = unicode(title, 'utf-8')
     if abstract is not None:
-        try:
-            abstract = unicode(abstract, 'utf-8')
-        except UnicodeDecodeError:
-            abstract = unicode(abstract, 'latin-1')
+        abstract = unicode(abstract, 'utf-8')
+    if authors is not None:
+        authors = unicode(authors, 'utf-8')
+
+
     
     # get associated genes
     c_genes.execute("""
@@ -73,8 +85,14 @@ for i, article in enumerate(c):
         """, (pmid,))
     homolog_genes = u' '.join([unicode(g[0]) for g in c_genes.fetchall()]) 
     
+    # change the date to a datetime
+    if pubdate:
+        pubdate = datetime.fromordinal(pubdate.toordinal())
+    
+    # index the document
     writer.update_document(pmid=pmid, genes=genes, homolog_genes=homolog_genes,
-        title=title, abstract=abstract, year=year)
+        title=title, abstract=abstract, authors=authors, pubdate=pubdate, 
+        year=year, journal=journal, volume=volume, pages=pages, review=review)
     
     # mark the document as indexed
     c_update.execute("""
@@ -88,6 +106,7 @@ for i, article in enumerate(c):
         writer.commit(merge=False)
         writer = ix.writer()
         print 'Commit.  Abstracts:', i
+        
 writer.commit(optimize=True) # Merge everything.  This will take a long time.
 
 c.close()

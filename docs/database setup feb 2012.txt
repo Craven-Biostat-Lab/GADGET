@@ -192,17 +192,17 @@ set `gene`.`abstracts` = (select count(distinct `abstract`) from `gene_abstract`
 --------------------------------------------------------------------------------
 -- fetch abstracts
 
-CREATE TABLE  `abstract` (
+CREATE TABLE  `new`.`abstract` (
   `pubmed_id` int(11) NOT NULL,
   `title` varchar(300) DEFAULT NULL,
   `authors` varchar(300) DEFAULT NULL,
   `abstract` text,
-  `year` smallint(6) DEFAULT NULL,
-  `month` char(3) DEFAULT NULL,
+  `pubdate` date DEFAULT NULL,
   `journal` varchar(150) DEFAULT NULL,
   `volume` smallint(6) DEFAULT NULL,
   `issue` smallint(6) DEFAULT NULL,
   `pages` varchar(30) DEFAULT NULL,
+  `review` bool DEFAULT 0,
   `updated` datetime DEFAULT NULL,
   `indexed` datetime DEFAULT NULL,
   PRIMARY KEY (`pubmed_id`)
