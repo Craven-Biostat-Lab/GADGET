@@ -7,7 +7,7 @@ from django import forms
 
 from genetext.eventview.event import EventInfo, get_events, get_event_genes, get_gene_combinations
 from genetext.eventview.models import Gene
-from genetext.geneview.index import get_abstracts
+from genetext.abstracts.index import get_abstracts
 
 def search(request):
     """The event search page.  Creates and reads from the forms."""

@@ -1,4 +1,5 @@
 index
+*.swp
 *.pyc
 genetext/settings.py
 genetext/urls.py
