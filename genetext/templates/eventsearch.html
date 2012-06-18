@@ -14,12 +14,20 @@
 {% endblock %}
 
 {% block header %}
-<a href="/"><img src="/static/logo-small.png" id="smalllogo" border="0" style="vertical-align:middle"/></a>
 <form name="search" action="" method="get">
     {{ form.q.label}}: {{ form.q }}
     {{ form.genes.label }}: {{ form.genes }}
     <input type="submit" value="Search Interactions" />
 </form>
+{% endblock %}
+
+
+{% block tabs %}
+<span class="tab"><a href="genesearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}&usehomologs=1">Gene search</a></span><span class="tab selected">Interaction search:</span>
+{% endblock %}
+
+
+{% block content %}
 <table id="download" style="display:none">
     <tr><td colspan="2">Download interactions:</td></tr>
     <tr>
@@ -27,10 +35,7 @@
         <td><a href="eventlist?{% if q %}&q={{ q|urlencode }}{% endif %}{% if geneids %}&genes={{ geneids|join:',' }}{% endif %}&download=xml" target="_blank">XML</a></td>
     </tr>
 </table>
-    
-{% endblock %}
 
-{% block content %}
 <div id="description" style="display:none">
     Showing interactions{% if genesyms %} for genes <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}:
     <ul>

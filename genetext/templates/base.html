@@ -14,7 +14,20 @@
 </head>
 <body>
     <div id="header">
-         {% block header %}{% endblock %}
+        <a href="/"><img src="/static/logo-small.png" id="smalllogo" border="0" /></a>
+        <div id="topnav">
+            <div id="toplinks">
+                <a href="/">Home</a>
+                <a href="/manual.html">User Manual</a>
+                <a href="/contact.html">Contact</a>
+            </div>
+            <div id="tabs">
+                {% block tabs %}{% endblock %}
+            </div>
+        </div>
+        <div id="search">
+            {% block header %}{% endblock %}
+        </div>
     </div>
     <div id="content">{% block content %}{% endblock %}</div>
     <div id="footer"><a href="/manual.html">User manual</a> <a href="/contact.html">Contact</a></div>

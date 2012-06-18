@@ -2,6 +2,9 @@
 
 {% block title %}GADGET{% if q or genes %}: genes for{% if q %} {{ q|safe }}{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} {{ genesyms|join:', ' }}{% endif %}{% endif %}{% endblock %}
 
+
+
+
 {% block head %}
 {% if q or genes %}
 <script type="text/javascript">
@@ -25,7 +28,6 @@ $(document).ready(function()
 {% endblock %}
 
 {% block header %}
-<a href="/"><img src="/static/logo-small.png" id="smalllogo" border="0" style="display:inline; float:left; padding-top:20px"/></a>
 <form name="search" action="" method="get">
     <table>
         <tr>
@@ -41,6 +43,17 @@ $(document).ready(function()
     </table>
 </form>
 
+
+{% endblock %}
+
+{% block tabs %}
+<span class="tab selected">Gene search</span><span class="tab">
+    <a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:','|urlencode }}{% endif %}">Interaction search</a>
+</span>
+{% endblock %}
+
+{% block content %}
+
 <table id="download" style="display:none">
     <tr><td colspan="2">Download results:</td></tr>
     <tr>
@@ -48,14 +61,13 @@ $(document).ready(function()
         <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}&download=xml" target="_blank">XML</a></td>
     </tr>
 </table>
-{% endblock %}
 
-{% block content %}
 <div id="description" style="display:none">
     Showing and scoring genes in abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} containing genes <b>{{ genesyms|join:', ' }}</b>{% endif %}<br />
     For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
     <a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:','|urlencode }}{% endif %}">See interactions{% if genesyms %} for genes <b>{{ genesyms|join:',' }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}</a>
 </div><br />
+
 <div id="results" style="display:none">
     <a class="hint" target="_blank" href="/manual.html#genesearch">About gene search results</a>
     <a class="hint" target="_blank" href="/manual.html#scores">Gene search scores</a>
