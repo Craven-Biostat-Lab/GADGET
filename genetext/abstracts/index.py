@@ -33,7 +33,8 @@ searcher = ix.searcher(weighting=BM25F)
 # facet object for sorting abstracts by date (some have years but not dates)
 datefacet = MultiFacet()
 datefacet.add_field('year')
-datefacet.add_field('pubdate')
+datefacet.add_field('month')
+datefacet.add_field('day')
 
 def cachekey(keywords='', genes=[], genehomologs=True):
     """Return a key to use for cached query results"""

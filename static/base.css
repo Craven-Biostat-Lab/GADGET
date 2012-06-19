@@ -227,16 +227,23 @@ table#generank tr.abstracts ul li {
     padding-top: 5px;
 }
 
+a.sortabstracts.selected {
+    font-weight: bold;
+    text-decoration: none;
+    color: #000;
+    cursor: text;
+}
+
+table#generank a.moreabstracts {
+    font-weight: bold;
+}
+
 table#generank tr.eventpreview td {
     background-color: #f4ffd9;
 }
 
 table#generank tr.crossrefs td {
     background-color: #fff8e3 /*#fff7de #fff5de #fff9d1 #FFFAD4 #FFF8D4*/
-}
-
-table#generank a.moreabstracts {
-    font-weight: bold;
 }
 
 div#buttoncontainer {
