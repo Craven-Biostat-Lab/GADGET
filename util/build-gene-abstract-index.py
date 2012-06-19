@@ -26,6 +26,8 @@ c.execute('SET character_set_connection=utf8;')
 
 
 # open or create the index
+# use numners to represent a date instead of a DATETIME object because we're
+# missing a lot of data, and Datetime's must have a year, month, and day.
 if index.exists_in(ABSTRACT_INDEX_PATH):
     ix = index.open_dir(ABSTRACT_INDEX_PATH)
 else:
@@ -37,8 +39,9 @@ else:
         title = TEXT(stored=True)
         abstract = TEXT
         authors = TEXT(stored=True)
-        pubdate = DATETIME(stored=True)
         year = NUMERIC(stored=True)
+        month = NUMERIC(stored=True)
+        day = NUMERIC(stored=True)
         review = BOOLEAN(stored=True)
         journal = STORED
         volume = STORED
@@ -48,7 +51,7 @@ else:
 
 # get unindexed and updated abstracts
 c.execute("""
-    select `pubmed_id`, `title`, `abstract`, `authors`, `pubdate`, year(`pubdate`), `journal`, `volume`, `pages`, `review`
+    select `pubmed_id`, `title`, `abstract`, `authors`, year(`pubdate`), month(`pubdate`), day(`pubdate`), `journal`, `volume`, `pages`, `review`
     from `abstract`
     where `updated` is not null
     and (`indexed` is null or `indexed` < `updated`);
@@ -57,7 +60,7 @@ c.execute("""
 # update the index with the articles
 writer = ix.writer()
 for i, article in enumerate(c):
-    pmid, title, abstract, authors, pubdate, year, journal, volume, pages, review = article
+    pmid, title, abstract, authors, year, month, day, journal, volume, pages, review = article
     
 
     # make text fields unicode
@@ -85,14 +88,10 @@ for i, article in enumerate(c):
         """, (pmid,))
     homolog_genes = u' '.join([unicode(g[0]) for g in c_genes.fetchall()]) 
     
-    # change the date to a datetime
-    if pubdate:
-        pubdate = datetime.fromordinal(pubdate.toordinal())
-    
     # index the document
     writer.update_document(pmid=pmid, genes=genes, homolog_genes=homolog_genes,
-        title=title, abstract=abstract, authors=authors, pubdate=pubdate, 
-        year=year, journal=journal, volume=volume, pages=pages, review=review)
+        title=title, abstract=abstract, authors=authors, year=year, month=month, 
+        day=day, journal=journal, volume=volume, pages=pages, review=review)
     
     # mark the document as indexed
     c_update.execute("""

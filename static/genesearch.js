@@ -100,31 +100,25 @@ $(document).ready(function()
             // the abstracts pane doesn't exist.
             hidepanes(gene); // hide other panes
             
+            // how many abstracts for this gene?
+            var abstractcount = $("tr#gene" + gene).attr("hits");
+
             // assemble querystring
-            var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&species=" + species + "&usehomologs=" + usehomologs + "&limit=" + abstractlimit;
+            var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount; 
             
             // set up abstract pane
             $("#generank tr#gene" + gene).after('<tr class="pane abstracts" id="abstracts' + gene + '"><td colspan="13"><img src="/static/spinner2.gif"></td></tr>');
             
             // fetch and display abstracts
-            $.getJSON("abstracts.html", querystring)
-            .success(function(data)
+            $.get("abstractview.html", querystring)
+            .success(function(result)
             {
-                if (data.validresult)
-                {
                     // append abstracts to td
                     $("#generank tr#abstracts" + gene + " td img").remove(); // hide spinner
-                    $("#generank tr#abstracts" + gene + " td").append('<div style="display:none; padding-top:5px;"><b>Abstracts</b><ul>' + data.result + '</ul></div>');
-                    
-                    // if there are more abstracts, show a "more" link
-                    var hits = parseInt($("#generank tr#gene" + gene).attr("hits"));
-                    if (hits > abstractlimit)
-                    {
-                        $("#generank tr#abstracts" + gene + " td div").append('<a id="more' + gene + '" gene="' + gene + '" class="moreabstracts" href="javascript: void(0);" offset="' + abstractlimit + '">More abstracts...</a>');
-                    }
+                    $("#generank tr#abstracts" + gene + " td").html(result);
                     
                     $("#generank tr#abstracts" + gene + " td div").slideDown();
-                }
+                    fetchabstracts(gene);
                 
             })
             .error(function() 
@@ -152,51 +146,7 @@ $(document).ready(function()
         }
     });
     
-    
-    // show more abstracts when the "more abstracts" link gets clicked
-    $("#generank").delegate("a.moreabstracts", "click", function() 
-    {
-        spin();
         
-        var id = $(this).attr("id");
-        var gene = $(this).attr("gene");
-        var offset = parseInt($(this).attr("offset"));
-        var hits = parseInt($("#generank tr#gene" + gene).attr("hits"));
-        
-        // update offset
-        $(this).attr("offset", offset + abstractlimit);
-        
-        // fetch and display abstracts
-        var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&species=" + species + "&usehomologs=" + usehomologs + "&limit=" + abstractlimit + "&offset=" + offset;
-        $.getJSON("abstracts.html", querystring)
-        .success(function(data)
-        {
-            if (data.validresult)
-            {
-                $("#generank tr.abstracts#abstracts" + gene + " td div ul").append(data.result);
-                
-                // hide the "more" link if there are no more abstracts
-                if (offset + abstractlimit > hits)
-                {
-                    $("#generank a#" + id).hide();
-                }
-            }
-            else
-            {
-                $("#generank a#" + id).hide();
-                flash(data.errmsg);
-            }
-        })
-        .error(function()
-        {
-            $("#generank a#" + id).hide();
-            flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
-        });
-        
-        hideflash();
-    });
-    
-    
     // show or hide events when the events button gets clicked
     $("#generank").delegate("a.showeventpreview", "click", function()
     {
