@@ -139,7 +139,7 @@ div#description ul li {
 
 table#download {
     position: absolute;
-    right: 0.5%;
+    right: 2%;
     /*top: 4px;*/
     display: inline;
     padding: 0;
@@ -255,11 +255,6 @@ div#buttoncontainer {
 
 div#buttoncontainer img {
     padding: 0 1px;
-}
-
-input#download {
-    position: absolute;
-    right: 10px;
 }
 
 /*******************************************************************************
