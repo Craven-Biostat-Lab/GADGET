@@ -2,20 +2,27 @@
 {% if results %}
     {% for g, p in results %}
         <tr id="gene{{ g.entrez_id }}" offset="0" hits="{{ g.hits }}">
-            <td><div id="buttoncontainer">
-                <a id="showabs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showabstracts" href="javascript: void(0);" offset="0"><img src="/static/document.png" alt="See abstracts" title="See abstracts" border="0" /></a><a id="showeventpreview{{ g.entrez_id }}" gene="{{ g.entrez_id }}" genesymbol="{{ g.symbol|urlencode }}" class="showeventpreview" href="javascript: void(0);"><img src="/static/interaction.png" alt="See interactions" title="See interactions" border="0" /></a><a id="showcrossrefs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showcrossrefs" href="javascript: void(0);"><img src="/static/links.png" alt="See external links" title="See external links" border="0" /></a>
-            </div></td>
-            <td>{{ forloop.counter|add:offset }}</td>
-            <td>{{ g.f1_score|floatformat:-3 }}</td>
-            <td>{{ g.hits }}</td>
-            <td>{{ g.abstracts_display }}</td>
-            <td>{{ g.precision|floatformat:-3 }}</td>
-            <td>{{ p }}</td>
-            <td>{{ g.symbol }}</td>
-            <td>{{ g.name }}</td>
-            <td><a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}" target="_blank">{{ g.entrez_id }}</a></td>
-            <td>{{ g.synonyms }}</td>
-            <td>{{ g.maplocation }}</td>
+            <td class="rankcol">{{ forloop.counter|add:offset }}</td>
+            <td class="namecol"><span class="genesymbol">{{ g.symbol }}</span><br /><span class="genename">{{ g.name }}</span></td>
+            <td class="infocol">
+                Entrez ID: <a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}" target="_blank">{{ g.entrez_id }}</a><br />
+                Map location: {{ g.maplocation }}<br />
+                Synonyms: {{ g.synonyms }}
+            </td>
+            <td class="scorecol">
+                F<span style="font-size:x-small;vertical-align:sub">1</span> score: {{ g.f1_score|floatformat:-3 }}<br />
+                Adjusted precision: {{ g.precision|floatformat:-3 }}<br />
+                <span class="pvalue">p-value: {{ p }}</span>
+            </td>
+            <td class="countcol">
+                Matching abstracts: {{ g.hits }}<br />
+                Total abstracts: {{ g.abstracts_display }}
+            </td>
+            <td class="linkcol">
+                <a id="showabs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showabstracts" href="javascript: void(0);" offset="0">See abstracts</a><br />
+                <a id="showeventpreview{{ g.entrez_id }}" gene="{{ g.entrez_id }}" genesymbol="{{ g.symbol|urlencode }}" class="showeventpreview" href="javascript: void(0);">Interactions with {{g.symbol }}</a><br />
+                <a id="showcrossrefs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showcrossrefs" href="javascript: void(0);">External links for {{ g.symbol }}</a>
+            </td>
         </tr>
     {% endfor %}
 {% endif %}

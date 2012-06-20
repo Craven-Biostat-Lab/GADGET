@@ -171,37 +171,58 @@ table#download a {
 * Gene search
 *******************************************************************************/
 
-table#generank th {
-    background-color: #D9F4FF;
-    font-weight: bold;
-}
-
-table#generank th a {
-    text-decoration: none;
+table#generank {
+    table-layout: fixed;
+    /*border-collapse: collapse;*/
 }
 
 table#generank td {
-    padding: 5px 10px;
-    /*border-bottom: 1px solid #000000;*/
+    padding: 10px 10px;
+    /*border-bottom: 10px solid #FFF;*/
+    border-spacing: 0px 10px;
     margin: 0px;
 } 
 
-table#generank tr {
-    background-color: #F5FCFF;
+table#generank td.rankcol {
+    width: 5%;
+    text-align: center;
 }
 
-table#generank tr.alt {
+table#generank td.namecol {
+    width: 20%;
+}
+
+table#generank td.namecol span.genesymbol {
+    font-weight: bold;
+    font-size: large;
+}
+
+table#generank td.namecol span.genename {
+    font-size: small;
+    color: #444;
+}
+
+table#generank td.infocol {
+    width: 25%;
+}
+
+table#generank td.scorecol {
+    width: 15%;
     background-color: #EBF9FF;
 }
 
-table#generank tr.over {
-    background-color: #D9F4FF;
+table#generank td.scorecol span.pvalue {
+    padding-left: 15px;
 }
 
-a.showabstracts {
-    font-weight: bold;
-    text-decoration: none;
-    border: none;
+table#generank td.countcol {
+    width: 15%;
+    vertical-align: text-top;
+    background-color: #EBF9FF;
+}
+
+table#generank td.linkcol {
+    width: 20%;
 }
 
 table#generank tr.pane td {
