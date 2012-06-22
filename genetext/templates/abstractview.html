@@ -1,4 +1,5 @@
-<b>Abstracts</b><br /><br />
+<b>Abstracts</b><br />
+Showing abstracts for{% if genesyms %} <b>{{ genesyms|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}<br /><br />
 Sort by: 
 <a href="javascript:void(0);" class="sortabstracts{% if orderby == 'relevance'%} selected{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="relevance">relevance</a>,
 <a href="javascript:void(0);" class="sortabstracts{% if orderby == 'newest'%} selected{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="newest">newest</a>,

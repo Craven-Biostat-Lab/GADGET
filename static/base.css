@@ -31,6 +31,10 @@ a.hint {
 * Gene search and interaction search
 *******************************************************************************/
 
+div#header {
+    margin: 0 5%;
+}
+
 #search {
     background-color: #e4d9ff; /*#f4ffd9; #E8FAC5;*/
     border-top: none;
@@ -97,6 +101,7 @@ div#tabs span.tab a {
 
 #content {
     padding-top: 10px;
+    margin: 0 5%;
 }
 
 #flash {
@@ -139,7 +144,7 @@ div#description ul li {
 
 table#download {
     position: absolute;
-    right: 2%;
+    right: 7%;
     /*top: 4px;*/
     display: inline;
     padding: 0;
@@ -173,7 +178,7 @@ table#download a {
 
 table#generank {
     table-layout: fixed;
-    /*border-collapse: collapse;*/
+    font-size: 90%;
 }
 
 table#generank td {
@@ -184,30 +189,35 @@ table#generank td {
 } 
 
 table#generank td.rankcol {
-    width: 5%;
+    width: 3%;
     text-align: center;
 }
 
 table#generank td.namecol {
-    width: 20%;
+    width: 22%;
 }
 
 table#generank td.namecol span.genesymbol {
     font-weight: bold;
-    font-size: large;
+    font-size: 130%;
 }
 
 table#generank td.namecol span.genename {
-    font-size: small;
     color: #444;
 }
 
 table#generank td.infocol {
-    width: 25%;
+    width: 22%;
+}
+
+table#generank td.infocol span.genesynonyms {
+    font-size: 80%;
+    color: #444;
+
 }
 
 table#generank td.scorecol {
-    width: 15%;
+    width: 18%;
     background-color: #EBF9FF;
 }
 
@@ -216,37 +226,36 @@ table#generank td.scorecol span.pvalue {
 }
 
 table#generank td.countcol {
-    width: 15%;
-    vertical-align: text-top;
+    width: 20%;
     background-color: #EBF9FF;
 }
 
 table#generank td.linkcol {
-    width: 20%;
+    width: 15%;
 }
 
 table#generank tr.pane td {
-    padding: 0px 10% 5px 10%;
-    font-size: 80%;
+    padding: 10px 10% 5px 10%;
+    /*font-size: 80%;*/
     width: 100%;
 }
 
 table#generank tr.pane td ul {
-    margin-top: 3px;
+    margin-top: 10px;
     margin-bottom: 0px;
 }
 
 table#generank tr.pane td ul li {
-    padding-bottom: 5px;
+    padding-bottom: 10px;
 }
 
-table#generank tr.abstracts td {
+/*table#generank tr.abstracts td {
     background-color: #F0EBFF;
-}
+}*/
 
-table#generank tr.abstracts ul li {
+/*table#generank tr.abstracts ul li {
     padding-top: 5px;
-}
+}*/
 
 a.sortabstracts.selected {
     font-weight: bold;

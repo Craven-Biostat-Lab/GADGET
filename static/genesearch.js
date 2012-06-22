@@ -94,6 +94,7 @@ $(document).ready(function()
     $("#generank").delegate("a.showabstracts", "click", function()
     {
         var gene = $(this).attr("gene");
+        var sym = $(this).attr("genesymbol");
         
         if ($("#generank tr#abstracts" + gene).length == 0) // see if the tr for absracts exists
         {
@@ -104,11 +105,14 @@ $(document).ready(function()
             var abstractcount = $("tr#gene" + gene).attr("hits");
 
             // assemble querystring
-            var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount; 
+            var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&genesyms=" + genesyms + ',' + sym + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount; 
             
             // set up abstract pane
             $("#generank tr#gene" + gene).after('<tr class="pane abstracts" id="abstracts' + gene + '"><td colspan="13"><img src="/static/spinner2.gif"></td></tr>');
             
+            // change link text
+            $(this).text("Hide abstracts");
+
             // fetch and display abstracts
             $.get("abstractview.html", querystring)
             .success(function(result)
@@ -136,12 +140,15 @@ $(document).ready(function()
                 hidepanes(gene);
                 $("#generank tr#abstracts" + gene).show();
                 $("#generank tr#abstracts" + gene + " td div").slideDown();
+
+                $(this).text("Hide abstracts");
             }
             else
             {
                 // the abstract exists and is visible
                 // hide the abstract pane
                 hidepanes(gene);
+                $(this).text("Show abstracts");
             }
         }
     });

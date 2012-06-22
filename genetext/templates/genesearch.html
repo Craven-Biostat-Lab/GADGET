@@ -72,10 +72,10 @@ $(document).ready(function()
 </div><br />
 
 <div id="results" style="display:none">
-    <b>Sort by:</b> {% if orderby == 'f1_score' %}<u>F1 Score</u>{% else %}<a href="javascript:order('f1_score');">F1 Score</a>{% endif %},
-    {% if orderby == 'adjusted_precision' %}<u>Adjusted Precision</u>{% else %}<a href="javascript:order('adjusted_precision');">Adjusted Precision</a>{% endif %},
-    {% if orderby == 'matching_abstracts' %}<u>Matching Abstracts</u>{% else %}<a href="javascript:order('matching_abstracts');">Matching Abstracts</a>{% endif %},
-    {% if orderby == 'total_abstracts' %}<u>Total Abstracts</u>{% else %}<a href="javascript:order('total_abstracts');">Total Abstracts</a>{% endif %}<br /><br />
+    <b>Sort by:</b> {% if orderby == 'f1_score' %}<b>F1 Score</b>{% else %}<a href="javascript:order('f1_score');">F1 Score</a>{% endif %},
+    {% if orderby == 'adjusted_precision' %}<b>Adjusted Precision</b>{% else %}<a href="javascript:order('adjusted_precision');">Adjusted Precision</a>{% endif %},
+    {% if orderby == 'matching_abstracts' %}<b>Matching Abstracts</b>{% else %}<a href="javascript:order('matching_abstracts');">Matching Abstracts</a>{% endif %},
+    {% if orderby == 'total_abstracts' %}<b>Total Abstracts</b>{% else %}<a href="javascript:order('total_abstracts');">Total Abstracts</a>{% endif %}<br /><br />
 
     <a class="hint" target="_blank" href="/manual.html#genesearch">About gene search results</a>
     <a class="hint" target="_blank" href="/manual.html#scores">Gene search scores</a>

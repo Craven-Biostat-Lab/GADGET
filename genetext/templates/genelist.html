@@ -7,7 +7,7 @@
             <td class="infocol">
                 Entrez ID: <a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}" target="_blank">{{ g.entrez_id }}</a><br />
                 Map location: {{ g.maplocation }}<br />
-                Synonyms: {{ g.synonyms }}
+                <span class="genesynonyms">Synonyms: {{ g.synonyms }}</span>
             </td>
             <td class="scorecol">
                 F<span style="font-size:x-small;vertical-align:sub">1</span> score: {{ g.f1_score|floatformat:-3 }}<br />
@@ -15,11 +15,11 @@
                 <span class="pvalue">p-value: {{ p }}</span>
             </td>
             <td class="countcol">
+                Total abstracts for {{ g.symbol }}: {{ g.abstracts_display }}<br />
                 Matching abstracts: {{ g.hits }}<br />
-                Total abstracts: {{ g.abstracts_display }}
+                <a id="showabs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showabstracts" href="javascript: void(0);" genesymbol="{{ g.symbol|urlencode }}" offset="0">Show abstracts</a><br />
             </td>
             <td class="linkcol">
-                <a id="showabs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showabstracts" href="javascript: void(0);" offset="0">See abstracts</a><br />
                 <a id="showeventpreview{{ g.entrez_id }}" gene="{{ g.entrez_id }}" genesymbol="{{ g.symbol|urlencode }}" class="showeventpreview" href="javascript: void(0);">Interactions with {{g.symbol }}</a><br />
                 <a id="showcrossrefs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showcrossrefs" href="javascript: void(0);">External links for {{ g.symbol }}</a>
             </td>

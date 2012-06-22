@@ -86,6 +86,7 @@ def abstractview(request):
     q = request.GET.get('q')
     species = request.GET.get('species')
     genes = request.GET.get('genes')
+    genesyms = request.GET.get('genesyms')
     usehomologs = request.GET.get('usehomologs')
     onlyreviews = request.GET.get('onlyreviews')
     orderby = request.GET.get('orderby')
@@ -93,13 +94,19 @@ def abstractview(request):
     unique = request.GET.get('unique')
     abstractcount = request.GET.get('abstractcount')
 
+    # clean up gene symbols
+    if genesyms:
+        genesyms = ', '.join(set([s.strip() for s in genesyms.split(',') if s]))
 
     if orderby:
         orderby = orderby.lower()
+    
+    # turn onlyreviews into a boolean
     if onlyreviews:
         onlyreviews = parseboolean(onlyreviews)
 
     return render_to_response('abstractview.html', {'q':q,
-        'species':species, 'genes':genes, 'usehomologs':usehomologs,
-        'onlyreviews':onlyreviews, 'orderby':orderby, 'offset':offset,
+        'species':species, 'genes':genes, 'genesyms': genesyms, 
+        'usehomologs':usehomologs, 'onlyreviews':onlyreviews, 
+        'orderby':orderby, 'offset':offset,
         'unique':unique, 'abstractcount':abstractcount})
