@@ -21,7 +21,7 @@
             </td>
             <td class="linkcol">
                 <a id="showeventpreview{{ g.entrez_id }}" gene="{{ g.entrez_id }}" genesymbol="{{ g.symbol|urlencode }}" class="showeventpreview" href="javascript: void(0);">Interactions with {{g.symbol }}</a><br />
-                <a id="showcrossrefs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showcrossrefs" href="javascript: void(0);">External links for {{ g.symbol }}</a>
+                <a id="showcrossrefs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showcrossrefs" href="javascript: void(0);" genesymbol="{{ g.symbol|urlencode }}">External links for {{ g.symbol }}</a>
             </td>
         </tr>
     {% endfor %}

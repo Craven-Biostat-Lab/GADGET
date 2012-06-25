@@ -211,6 +211,7 @@ $(document).ready(function()
     $("#generank").delegate("a.showcrossrefs", "click", function()
     {
         var gene = $(this).attr("gene");
+        var sym = $(this).attr("genesymbol");
         
         if ($("#generank tr#crossrefs" + gene).length == 0) // see if the tr for crossrefs exists
         {
@@ -220,7 +221,7 @@ $(document).ready(function()
             $("#generank tr#gene" + gene).after('<tr class="pane crossrefs" id="crossrefs' + gene + '"><td colspan="13"><div><img src="/static/spinner2.gif"></div></td></tr>');
         
             // assemble querystring
-            var querystring = "gene=" + gene;
+            var querystring = "gene=" + gene + "&genesymbol=" + sym;
             
             // fetch and display crossrefs
             $.getJSON("genecrossrefs", querystring)

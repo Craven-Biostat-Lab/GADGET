@@ -213,7 +213,6 @@ table#generank td.infocol {
 table#generank td.infocol span.genesynonyms {
     font-size: 80%;
     color: #444;
-
 }
 
 table#generank td.scorecol {
@@ -236,7 +235,6 @@ table#generank td.linkcol {
 
 table#generank tr.pane td {
     padding: 10px 10% 5px 10%;
-    /*font-size: 80%;*/
     width: 100%;
 }
 
@@ -249,14 +247,6 @@ table#generank tr.pane td ul li {
     padding-bottom: 10px;
 }
 
-/*table#generank tr.abstracts td {
-    background-color: #F0EBFF;
-}*/
-
-/*table#generank tr.abstracts ul li {
-    padding-top: 5px;
-}*/
-
 a.sortabstracts.selected {
     font-weight: bold;
     text-decoration: none;
@@ -266,14 +256,6 @@ a.sortabstracts.selected {
 
 table#generank a.moreabstracts {
     font-weight: bold;
-}
-
-table#generank tr.eventpreview td {
-    background-color: #f4ffd9;
-}
-
-table#generank tr.crossrefs td {
-    background-color: #fff8e3 /*#fff7de #fff5de #fff9d1 #FFFAD4 #FFF8D4*/
 }
 
 div#buttoncontainer {
