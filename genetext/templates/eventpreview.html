@@ -1,9 +1,9 @@
 {% autoescape on %}
 <b>Interactions</b><br />
-{% if events %}Gene interactions for{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}:<br /><br />{% endif %}
+{% if events %}Gene interactions{% if genesyms or q %} for{% endif %}{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}:<br /><br />{% endif %}
 {% for e in events %}
     <img class="eventthumb", src="eventthumb.png?event={{ e.id }}" />
-{% empty %}No interactions found for{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}!<br />{% endfor %}
+{% empty %}No interactions found{% if genesyms or q %} for{% endif %}{% if genesyms %} <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}!<br />{% endfor %}
 
 {% if summaryrow %}<br /><br />Genes interacting with <b>{{ summaryrow.symbol }}</b>:<br /> 
     {% for ig in summaryrow.innergenes %}
