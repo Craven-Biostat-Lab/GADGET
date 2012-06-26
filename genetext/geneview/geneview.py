@@ -184,7 +184,7 @@ def genesearch(request):
     
     # dict of valid orderby options, and corresponding terms for SQL query
     _query_orderbys = {'adjusted_precision': 'precision',
-        'matching_abstracts': 'hits', 'total_abstracts': 'abstracts',
+        'matching_abstracts': 'hits', 'total_abstracts': 'abstracts_display',
         'f1_score': 'f1_score'}
     
     # get the order from the query string
