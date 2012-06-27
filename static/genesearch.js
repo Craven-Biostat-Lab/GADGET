@@ -22,7 +22,8 @@ function hidepanes(gene)
 {
     $("#generank tr#abstracts" + gene + " td div").slideUp('fast', function() { $("#generank tr#abstracts" + gene).hide(); });
     $("#generank tr#eventpreview" + gene + " td div").slideUp('fast', function() { $("#generank tr#eventpreview" + gene).hide(); });
-$("#generank tr#crossrefs" + gene + " td div").slideUp('fast', function() { $("#generank tr#crossrefs" + gene).hide(); });
+    $("#generank tr#crossrefs" + gene + " td div").slideUp('fast', function() { $("#generank tr#crossrefs" + gene).hide(); });
+    $("#generank a#showabs" + gene).text("Show abstracts");
 }
 
 $(document).ready(function()
@@ -119,7 +120,8 @@ $(document).ready(function()
             {
                     // append abstracts to td
                     $("#generank tr#abstracts" + gene + " td img").remove(); // hide spinner
-                    $("#generank tr#abstracts" + gene + " td").html(result);
+                    $("#generank tr#abstracts" + gene + " td").html(result); 
+                    $("#generank tr#abstracts" + gene + " td").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide abstracts</a>');
                     
                     $("#generank tr#abstracts" + gene + " td div").slideDown();
                     fetchabstracts(gene);
@@ -148,7 +150,6 @@ $(document).ready(function()
                 // the abstract exists and is visible
                 // hide the abstract pane
                 hidepanes(gene);
-                $(this).text("Show abstracts");
             }
         }
     });
@@ -177,6 +178,7 @@ $(document).ready(function()
             {
                 $("#generank tr#eventpreview" + gene + " td div").remove(); // hide spinner
                 $("#generank tr#eventpreview" + gene + " td").html('<div style="display:none; padding-top:5px;">' + result + '</div>');
+                $("#generank tr#eventpreview" + gene + " td").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide interactions</a>');
                 $("#generank tr#eventpreview" + gene + " td div").slideDown();
             })
             .error(function()
@@ -232,6 +234,7 @@ $(document).ready(function()
                 {
                     // display the cross references 
                     $("#generank tr#crossrefs" + gene + " td").html('<div style="display:none; padding-top:5px;">' + data.result + '</div>');
+                    $("#generank tr#crossrefs" + gene + " td").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide external links</a>');
                     $("#generank tr#crossrefs" + gene + " td div").slideDown();
                 }
                 else
@@ -268,6 +271,14 @@ $(document).ready(function()
                 hidepanes(gene);
             }
         }
+    });
+
+
+    // hide the pane when the "hide" link gets clicked
+    $("#generank").delegate("a.hidepanes", "click", function()
+    {
+        var gene = $(this).attr("gene");
+        hidepanes(gene);
     });
 });
 
