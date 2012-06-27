@@ -93,7 +93,7 @@ def eventlist(request):
     try:
         events = get_events(genes=genes, abstracts=abstracts, limit=limit, offset=offset)
     except KeyError:
-        raise Http404
+        events = []
     
     # return the appropriate response
     

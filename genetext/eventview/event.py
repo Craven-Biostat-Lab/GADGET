@@ -29,7 +29,7 @@ class multidict(dict):
 def get_events(genes=None, abstracts=None, offset=0, limit=None):
     """Return a list of event ID's given gene ID's and/or abstract ID's"""
     
-    if genes is None and (abstracts is None or len(abstracts) == 0):
+    if (genes is None or len(genes) == 0) and (abstracts is None or len(abstracts) == 0):
         raise KeyError('You must supply either genes or abstracts to fetch events.')
     
     # build query, order by increasing compleity (number of sub-events)
@@ -61,7 +61,7 @@ def get_events(genes=None, abstracts=None, offset=0, limit=None):
 def get_event_genes(genes, abstracts):
     """Return genes for an event query"""
     
-    if genes is None and (abstracts is None or len(abstracts) == 0):
+    if (genes is None or len(genes) == 0) and (abstracts is None or len(abstracts) == 0):
         raise KeyError('You must supply either genes or abstracts to fetch events.')
     
     def build_sql(genes=None, abstracts=None):
