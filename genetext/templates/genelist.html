@@ -10,13 +10,13 @@
                 <span class="genesynonyms">Synonyms: {{ g.synonyms }}</span>
             </td>
             <td class="scorecol">
-                F<span style="font-size:x-small;vertical-align:sub">1</span> score: {{ g.f1_score|floatformat:-3 }}<br />
-                Adjusted precision: {{ g.precision|floatformat:-3 }}<br />
+                <span class="score{% if orderby == 'f1_score' %} selected{% endif %}">F<span style="font-size:x-small;vertical-align:sub">1</span> score: {{ g.f1_score|floatformat:-3 }}</span><br />
+                <span class="score{% if orderby == 'adjusted_precision' %} selected{% endif %}">Adjusted precision: {{ g.precision|floatformat:-3 }}</span><br />
                 <span class="pvalue">p-value: {{ p }}</span>
             </td>
             <td class="countcol">
-                Total abstracts for {{ g.symbol }}: {{ g.abstracts_display }}<br />
-                Matching abstracts: {{ g.hits }}<br />
+                <span class="score{% if orderby == 'total_abstracts' %} selected{% endif %}">Total abstracts for {{ g.symbol }}: {{ g.abstracts_display }}</span><br />
+                <span class="score{% if orderby == 'matching_abstracts' %} selected{% endif %}">Matching abstracts: {{ g.hits }}</span><br />
                 <a id="showabs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showabstracts" href="javascript: void(0);" genesymbol="{{ g.symbol|urlencode }}" offset="0">Show abstracts</a><br />
             </td>
             <td class="linkcol">

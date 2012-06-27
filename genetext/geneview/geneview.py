@@ -273,7 +273,7 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
     else: # display results in web browser
         # render results to html
         if validresult:
-            resulthtml = render_to_string('genelist.html', {'results': zip(results, pvals), 'pvals': pvals, 'offset': offset})
+            resulthtml = render_to_string('genelist.html', {'results': zip(results, pvals), 'pvals': pvals, 'offset': offset, 'orderby': orderby})
         else:
             resulthtml = None
 
@@ -290,61 +290,4 @@ def makeCSV(genes, pvals, offset):
         (rank, '{0:0.3f}'.format(g.f1_score), g.hits, g.abstracts_display, '{0:0.3f}'.format(g.precision), p, g.symbol, g.name, g.synonyms, g.entrez_id, g.chromosome, g.maplocation)])
         for rank, (g, p) in enumerate(zip(genes, pvals), start=1+offset)])
     return header + body
-
-
-def abstracts(request):
-    """Return a list of abstracts (as HTML wrapped in JSON) for a keyword
-    query and list of genes."""
-
-    # get species, default=human
-    try:
-        species = int(request.GET['species'])
-    except (KeyError, ValueError):
-        species = 9606
-    
-    # get query arguments from query string
-    keywords = request.GET.get('q')
-    try:
-        genes = gene_lookup(request.GET.get('genes'), species)
-    except KeyError:
-        # bad gene query
-        raise Http404
-    
-    # figure out if we should include homologs
-    try:
-        usehomologs = parseboolean(request.GET['usehomologs'])
-    except (KeyError, ValueError):
-        usehomologs = False
-    
-    # error if no query
-    if not keywords and not genes:
-        response = HttpResponse()
-        json.dump({'validresult': False, 'errmsg': 'You must supply either genes or a query'}, response)
-        return response
-    
-    # get abstract ID's from index
-    abstract_ids = get_abstracts(keywords, genes, usehomologs)
-    
-    # error if no abstracts
-    if not abstract_ids:
-        response = HttpResponse()
-        json.dump({'validresult': False, 'errmsg': 'No more abstracts!'}, response)
-        return response
-    
-    # apply limit and offset
-    # get optional limit and offset parameters
-    try: offset = int(request.GET.get('offset'))
-    except: offset = 0
-    try: limit = int(request.GET.get('limit'))
-    except: limit = 18446744073709551615 # arbitrary large number
-    abstract_ids = abstract_ids[offset:limit+offset]
-    
-    # fetch rows from database
-    abstracts = Abstract.objects.filter(pubmed_id__in=abstract_ids)
-    
-    # create response
-    resulthtml = render_to_string('abstracts.html', {'abstracts': abstracts})
-    response = HttpResponse()
-    json.dump({'validresult': True, 'result': resulthtml}, response)
-    return response
 
