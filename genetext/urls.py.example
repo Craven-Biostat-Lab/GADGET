@@ -11,7 +11,7 @@ import abstracts.abstracts as ab
 urlpatterns = patterns('',
     (r'^gadget/genesearch', gv.searchpage),
     (r'^gadget/genelist', gv.genesearch),
-    (r'^gadget/genecrossrefs', gxr.genecrossrefs2),
+    (r'^gadget/genecrossrefs', gxr.genecrossrefs),
     (r'^gadget/abstractview', ab.abstractview),
     (r'^gadget/abstracts', ab.abstracts),
     (r'^gadget/eventsearch', ev.search),
