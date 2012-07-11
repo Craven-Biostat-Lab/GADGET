@@ -27,6 +27,19 @@ a.hint {
     font-weight: normal;
 }
 
+div.searchtips {
+    font-size: 80%;
+    font-weight: bold;
+    padding-top: 10px;
+}
+
+div.searchtips a {
+    text-align: left;
+    padding: 0px 5px;
+    font-weight: normal;
+}
+
+
 /*******************************************************************************
 * Gene search and interaction search
 *******************************************************************************/

@@ -19,9 +19,11 @@
     {{ form.genes.label }}: {{ form.genes }}
     <input type="submit" value="Search Interactions" />
 </form><br />
-<a class="hint" target="_blank" style="padding-left:150px" href="/manual.html#queryterms">Keyword search tips</a>
-<a class="hint" target="_blank" href="/manual.html#geneentry">Gene symbol entry</a>
-        
+<div class="searchtips" style="padding-left:50px">
+    Search tips:
+    <a target="_blank" href="/manual.html#queryterms">Keywords</a>
+    <a target="_blank" href="/manual.html#geneentry">Gene symbols</a>
+</div>        
 {% endblock %}
 
 
@@ -41,10 +43,7 @@
 
 <div id="description" style="display:none">
     Showing interactions{% if genesyms %} for genes <b>{{ genesyms|join:', '|safe }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}:
-    <ul>
-        {% if q or genesyms %}<li><a href="genesearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}&usehomologs=1">Rank genes matching{% if q %} <b>{{ q|safe }}</b>{% endif %}{% if genesyms and q %} and{% endif %}{% if genesyms %} <b>{{ genesyms|join:', ' }}</b>{% endif %}</a></li>{% endif %}
-        <li><a href="javascript:eventgenes();" id="showeventgenes">See a list of genes referenced by these interactions...</a></li>
-    </ul>
+    <br /><a href="javascript:eventgenes();" id="showeventgenes">See a list of genes referenced by these interactions...</a>
 </div>
 <div id="eventgenes" style="display:none"><b>Genes referenced by these interactions:</b><br />(Click on a gene symbol to add it to the query.)</div>
 <div id="eventsummarycontainer" style="display:none">

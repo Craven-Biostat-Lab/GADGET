@@ -19,7 +19,7 @@
     <p><b>GADGET</b> is a tool that lets you search through literature related to genes.  You can search for genes related to a topic, or find gene interactions extracted from text.</p>
     <br />
 
-    <b>Search the literature for genes associated with keywords and gene symbols</b>
+    <b>Search the literature for genes by keyword and gene symbol</b>
     <div id="frontsearch">
         <form action="/gadget/genesearch" method="get"><table>
             <tr>
@@ -44,11 +44,13 @@
             </tr>
             <!--<tr><td style="vertical-align:top"><input type="submit" value="Search genes" /></td></tr>-->
         </table></form>
-        <a class="hint" target="_blank" href="/manual.html#queryterms">Keyword search tips</a>
-        <a class="hint" target="_blank" href="/manual.html#geneentry">Gene symbol entry</a>
-        <a class="hint" target="_blank" href="/manual.html#species">Species selection</a>
-        <a class="hint" target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
-
+        <div class="searchtips"> 
+            Search tips:
+            <a target="_blank" href="/manual.html#queryterms">Keywords</a>
+            <a target="_blank" href="/manual.html#geneentry">Gene symbols</a>
+            <a target="_blank" href="/manual.html#species">Species</a>
+            <a target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
+        </div>
     </div>
     <div class="example">
         <b>Examples:</b>
@@ -76,8 +78,11 @@
                 <td><input type="text" name="genes" id="id_genes" style="width:100%" /></td>
             </tr>
         </table></form>
-        <a class="hint" target="_blank" href="/manual.html#queryterms">Keyword search tips</a>
-        <a class="hint" target="_blank" href="/manual.html#geneentry">Gene symbol entry</a>
+        <div class="searchtips">
+            Search tips:
+            <a target="_blank" href="/manual.html#queryterms">Keywords</a>
+            <a target="_blank" href="/manual.html#geneentry">Gene symbols</a>
+        </div>
     </div>
     <div class="example">
         <b>Examples:</b>

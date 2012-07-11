@@ -42,10 +42,13 @@ $(document).ready(function()
         </tr>
     </table>
 </form><br />
-<a class="hint" target="_blank" style="padding-left:100px" href="/manual.html#queryterms">Keyword search tips</a>
-<a class="hint" target="_blank" href="/manual.html#geneentry">Gene symbol entry</a>
-<a class="hint" target="_blank" href="/manual.html#species">Species selection</a>
-<a class="hint" target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
+<div class="searchtips" style="padding-left:100px">
+    Search tips:
+    <a target="_blank" href="/manual.html#queryterms">Keywords</a>
+    <a target="_blank" href="/manual.html#geneentry">Gene symbols</a>
+    <a target="_blank" href="/manual.html#species">Species</a>
+    <a target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
+</div>
 
 {% endblock %}
 
@@ -68,7 +71,6 @@ $(document).ready(function()
 <div id="description" style="display:none">
     Showing and scoring genes in abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} containing genes <b>{{ genesyms|join:', ' }}</b>{% endif %}<br />
     For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
-    <a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:','|urlencode }}{% endif %}">See interactions{% if genesyms %} for genes <b>{{ genesyms|join:',' }}</b>{% endif %}{% if q %} in abstracts matching <b>{{ q|safe }}</b>{% endif %}</a>
 </div><br />
 
 <div id="results" style="display:none">
@@ -78,7 +80,7 @@ $(document).ready(function()
     {% if orderby == 'matching_abstracts' %}<b>Matching Abstracts</b>{% else %}<a href="javascript:order('matching_abstracts');">Matching Abstracts</a>{% endif %}<br /><br />
 
     <a class="hint" target="_blank" href="/manual.html#genesearch">About gene search results</a>
-    <a class="hint" target="_blank" href="/manual.html#scores">Gene search scores</a>
+    <a class="hint" target="_blank" href="/manual.html#scores">About gene search scores</a>
     <table class="stripe" id="generank"></table>
 </div>
 <input type="button" id="more" value="More genes..." style="display:none" />
