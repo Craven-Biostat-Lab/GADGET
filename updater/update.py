@@ -14,10 +14,10 @@ if __name__ == '__main__':
     abstract_queries.add_new_abstracts()
 
     # 4: add abstracts with more than 1000 genes to 'removed_abstract' table
-    # TODO
+    abstract_queries.find_too_many_abstracts()
 
     # 5: remove abstracts in 'removed_abstract' table from 'abstract' table
-    # TODO
+    abstract_queries.remove_bad_abstracts()
 
     # 6: fetch new abstracts from PubMed
     # TODO
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # TODO
 
     # 8: remove abstracts in 'removed_abstract' table from 'abstract' table
-    # TODO
+    abstract_queries.remove_bad_abstracts()
 
     # 9: remove 'gene_abstract' links for abstracts not in 'abstract' table
     # TODO

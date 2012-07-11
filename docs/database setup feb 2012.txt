@@ -292,3 +292,14 @@ delete from `gene_crossrefs` where `gene_crossrefs`.`idtype` = "GermOnline" and
 insert into gene_crossrefs
 select null, `xref_id`, "SGD", `sgd_gene_id`
 from sgd_xrefs;
+
+----------------------------------------------------------------------------
+-- removed abstract table for updater
+
+CREATE TABLE `removed_abstracts` (
+  `abstract_pmid` int(11) NOT NULL,
+  `removed` datetime NOT NULL,
+  `reason` tinyint(4) NOT NULL COMMENT '1 for too many abstracts, 2 if the abstract couldn''t be fetched',
+  PRIMARY KEY (`abstract_pmid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8
+
