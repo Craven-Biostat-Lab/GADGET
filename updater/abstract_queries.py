@@ -1,3 +1,4 @@
+#!/usr/bin/python
 
 # set up logging
 import logging
@@ -19,7 +20,7 @@ try:
     c.execute('SET character_set_connection=utf8;')
 except Exception as e:
     logger.critical('Error connecting to database.  Error message: %s', e)
-
+    raise
 
 def add_new_abstracts():
     """Add abstracts from the 'gene_abstract' link table to the 'abstract'

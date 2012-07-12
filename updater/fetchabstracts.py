@@ -8,15 +8,27 @@ import urllib
 import MySQLdb
 from xml.etree import ElementTree as ET
 
-# connect to database
-db = MySQLdb.connect(user='root', passwd='password', db='new')
-c = db.cursor()
+# set up logging
+import logging
+logger = logging.getLogger(__name__)
 
-# unicode stuff
-db.set_character_set('utf8')
-c.execute('SET NAMES utf8;')
-c.execute('SET CHARACTER SET utf8;')
-c.execute('SET character_set_connection=utf8;')
+# TODO: get this from a configuration file
+dbparams = {'user': 'root', 'passwd': 'password', 'db': 'updater'}
+
+# connect to database
+try:
+    db = MySQLdb.connect(**dbparams)
+    c = db.cursor()
+
+    # unicode stuff
+    db.set_character_set('utf8')
+    c.execute('SET NAMES utf8;')
+    c.execute('SET CHARACTER SET utf8;')
+    c.execute('SET character_set_connection=utf8;')
+except Exception as e:
+    logger.critical('Error connecting to database.  Error message: %s', e)
+    raise
+
 
 def convertmonth(m):
     """Months are stored in PubMed in a couple different forms.
@@ -38,8 +50,19 @@ def fetch(idlist):
     
     # fetch from entrez
     idstring = ','.join([str(i) for i in idlist])
-    u = urllib.urlopen(url.format(idstring))
-    root = ET.parse(u, parser=ET.XMLParser(encoding='utf-8')).getroot()
+
+    try:
+        u = urllib.urlopen(url.format(idstring))
+    except Exception as e:
+        logger.error('Error fetching abstracts from PubMed.  url: %s    Error message: %s', url.format(idstring), e)
+        raise
+    
+    try:
+        root = ET.parse(u, parser=ET.XMLParser(encoding='utf-8')).getroot()
+    except Exception as e:
+        logger.error('Error parsing abstract XML from PubMed: %s', e)
+        raise
+    
     u.close()
     
     # parse XML for each abstract
@@ -107,13 +130,21 @@ def ids(size = 200):
     """Find all pubmed ID's of abstracts with `updated` set to null.  Return an
     iterator over lists of abstract PMID's with the given size (for fetching
     multiple abstracts at once.)"""
-    c.execute("""
-        select `pubmed_id`
-        from `abstract`
-        where `updated` is null;
-    """)
-    # return [r[0] for r in c.fetchall()]
+
+    logger.debug('Quering database for a list of un-fetched abstracts')
+
+    try:
+        c.execute("""
+            select `pubmed_id`
+            from `abstract`
+            where `updated` is null;
+        """)
+    except Exception as e:
+        logger.critical('Error: could not get a list of un-fetched abstracts from the database.  Error message: %s', e)
+        raise
     
+    logger.info('Got list of un-fetched abstracts')
+
     records = c.fetchall()
     for i in xrange(0, len(records), size):
         yield [r[0] for r in records[i:i+size]]
@@ -142,18 +173,25 @@ def update(metadata):
             (m['title'], m['authors'], m['abstract'], (m['year'] +'-'+ m['month'] +'-'+m['day']), 
             m['journal'], m['volume'], m['issue'], m['pages'], m['review'], m['id'])
             )
-        except: print m; raise
+        except Exception as e:     
+            logger.error('Error updating `abstract` table for PMID %s.  Error message: %s', m['id'], e)
+
+
+def fetchall():
+    """Find all un-fetched abstracts in the 'abstract' table, and fetch them
+    from PubMed"""
+
+    logging.debug('Fetching unfetched abstracts in `abstract` table')
     
-
-if __name__ == '__main__':
-    #m = fetch(9873000)
-    #for k, v in m.items():
-    #    print k, ': ', v
-
     for idlist in ids():
-        #try:
+        try:
             m = fetch(idlist)
             update(m)
-        #except Exception as e:
-        #    print "\nException on abstract", id
-        #    print e
+        except Exception as e:
+            logger.Error('Exception while fetching abstracts from pubmed.  IDlist: %s,   error message: %s', idlist, e)
+
+    logger.info('Fetched unfetched abstracts in `abstract` table')
+
+
+if __name__ == '__main__':
+    fetchall()
