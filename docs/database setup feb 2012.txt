@@ -241,6 +241,7 @@ using (uniprotKB_AC)
 where ui1.idtype = "GeneID";
 
 ALTER TABLE  `gene_crossrefs` ADD INDEX `entrez_id_idtype`(`entrez_id`, `idtype`);
+alter table `new`.gene_crossrefs add unique index(entrez_id, idtype, crossref_id);
 
 -- insert UniprotKB-AC numbers back into table (lost in previous query)
 insert into gene_crossrefs
@@ -260,3 +261,8 @@ ALTER TABLE `production`.`gene_crossrefs` ADD COLUMN `id` INT  NOT NULL AUTO_INC
 insert into gene_crossrefs
 select null, g.entrez_id, 'BioGPS', g.entrez_id
 from gene g;
+
+-- add SGD keys
+insert into gene_crossrefs
+select null, `xref_id`, "SGD", `sgd_gene_id`
+from sgd_xrefs;
