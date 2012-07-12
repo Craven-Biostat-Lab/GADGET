@@ -92,7 +92,7 @@ div#tabs span.tab {
     margin: 0px 1px;
     border-top-left-radius: 6px; 
     border-top-right-radius: 6px;
-    vertical-align: text-bottom;
+    vertical-align: bottom;
 }
 
 div#tabs span.tab.selected {
