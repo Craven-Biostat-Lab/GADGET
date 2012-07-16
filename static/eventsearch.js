@@ -24,10 +24,13 @@ $(document).ready(function()
         $("table#events").append(result);
         $("div#results").fadeIn(200);
         $("table#download").fadeIn('slow');
+        hidespinner();
         $("#more").show();
-        hideflash();
     })
-    .error(function() {flash("No events found!  Please try a different query.")});
+    .error(function() {
+        hidespinner();
+        flash("No events found!  Please try a different query.");
+    });
     
     eventsummary(); // fetch and render event summary
     
@@ -38,15 +41,18 @@ $(document).ready(function()
         offset += limit;
         
         spin();
+        $("input#more").hide();
         $.get("eventlist", querystring)
         .success(function(result) 
         {
             $("table#events").append(result);
-            hideflash();
+            hidespinner();
+            $("input#more").show();
         })
         .error(function() 
         {
             flash("No more events for this query.");
+            hidespinner();
             $("#more").hide();
         });
     });

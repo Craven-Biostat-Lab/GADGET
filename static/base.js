@@ -1,3 +1,5 @@
+var errormessage = "An error occurred!  Please check your internet connection and try again.  If the problem persists, please <a href='/contact.html'>contact us</a>.";
+
 // display a message
 function flash(message)
 {
@@ -13,7 +15,12 @@ function hideflash()
 // ajax spinner
 function spin()
 {
-    flash('<img src="/static/spinner.gif" />');
+    $("div#spinner").fadeIn("fast");
+}
+
+function hidespinner()
+{
+    $("div#spinner").fadeOut("fast");
 }
 
 // show error message

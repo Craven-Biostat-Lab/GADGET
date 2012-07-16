@@ -40,14 +40,13 @@ $(document).ready(function()
         {
             // append new genes to table, show "more" button
             $("#generank").append(data.result);
-            stripetables();
             
             $("div#description").show();
             $("#results").fadeTo(200, 1);
             $("table#download").fadeIn('slow');
             
             $("#more").show();
-            hideflash();        
+            hidespinner();        
         }
         else
         {
@@ -55,7 +54,7 @@ $(document).ready(function()
             flash(data.errmsg);
         }
     })
-    .error(function() {flasherror();} );
+    .error(function() {hidespinner(); flasherror();} );
     
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
@@ -63,6 +62,9 @@ $(document).ready(function()
         var queryString = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
         offset += limit;
         
+        // hide "more" button while we're fetching more genes
+        $("input#more").hide();
+
         // get more genes
         spin();
         $.getJSON("genelist", queryString)
@@ -72,20 +74,22 @@ $(document).ready(function()
             {
                 // append new genes to table
                 $("#generank").append(data.result);
-                stripetables();
-                hideflash();
+                hidespinner();
+                $("input#more").show();
             }
             else
             {
-                // If "validresult" is false, we ran out of genes.  (Ot
+                // If "validresult" is false, we ran out of genes.  
+                hidespinner();
                 flash("No more genes match your query.");
                 $("#more").hide(); 
             }
         })
         .error(function() 
         {
+            hidespinner();
             flasherror();
-            $("#more").hide();    
+            $("input#more").hide();    
         });
         
     });

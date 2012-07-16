@@ -30,7 +30,10 @@
             {% block header %}{% endblock %}
         </div>
     </div>
-    <div id="content">{% block content %}{% endblock %}</div>
-    <div id="flash"></div>
+    <div id="content">
+        {% block content %}{% endblock %}
+        <div id="spinner" style="display:none"><img src="/static/spinner.gif" /></div>
+        <div id="flash"></div>
+    </div>
 </body>
 </html>

@@ -122,6 +122,10 @@ div#tabs span.tab a {
     max-width: 40%;
 }
 
+div#spinner {
+    padding-left: 25px;
+}
+
 #title {
     display: block;
     font-weight: bold;
