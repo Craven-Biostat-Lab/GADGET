@@ -108,6 +108,7 @@ div#tabs span.tab a {
 #content {
     padding-top: 10px;
     margin: 0 5%;
+    background: white;
 }
 
 #flash {
@@ -156,7 +157,7 @@ table#download {
     padding: 0;
 
     display:inline;
-    background-color: #D9F4FF;
+    background-color: #EBF9FF;
     padding: 2px 8px;
     
     font-size: x-small;
@@ -185,6 +186,7 @@ table#download a {
 table#generank {
     table-layout: fixed;
     font-size: 90%;
+    border-collapse: collapse;
 }
 
 table#generank td {
@@ -224,6 +226,9 @@ table#generank td.infocol span.genesynonyms {
 table#generank td.scorecol {
     width: 18%;
     background-color: #EBF9FF;
+    border: solid 1px #426BA2;
+    border-right: none;
+    border-bottom: none;
 }
 
 table#generank td.scorecol span.pvalue {
@@ -237,6 +242,9 @@ table#generank span.score.selected {
 table#generank td.countcol {
     width: 20%;
     background-color: #EBF9FF;
+    border: solid 1px #426BA2;
+    border-left: none;
+    border-bottom: none;
 }
 
 table#generank td.linkcol {
@@ -244,8 +252,10 @@ table#generank td.linkcol {
 }
 
 table#generank tr.pane td {
-    padding: 10px 10% 5px 10%;
+    padding: 10px 5% 5px 5%;
     width: 100%;
+    background-color:#EBF9FF; 
+    border: solid 1px #426BA2;
 }
 
 table#generank tr.pane td ul {
