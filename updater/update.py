@@ -1,5 +1,8 @@
 import load_gene_abstract_links 
-import abstract_queries
+import abstractqueries
+import fetchabstracts
+
+#TODO: set up logging
 
 if __name__ == '__main__':
     
@@ -11,25 +14,25 @@ if __name__ == '__main__':
     # for abstracts with new gene-abstract links
 
     # 3: add new abstracts from 'gene_abstract' links to 'abstract' table
-    abstract_queries.add_new_abstracts()
+    abstractqueries.add_new_abstracts()
 
     # 4: add abstracts with more than 1000 genes to 'removed_abstract' table
-    abstract_queries.find_too_many_abstracts()
+    abstractqueries.find_too_many_abstracts()
 
     # 5: remove abstracts in 'removed_abstract' table from 'abstract' table
-    abstract_queries.remove_bad_abstracts()
+    abstractqueries.remove_bad_abstracts()
 
     # 6: fetch new abstracts from PubMed
-    # TODO
+    fetchabstracts.fetchall()
 
     # 7: add abstracts that couldn't be fetched to 'removed_abstract' table
-    # TODO
+    abstractqueries.find_unfetched_abstracts()
 
     # 8: remove abstracts in 'removed_abstract' table from 'abstract' table
-    abstract_queries.remove_bad_abstracts()
+    abstractqueries.remove_bad_abstracts()
 
     # 9: remove 'gene_abstract' links for abstracts not in 'abstract' table
-    # TODO
+    abstractqueries.remove_bad_links()
 
     # 10: update abstract index - add new abstracts and "index_dirty" abstracts
     # TODO

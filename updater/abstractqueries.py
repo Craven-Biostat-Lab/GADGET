@@ -80,3 +80,41 @@ def remove_bad_abstracts():
         raise
 
     logger.info('removed abstracts in the `removed_abstracts` table from the `abstract` table')
+
+
+def find_unfetched_abstracts():
+    """Find unfetched abstracts in the `abstract` table (where the `abstract`
+    field is null,) and add them to the `removed_abstracts` table"""
+
+    logger.debug('Finding unfetched abstracts in the `abstract` table (where the `abstract` field is null), and adding them to the `removed_abstract` table'
+
+    try:
+        c.execute("""
+        insert ignore into `removed_abstracts`
+        (`abstract_pmid`, `removed`, `reason`)
+        select `pubmed_id` `abstract_pmid`, now() `removed`, 2 `reason`
+        from `abstract` a
+        where a.`abstract` is null""")
+    except Exception as e:
+        logger.critical('Error adding unfetched abstracts to `removed_abstract` table.  Error message: %s', e)
+        raise
+
+    logger.info('Found unfetched abstracts in the `abstract` table (where the `abstract` field is null), and added them to the `removed_abstract` table'
+
+
+def remove_bad_links():
+    """Remove `gene_abstract` links for abstracts not in the `abstract` table"""
+
+    logger.debug('Removing `gene_abstract` links for abstracts not in the `abstract` table')
+
+    try:
+        c.execute("""
+        delete `gene_abstract`
+        from `gene_abstract`
+        left join `abstract`
+        on `gene_abstract`.`abstract_pmid` = `abstract`.`pubmed_id`
+        where `abstract`.`pubmed_id` is null""")
+    except Exception as e:
+        logger.critical('Error removing `gene_abstract` links for abstracts not in the `abstract` table.  Error message: %s', e)
+
+    logger.info('Removed `gene_abstract` links for abstracts not in the `abstract` table')
