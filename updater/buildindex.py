@@ -1,6 +1,7 @@
 #!/usr/bin/python
 """
-Grab rows from the "abstract" database table with no "indexed_date", and put
+Grab rows from the "abstract" database table that need to be indexed (updated 
+but not indexed, or 'indexed' date is older than 'index_dirty' date), and put
 them in the index.  Optimize the index when we're done.
 """
 
@@ -9,27 +10,11 @@ import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST, DATETIME, STORED, BOOLEAN
 from datetime import datetime
 
+from config import ABSTRACT_INDEX_PATH, getcursor
+
 # set up logging
 import logging
 logger = logging.getLogger('GADGET.updater.buildindex')
-
-#TODO: get this from a config file
-ABSTRACT_INDEX_PATH = '../index'
-
-
-def getcursor(db):
-    """Create and return a cursor from the database connection"""
-    
-    try:
-        c = db.cursor()
-        c.execute('SET NAMES utf8;')
-        c.execute('SET CHARACTER SET utf8;')
-        c.execute('SET character_set_connection=utf8;')
-    except Exception as e:
-        logger.critical('Error creating database cursor.  Error message: %s', e)
-        raise
-
-    return c
 
 
 def open_index(indexpath):

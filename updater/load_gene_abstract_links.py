@@ -6,30 +6,17 @@ import urllib
 from os.path import join
 import gzip
 
+from config import datapath, getcursor, ga_sources
+
 # set up logger
 import logging
 logger = logging.getLogger('GADGET.updater.load_gene_abstract_links')
 
 
-# TODO: get this from a config file later
-datapath = '/home/genetext/update_data/gene_abstract_links'
-
-def getcursor(db):
-    """Create and return a cursor from the database connection"""
-    
-    try:
-        c = db.cursor()
-        c.execute('SET NAMES utf8;')
-        c.execute('SET CHARACTER SET utf8;')
-        c.execute('SET character_set_connection=utf8;')
-    except Exception as e:
-        logger.critical('Error creating database cursor.  Error message: %s', e)
-        raise
-
-    return c
-
-
 class linksource:
+    """Class storing information about a source for gene-abstact links.
+    Used in 'config.py'"""
+
     def __init__(self, url, filename, insertquery=None, insertfunction=None, compressiontype=None, compressedfilename=None):
 
         self.url = url
@@ -193,7 +180,7 @@ def loadall(db):
     """Fetch, decompress, and insert all sources in the 'sources' list into 
     the database.  Return true if all loads were successful."""
     
-    return not (False in [load(db, source) for source in sources])
+    return not (False in [load(db, source) for source in ga_sources])
 
 
 def cleanup(db):
@@ -216,53 +203,11 @@ def cleanup(db):
     logger.info('Removed gene_abstracts with gene or abstract ID set to 0')
 
 
-# TODO: get these from config file
-sources = [    
-    # gene2pubmed
-    linksource(
-        url = 'ftp://ftp.ncbi.nih.gov/gene/DATA/gene2pubmed.gz',
-        filename = 'gene2pubmed',
-        compressiontype = 'gzip',
-        compressedfilename = 'gene2pubmed.gz',
-        insertquery = \
-            """load data local infile '{path}'
-            into table `gene_abstract`
-            fields terminated by '\t'
-            ignore 1 lines
-            (@tax_id, `gene`, `abstract`);"""
-    ),
-    
-    # SGD
-    # requires "sgd_xrefs" table
-    linksource(
-        url = 'http://downloads.yeastgenome.org/curation/literature/gene_literature.tab',
-        filename = 'SGD_gene_literature.tab',
-        insertquery = \
-            """load data local infile '{path}'
-            into table `gene_abstract`
-            fields terminated by '\t'
-            (`abstract`, @citation, @genename, @feature, @topic, @sgd_gene_id)
-            set `gene` = (select `xref_id` from `sgd_xrefs` where `sgd_gene_id` = @sgd_gene_id limit 1);"""
-    ),
 
-    # MGI
-    # requires mgi_entrez_gene (must be populated) 
-    # and mgi_reference (can be enpty) tables
-    linksource(
-        url = 'ftp://ftp.informatics.jax.org/pub/reports/MRK_Reference.rpt',
-        filename = 'MGI_MRK_Reference.rpt',
-        insertfunction = insertMGI,
-        ),
-    ]
-
-
-if __name__ == '__mai__':
+if __name__ == '__main__':
     print "Loading all sources" 
     print "Successful: ", loadall()
     print "Cleaning up..."
     cleanup()
 
-if __name__ == '__main__':
-    insert(sources[0])
-    insert(sources[1])
-    insert(sources[2])
+

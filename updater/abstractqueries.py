@@ -1,23 +1,13 @@
 #!/usr/bin/python
+"""
+SQL queries called by GADGET updater
+"""
 
 # set up logging
 import logging
 logger = logging.getLogger('GADGET.updater.abstractqueries')
 
-
-def getcursor(db):
-    """Create and return a cursor from the database connection"""
-    
-    try:
-        c = db.cursor()
-        c.execute('SET NAMES utf8;')
-        c.execute('SET CHARACTER SET utf8;')
-        c.execute('SET character_set_connection=utf8;')
-    except Exception as e:
-        logger.critical('Error creating database cursor.  Error message: %s', e)
-        raise
-
-    return c
+from config import getcursor
 
 
 def add_new_abstracts(db):

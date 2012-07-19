@@ -8,23 +8,11 @@ import urllib
 import MySQLdb
 from xml.etree import ElementTree as ET
 
+from config import getcursor, abstracturl, abstract_fetch_batchsize
+
 # set up logging
 import logging
 logger = logging.getLogger('GADGET.updater.fetchabstracts')
-
-def getcursor(db):
-    """Create and return a cursor from the database connection"""
-    
-    try:
-        c = db.cursor()
-        c.execute('SET NAMES utf8;')
-        c.execute('SET CHARACTER SET utf8;')
-        c.execute('SET character_set_connection=utf8;')
-    except Exception as e:
-        logger.critical('Error creating database cursor.  Error message: %s', e)
-        raise
-
-    return c
 
 
 def convertmonth(m):
@@ -43,15 +31,14 @@ def convertmonth(m):
 def fetch(idlist):
     """Fetch and return metadata for a list of Pubmed IDs.  Returns a lists of 
     dicts, each dict containing data for one abstract."""
-    url = """http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id={0}&rettype=abstract&retmode=xml"""
-    
+        
     # fetch from entrez
     idstring = ','.join([str(i) for i in idlist])
 
     try:
-        u = urllib.urlopen(url.format(idstring))
+        u = urllib.urlopen(abstracturl.format(idstring))
     except Exception as e:
-        logger.error('Error fetching abstracts from PubMed.  url: %s    Error message: %s', url.format(idstring), e)
+        logger.error('Error fetching abstracts from PubMed.  url: %s    Error message: %s', abstracturl.format(idstring), e)
         raise
     
     try:
@@ -123,7 +110,7 @@ def fetch(idlist):
     return results
 
 
-def ids(db, size = 200):
+def ids(db, size = abstract_fetch_batchsize):
     """Find all pubmed ID's of abstracts with `updated` set to null.  Return an
     iterator over lists of abstract PMID's with the given size (for fetching
     multiple abstracts at once.)"""

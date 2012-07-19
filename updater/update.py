@@ -1,21 +1,48 @@
+#!/usr/bin/python
+"""
+Update the gene-abstract links and abstract texts that GADGET uses.
+
+This script will insert records into these database tables.  These tables can 
+be empty when you run the script:
+abstract
+gene_abstract
+homologene_gene_abstract
+mgi_reference
+removed_abstracts
+
+The script will update the `abstracts` and `homolog_abstracts` of the `gene`
+table, but will not insert any records.  The `gene` table should be populated 
+before you run the script.
+
+The script also uses the following tables, but does not make any changes:
+homologene_gene
+mgi_entrez_gene
+sgd_xrefs
+
+Briefly, the script downloads and decompresses files specified in "config.py",
+inserts their contents into the `gene_abstract` table, fetches new abstracts
+from PubMed, and updates the index of abstracts.
+"""
+
+
 import load_gene_abstract_links 
 import abstractqueries
 import fetchabstracts
 import buildindex
 
-#TODO: set up logging
+from config import dbparams, logfilename
+
+# set up logging
 import logging
 logger = logging.getLogger('GADGET.updater')
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler('updater.log')
+fh = logging.handlers.RotatingFileHandler(logfilename, maxBytes=5000, backupCount=5)
 fh.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(levelname)s - %(filename)s - line: %(lineno)s - %(asctime)s\n    %(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
 
 
-# TODO: get this from a configuration file
-dbparams = {'user': 'root', 'passwd': 'password', 'db': 'updater'}
 
 # set up database connection
 try:
@@ -31,6 +58,8 @@ except Exception as e:
 
 if __name__ == '__main__':
     
+    logger.info('Beginning GADGET data update.  Updating gene-abstract links and abstract texts.')
+
     # 1: get new gene_abstract links from gene2pubmed, MGI, SGD, etc.
     load_gene_abstract_links.loadall(db)
     load_gene_abstract_links.cleanup(db)
@@ -67,3 +96,5 @@ if __name__ == '__main__':
 
     # 11: update 'gene' table, count abstracts for each gene
     abstractqueries.count_genes(db)
+
+    logger.info('Completed GADGET data update.')
