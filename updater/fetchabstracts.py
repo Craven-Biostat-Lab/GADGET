@@ -10,24 +10,21 @@ from xml.etree import ElementTree as ET
 
 # set up logging
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('GADGET.updater.fetchabstracts')
 
-# TODO: get this from a configuration file
-dbparams = {'user': 'root', 'passwd': 'password', 'db': 'updater'}
+def getcursor(db):
+    """Create and return a cursor from the database connection"""
+    
+    try:
+        c = db.cursor()
+        c.execute('SET NAMES utf8;')
+        c.execute('SET CHARACTER SET utf8;')
+        c.execute('SET character_set_connection=utf8;')
+    except Exception as e:
+        logger.critical('Error creating database cursor.  Error message: %s', e)
+        raise
 
-# connect to database
-try:
-    db = MySQLdb.connect(**dbparams)
-    c = db.cursor()
-
-    # unicode stuff
-    db.set_character_set('utf8')
-    c.execute('SET NAMES utf8;')
-    c.execute('SET CHARACTER SET utf8;')
-    c.execute('SET character_set_connection=utf8;')
-except Exception as e:
-    logger.critical('Error connecting to database.  Error message: %s', e)
-    raise
+    return c
 
 
 def convertmonth(m):
@@ -126,12 +123,14 @@ def fetch(idlist):
     return results
 
 
-def ids(size = 200):
+def ids(db, size = 200):
     """Find all pubmed ID's of abstracts with `updated` set to null.  Return an
     iterator over lists of abstract PMID's with the given size (for fetching
     multiple abstracts at once.)"""
 
     logger.debug('Quering database for a list of un-fetched abstracts')
+
+    c = getcursor(db)
 
     try:
         c.execute("""
@@ -146,14 +145,18 @@ def ids(size = 200):
     logger.info('Got list of un-fetched abstracts')
 
     records = c.fetchall()
+    c.close()
+
     for i in xrange(0, len(records), size):
         yield [r[0] for r in records[i:i+size]]
 
 
-def update(metadata):
+def update(db, metadata):
     """Enter metadata into the table using a given list of dicts.  Each dict is
     one row."""
-    
+   
+    c = getcursor(db)
+
     for m in metadata:
         try:
             c.execute("""
@@ -176,17 +179,19 @@ def update(metadata):
         except Exception as e:     
             logger.error('Error updating `abstract` table for PMID %s.  Error message: %s', m['id'], e)
 
+    c.close()
 
-def fetchall():
+
+def fetchall(db):
     """Find all un-fetched abstracts in the 'abstract' table, and fetch them
     from PubMed"""
 
     logging.debug('Fetching unfetched abstracts in `abstract` table')
     
-    for idlist in ids():
+    for idlist in ids(db):
         try:
             m = fetch(idlist)
-            update(m)
+            update(db, m)
         except Exception as e:
             logger.Error('Exception while fetching abstracts from pubmed.  IDlist: %s,   error message: %s', idlist, e)
 

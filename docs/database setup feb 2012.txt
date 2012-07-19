@@ -185,7 +185,6 @@ delete `gene_abstract`
 from `gene_abstract` 
 inner join `toomanygenes` using (`abstract`);
 
--- delete genes with no associated abstracts
 create table homologene_gene_abstract
 select * from gene_abstract
 union
@@ -197,6 +196,7 @@ inner join `gene_abstract` ga on h2.`gene` = ga.`gene`;
 
 ALTER TABLE `homologene_gene_abstract` ADD INDEX `gene`(`gene`);
 
+-- delete genes with no associated abstracts
 delete `gene`
 from `gene`
 left join `homologene_gene_abstract`
@@ -207,8 +207,14 @@ where `homologene_gene_abstract`.`gene` is null;
 -- count abstracts for each gene
 
 update `gene`
-set `gene`.`abstracts` = (select count(distinct `abstract`) from `gene_abstract` where `gene_abstract`.`gene` = `gene`.`entrez_id`),
-`gene`.`homolog_abstracts` = (select count(distinct `abstract`) from `homologene_gene_abstract` where `homologene_gene_abstract`.`gene` = `gene`.`entrez_id`);
+set `gene`.`abstracts` = (
+    select count(distinct `abstract`) 
+    from `gene_abstract` 
+    where `gene_abstract`.`gene` = `gene`.`entrez_id`),
+`gene`.`homolog_abstracts` = (
+    select count(distinct `abstract`) 
+    from `homologene_gene_abstract` 
+    where `homologene_gene_abstract`.`gene` = `gene`.`entrez_id`);
 
 --------------------------------------------------------------------------------
 -- fetch abstracts

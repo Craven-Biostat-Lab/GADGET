@@ -8,29 +8,25 @@ import gzip
 
 # set up logger
 import logging
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.FileHandler('gene2abstract.log'))
+logger = logging.getLogger('GADGET.updater.load_gene_abstract_links')
 
-# TODO: get this from a configuration file
-dbparams = {'user': 'root', 'passwd': 'password', 'db': 'updater'}
-
-
-# set up database connection
-try:
-    import MySQLdb
-    db = MySQLdb.connect(**dbparams)
-    c = db.cursor()
-
-    # unicode stuff
-    db.set_character_set('utf8')
-    c.execute('SET NAMES utf8;')
-    c.execute('SET CHARACTER SET utf8;')
-    c.execute('SET character_set_connection=utf8;')
-except Exception as e:
-    logger.critical('Error connecting to database.  Error message: %s', e)
 
 # TODO: get this from a config file later
 datapath = '/home/genetext/update_data/gene_abstract_links'
+
+def getcursor(db):
+    """Create and return a cursor from the database connection"""
+    
+    try:
+        c = db.cursor()
+        c.execute('SET NAMES utf8;')
+        c.execute('SET CHARACTER SET utf8;')
+        c.execute('SET character_set_connection=utf8;')
+    except Exception as e:
+        logger.critical('Error creating database cursor.  Error message: %s', e)
+        raise
+
+    return c
 
 
 class linksource:
@@ -114,14 +110,16 @@ def decompress(source):
     return True
 
 
-def insert(source):
+def insert(db, source):
     """Insert a source into the database"""
 
     logger.debug('Inserting %s into gene_abstract database table', source.filename)
 
     # check to see if this source has a function for insertion
     if source.insertfunction:
-        return source.insertfunction(source)
+        return source.insertfunction(db, source)
+
+    c = getcursor(db)
 
     # otherwise insert by executing its 'insertquery'
     try:
@@ -134,7 +132,7 @@ def insert(source):
         return True
 
 
-def insertMGI(source):
+def insertMGI(db, source):
     """Load the MGI 'MRK_Reference.rpt' file into the gene_abstract table.
     Return true if successful."""
     
@@ -142,6 +140,8 @@ def insertMGI(source):
     # separated by |'s
 
     logger.debug('Inserting MGI links into table using insertMGI function')
+
+    c = getcursor(db)
 
     # We need to insert the gene-abstract links one-by-one because we have more
     # than one link per row in the file.
@@ -166,7 +166,7 @@ def insertMGI(source):
     # insert links into gene_abstract table
     try:
         c.execute("""insert ignore into `gene_abstract`
-        select null `id`, e.`entrez_id` `gene`, r.`abstract_pmid` `abstract_pmid`
+        select null `id`, e.`entrez_id` `gene`, r.`abstract_pmid` `abstract`
         from `mgi_reference` r
         inner join `mgi_entrez_gene` e
         using (`mgi_marker`);""")
@@ -179,37 +179,40 @@ def insertMGI(source):
     return True
 
 
-def load(source):
+def load(db, source):
     """Fetch / decompress a gene-abstract link source and insert it into the 
     database.  Return true if successful."""
 
     if fetch(source):
-        return insert(source)
+        return insert(db, source)
     else:
         return False
 
 
-def loadall():
+def loadall(db):
     """Fetch, decompress, and insert all sources in the 'sources' list into 
     the database.  Return true if all loads were successful."""
     
-    return not (False in [load(source) for source in sources])
+    return not (False in [load(db, source) for source in sources])
 
 
-def cleanup():
+def cleanup(db):
     """Remove gene-abstract links with gene or abstract IDs set to 0."""
 
     logger.debug('Removing gene_abstracts with gene or abstract ID set to 0')
 
+    c = getcursor(db)
+
     try:
         c.execute("""
         delete from `gene_abstract`
-        where `abstract_pmid` = 0
+        where `abstract` = 0
         or `gene` = 0;
         """)
     except Exception as e:
         logger.error('Error removing bad gene_abstract links, error message: %s', e)
     
+    c.close()
     logger.info('Removed gene_abstracts with gene or abstract ID set to 0')
 
 
@@ -226,7 +229,7 @@ sources = [
             into table `gene_abstract`
             fields terminated by '\t'
             ignore 1 lines
-            (@tax_id, `gene`, `abstract_pmid`);"""
+            (@tax_id, `gene`, `abstract`);"""
     ),
     
     # SGD
@@ -238,7 +241,7 @@ sources = [
             """load data local infile '{path}'
             into table `gene_abstract`
             fields terminated by '\t'
-            (`abstract_pmid`, @citation, @genename, @feature, @topic, @sgd_gene_id)
+            (`abstract`, @citation, @genename, @feature, @topic, @sgd_gene_id)
             set `gene` = (select `xref_id` from `sgd_xrefs` where `sgd_gene_id` = @sgd_gene_id limit 1);"""
     ),
 
