@@ -116,7 +116,7 @@ def mark_as_indexed(pmid, cursor):
 
 
 def write(articles, ix, db):
-   """Given a list of articles as tuples, write them to the index ix.""" 
+    """Given a list of articles as tuples, write them to the index ix.""" 
 
     # update the index with the articles
     writer = ix.writer()
@@ -168,6 +168,7 @@ def update_index(db):
         write(articles(db), ix, db)
     except Exception as e:
         logger.critical('could not write articles to index.  Error message: %s', e)
+        raise
 
     logger.info('Wrote articles to index')
     

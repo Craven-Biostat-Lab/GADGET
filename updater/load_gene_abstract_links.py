@@ -6,7 +6,9 @@ import urllib
 from os.path import join
 import gzip
 
-from config import datapath, getcursor, ga_sources
+
+# additional imports from config file below (to prevent circular imports)
+
 
 # set up logger
 import logging
@@ -42,6 +44,57 @@ class linksource:
                 logger.critical(errmsg)
                 raise ValueError(errmsg)
     
+
+def insertMGI(db, source):
+    """Load the MGI 'MRK_Reference.rpt' file into the gene_abstract table.
+    Return true if successful."""
+    
+    # on each line, the MGI file has an MGI marker ID and a list of PMID's
+    # separated by |'s
+
+    logger.debug('Inserting MGI links into table using insertMGI function')
+
+    c = getcursor(db)
+
+    # We need to insert the gene-abstract links one-by-one because we have more
+    # than one link per row in the file.
+    # Put them into a separate table first and then get gene Entrez ID's with
+    # a join, because it would be very slow to look them up with a subquery.
+    query = \
+    """insert ignore into `mgi_reference` (`mgi_marker`, `abstract_pmid`) values {values}"""
+
+    try:
+        f = open(join(datapath, source.filename))
+        for line in f:
+            fields = line.split('\t')
+            MGI_marker = fields[0]
+            PMIDs = fields[-1].split('|')
+
+            c.execute(query.format(values=','.join(['(%s, %s)' for p in PMIDs])),  
+                [val for p in PMIDs for val in (MGI_marker, p)])    
+    except Exception as e:
+        logger.error('Error inserting MGI gene-abstract links into `mgi_reference` table.  Maybe the format of the file changed?  Error message: %s', e)
+        return False
+
+    # insert links into gene_abstract table
+    try:
+        c.execute("""insert ignore into `gene_abstract`
+        select null `id`, e.`entrez_id` `gene`, r.`abstract_pmid` `abstract`
+        from `mgi_reference` r
+        inner join `mgi_entrez_gene` e
+        using (`mgi_marker`);""")
+    except Exception as e:
+        logger.error('Error inserting MGI gene-abstract links into `gene_abstract` table (from `mgi_reference` table.)  Error message: %s', e)
+        return False
+
+    # no exceptions
+    logger.info('Inserted MGI links into table using insertMGI function')
+    return True
+    
+
+# load from config file down here to resolve cyclical imports
+from config import datapath, getcursor, ga_sources
+
 
 def fetch(source):
     """Fetch and decompress the specified url into the filename, use logging.
@@ -119,51 +172,7 @@ def insert(db, source):
         return True
 
 
-def insertMGI(db, source):
-    """Load the MGI 'MRK_Reference.rpt' file into the gene_abstract table.
-    Return true if successful."""
-    
-    # on each line, the MGI file has an MGI marker ID and a list of PMID's
-    # separated by |'s
 
-    logger.debug('Inserting MGI links into table using insertMGI function')
-
-    c = getcursor(db)
-
-    # We need to insert the gene-abstract links one-by-one because we have more
-    # than one link per row in the file.
-    # Put them into a separate table first and then get gene Entrez ID's with
-    # a join, because it would be very slow to look them up with a subquery.
-    query = \
-    """insert ignore into `mgi_reference` (`mgi_marker`, `abstract_pmid`) values {values}"""
-
-    try:
-        f = open(join(datapath, source.filename))
-        for line in f:
-            fields = line.split('\t')
-            MGI_marker = fields[0]
-            PMIDs = fields[-1].split('|')
-
-            c.execute(query.format(values=','.join(['(%s, %s)' for p in PMIDs])),  
-                [val for p in PMIDs for val in (MGI_marker, p)])    
-    except Exception as e:
-        logger.error('Error inserting MGI gene-abstract links into `mgi_reference` table.  Maybe the format of the file changed?  Error message: %s', e)
-        return False
-
-    # insert links into gene_abstract table
-    try:
-        c.execute("""insert ignore into `gene_abstract`
-        select null `id`, e.`entrez_id` `gene`, r.`abstract_pmid` `abstract`
-        from `mgi_reference` r
-        inner join `mgi_entrez_gene` e
-        using (`mgi_marker`);""")
-    except Exception as e:
-        logger.error('Error inserting MGI gene-abstract links into `gene_abstract` table (from `mgi_reference` table.)  Error message: %s', e)
-        return False
-
-    # no exceptions
-    logger.info('Inserted MGI links into table using insertMGI function')
-    return True
 
 
 def load(db, source):

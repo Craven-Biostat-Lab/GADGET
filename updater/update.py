@@ -34,6 +34,8 @@ from config import dbparams, logfilename
 
 # set up logging
 import logging
+import logging.handlers
+
 logger = logging.getLogger('GADGET.updater')
 logger.setLevel(logging.DEBUG)
 fh = logging.handlers.RotatingFileHandler(logfilename, maxBytes=5000, backupCount=5)
