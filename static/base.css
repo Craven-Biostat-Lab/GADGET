@@ -186,7 +186,7 @@ table#download a {
 table#generank {
     table-layout: fixed;
     font-size: 90%;
-    border-collapse: collapse;
+    border-spacing: 0px 10px;
 }
 
 table#generank td {
@@ -228,7 +228,6 @@ table#generank td.scorecol {
     background-color: #EBF9FF;
     border: solid 1px #426BA2;
     border-right: none;
-    border-bottom: none;
 }
 
 table#generank td.scorecol span.pvalue {
@@ -244,7 +243,6 @@ table#generank td.countcol {
     background-color: #EBF9FF;
     border: solid 1px #426BA2;
     border-left: none;
-    border-bottom: none;
 }
 
 table#generank td.linkcol {
