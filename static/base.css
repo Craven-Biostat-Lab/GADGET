@@ -189,11 +189,20 @@ table#generank {
     border-spacing: 0px 10px;
 }
 
+table#generank tr#gene26281 td {
+    border-spacing: 0px;
+}
+
+table#generank tr.abstracts td {
+    border-spacing: 0px;
+}
+
 table#generank td {
     padding: 10px 10px;
     /*border-bottom: 10px solid #FFF;*/
-    border-spacing: 0px 10px;
+    /*border-spacing: 0px 10px;*/
     margin: 0px;
+    margin-bottom: 10px;
 } 
 
 table#generank td.rankcol {
@@ -247,21 +256,23 @@ table#generank td.countcol {
 
 table#generank td.linkcol {
     width: 15%;
+    line-height: 200%;
+    font-size: 90%;
 }
 
-table#generank tr.pane td {
-    padding: 10px 5% 5px 5%;
+table#generank tr td.pane {
+    padding: 10px 5% 5px 2%;
     width: 100%;
     background-color:#EBF9FF; 
     border: solid 1px #426BA2;
 }
 
-table#generank tr.pane td ul {
+table#generank tr td.pane ul {
     margin-top: 10px;
     margin-bottom: 0px;
 }
 
-table#generank tr.pane td ul li {
+table#generank tr td.pane ul li {
     padding-bottom: 10px;
 }
 
