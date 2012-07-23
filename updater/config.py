@@ -7,6 +7,11 @@ Config file for GADGET automatic data updates
 # log files rotate, so old log files are kept and suffixed with numbers.
 logfilename = 'updater.log'
 
+# minimum 'severity' of events to record in log.
+# valid options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL'.
+# see http://docs.python.org/howto/logging.html for log level descriptions.
+loglevel = 'WARNING'
+
 # connection string for database
 dbparams = {'user': 'root', 'passwd': 'password', 'db': 'updater'}
 

@@ -30,7 +30,7 @@ import abstractqueries
 import fetchabstracts
 import buildindex
 
-from config import dbparams, logfilename
+from config import dbparams, logfilename, loglevel
 
 # set up logging
 import logging
@@ -38,8 +38,9 @@ import logging.handlers
 
 logger = logging.getLogger('GADGET.updater')
 logger.setLevel(logging.DEBUG)
+
 fh = logging.handlers.RotatingFileHandler(logfilename, maxBytes=5000, backupCount=5)
-fh.setLevel(logging.DEBUG)
+fh.setLevel(getattr(logging, loglevel.upper()))
 formatter = logging.Formatter('%(levelname)s - %(filename)s - line: %(lineno)s - %(asctime)s\n    %(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
