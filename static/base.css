@@ -110,25 +110,13 @@ div#tabs span.tab a {
     margin: 0 5%;
 }
 
-#flash {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background-color: #e4d9ff;
-    display: none;
-    padding: 10px;
-    border-radius: 10px;
-    border: solid 1px #968fa8;
-    max-width: 40%;
-}
-
-
 div#errorbox {
     position: fixed;
     top: 0px;
     left: 0px;
     width: 100%;
-    border: solid #613333 2px;
+    border: solid #613333;
+    border-width: 2px 0px;
     font-weight: bold;
     padding: 10px;
     background: #E0B2B2;
