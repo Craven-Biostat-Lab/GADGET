@@ -51,9 +51,9 @@ $(document).ready(function()
         })
         .error(function() 
         {
-            flash("No more events for this query.");
+            $("input#more").hide();
             hidespinner();
-            $("#more").hide();
+            $("div#content").append("No more interactions for this query!");
         });
     });
 });
@@ -74,7 +74,7 @@ function eventgenes()
         })
         .complete(function()
         {
-            hideflash();
+            hidespinner();
         });
     }
 }

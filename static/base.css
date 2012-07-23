@@ -122,6 +122,33 @@ div#tabs span.tab a {
     max-width: 40%;
 }
 
+
+div#errorbox {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    border: solid #613333 2px;
+    font-weight: bold;
+    padding: 10px;
+    background: #E0B2B2;
+    color: #613333;
+}
+
+div#errorbox span#errormessage {
+    padding-right: 5em;
+}
+
+div#errorbox a {
+    color: #613333;
+    text-decoration: underline;
+}
+
+div#errorbox a#hideerror {
+    position: fixed;
+    right: 10px;
+}
+
 div#spinner {
     padding-left: 25px;
 }

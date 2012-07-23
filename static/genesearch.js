@@ -81,8 +81,8 @@ $(document).ready(function()
             {
                 // If "validresult" is false, we ran out of genes.  
                 hidespinner();
-                flash("No more genes match your query.");
-                $("#more").hide(); 
+                $("input#more").hide(); 
+                $("div#content").append("No more genes match your query!");
             }
         })
         .error(function() 
@@ -133,7 +133,7 @@ $(document).ready(function()
             })
             .error(function() 
             {
-                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                flasherror();
             });
         }
         else // the abstract pane exists
@@ -190,7 +190,7 @@ $(document).ready(function()
                 $("#generank tr#eventpreview" + gene + " td div").remove(); // hide spinner
                 $("#generank tr#eventpreview" + gene + " td").html('<div></div>');
                 hidepanes(gene);
-                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                flasherror();
             });
         }
         else // the tr for events exists
@@ -246,7 +246,7 @@ $(document).ready(function()
                     // collapse the pane, show an error message
                     $("#generank tr#crossrefs" + gene + " td").html('<div></div>');
                     hidepanes(gene);
-                    flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                    flasherror();
                 }
             })
             .error(function()
@@ -254,7 +254,7 @@ $(document).ready(function()
                 $("#generank tr#crossrefs" + gene + " td div").remove(); // hide spinner
                 $("#generank tr#crossrefs" + gene + " td").html('<div></div>');
                 hidepanes(gene);
-                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                flasherror();
             });
             
         }

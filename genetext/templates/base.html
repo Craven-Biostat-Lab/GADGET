@@ -33,7 +33,11 @@
     <div id="content">
         {% block content %}{% endblock %}
         <div id="spinner" style="display:none"><img src="/static/spinner.gif" /></div>
-        <div id="flash"></div>
+    </div>
+
+    <div id="errorbox" style="display:none">
+        <span id="errormessage">An error occurred!  Please check your internet connection and try again.  If the problem persists, please <a href='/contact.html'>contact us</a>.</span>
+        <a id="hideerror" href="javascript:hideflash();">Hide</a>
     </div>
 </body>
 </html>
