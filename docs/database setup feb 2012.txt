@@ -2,31 +2,28 @@
 -- set up and populate gene table
 
 CREATE TABLE  `gene` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `entrez_id` int(11) DEFAULT NULL,
-  `symbol` varchar(30) CHARACTER SET utf8 DEFAULT NULL,
-  `name` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
-  `locustag` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
-  `synonyms` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
-  `dbxrefs` varchar(250) CHARACTER SET utf8 DEFAULT NULL,
-  `dbxrefs_split` tinyint(1) NOT NULL DEFAULT '0',
-  `hgnc_id` int(11) DEFAULT NULL,
-  `mim_id` int(11) DEFAULT NULL,
-  `ensembl_id` int(11) DEFAULT NULL,
-  `hprd_id` int(11) DEFAULT NULL,
-  `chromosome` varchar(7) CHARACTER SET utf8 DEFAULT NULL,
-  `maplocation` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
-  `type` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
-  `other` varchar(800) CHARACTER SET utf8 DEFAULT NULL,
-  `abstracts` bigint(21) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `entrez_id` (`entrez_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=30938 DEFAULT CHARSET=latin1
+  `tax_id` int(11) unsigned DEFAULT NULL,
+  `entrez_id` int(11) NOT NULL,
+  `symbol` varchar(30) DEFAULT NULL,
+  `name` varchar(150) DEFAULT NULL,
+  `locustag` varchar(100) DEFAULT NULL,
+  `synonyms` varchar(250) DEFAULT NULL,
+  `dbXrefs` varchar(250) DEFAULT NULL,
+  `chromosome` varchar(7) DEFAULT NULL,
+  `maplocation` varchar(100) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `abstracts` int(11) DEFAULT NULL,
+  `homolog_abstracts` int(11) DEFAULT NULL,
+  PRIMARY KEY (`entrez_id`),
+  KEY `symbol` (`symbol`,`tax_id`) USING BTREE,
+  KEY `gene_tax` (`entrez_id`,`tax_id`),
+  KEY `tax_gene` (`tax_id`,`entrez_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8
 
 -- files for humans, mice, and yeast
 ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz
 ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Mus_musculus.gene_info.gz
-ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Fungi/Saccharomyces_cerevisiae.gene_info.gz
+--ftp://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Fungi/Saccharomyces_cerevisiae.gene_info.gz
 
 -- once for each species file
 load data local infile '~/Downloads/gene_info/Homo_sapiens.gene_info'
@@ -35,15 +32,23 @@ fields terminated by '\t'
 (`tax_id`, `entrez_id`, `symbol`, `locustag`, @synonyms, `dbXrefs`, `chromosome`, `maplocation`, `description`, @type, @authsym, `name`, @status, @other, @date)
 set `synonyms` := replace(@synonyms, '|', ', ');
 
+
+-- gene data for yeast (NCBI data is missing some fields)
+-- save as "~/Downloafs/SGD/SGD-genes.tsv"
+http://yeastmine.yeastgenome.org/yeastmine/service/query/results?query=%3Cquery+name%3D%22%22+model%3D%22genomic%22+view%3D%22Gene.primaryIdentifier+Gene.secondaryIdentifier+Gene.symbol+Gene.name+Gene.sgdAlias+Gene.chromosome.primaryIdentifier+Gene.chromosomeLocation.start+Gene.chromosomeLocation.end+Gene.organism.name%22+longDescription%3D%22List+all+genes+for+the+selected+organism+and+their+chromosomal+locations%2C+nomenclature%2C+sequence+lengths%2C+and+descriptions.%22+sortOrder%3D%22Gene.primaryIdentifier+asc%22+constraintLogic%3D%22%28A+or+B%29+and+%28C+or+D%29+and+E+and+F%22%3E%3Cjoin+path%3D%22Gene.chromosome%22+style%3D%22OUTER%22%2F%3E%3Cjoin+path%3D%22Gene.chromosomeLocation%22+style%3D%22OUTER%22%2F%3E%3Cconstraint+path%3D%22Gene.status%22+code%3D%22D%22+op%3D%22IS+NULL%22%2F%3E%3Cconstraint+path%3D%22Gene.status%22+code%3D%22C%22+op%3D%22%3D%22+value%3D%22Active%22%2F%3E%3Cconstraint+path%3D%22Gene.qualifier%22+code%3D%22B%22+op%3D%22IS+NULL%22%2F%3E%3Cconstraint+path%3D%22Gene.qualifier%22+code%3D%22A%22+op%3D%22%21%3D%22+value%3D%22Dubious%22%2F%3E%3Cconstraint+path%3D%22Gene.dataSets.name%22+code%3D%22F%22+op%3D%22%3D%22+value%3D%22SGD+data+set%22%2F%3E%3Cconstraint+path%3D%22Gene.organism.name%22+code%3D%22E%22+op%3D%22%3D%22+value%3D%22Saccharomyces+cerevisiae%22%2F%3E%3C%2Fquery%3E&format=tab
+-- load this into the table after we set up the `sgd_xrefs` table
+
 --------------------------------------------------------------------------------
 -- set up and populate the gene_abstract table with gene2pubmed
 
 CREATE TABLE  `gene_abstract` (
-  `gene` int(11) NOT NULL,
-  `abstract` int(11) NOT NULL,
-  PRIMARY KEY (`gene`,`abstract`),
-  KEY `abstract` (`abstract`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gene` int(11) NOT NULL DEFAULT '0',
+  `abstract_pmid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `gene` (`gene`,`abstract_pmid`),
+  KEY `abstract_pmid` (`abstract_pmid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8
 
 -- get gene-abstract links from gene2pubmed
 ftp://ftp.ncbi.nih.gov/gene/DATA/gene2pubmed.gz
@@ -101,6 +106,22 @@ from `sgd_xrefs` x
 inner join `sgd_literature` l
 using (sgd_gene_id)
 where l.`abstract` != 0;
+
+--------------------------------------------------------------------------------
+-- load SGD genes into `gene` table
+
+load data local infile '~/Downloads/SGD/SGD-genes.tsv'
+into table `gene`
+fields terminated by '\t' optionally enclosed by '"'
+(@SGD_ID, @sysname, @symbol, @name, @synonyms, @chromosome, @start, @stop, @species)
+set
+`tax_id` := 559292,
+`entrez_id` := (select `xref_id` from `sgd_xrefs` where `sgd_gene_id` = @SGD_ID),
+`symbol` := if(@symbol != "", @symbol, @sysname),
+`name` := if(@name != "", @name, '-'),
+`synonyms` := if(@synonyms != "", @synonyms, '-'),
+`chromosome`:= @chromosome,
+`maplocation`:= concat(@chromosome, ": ", @start, " to ", @stop);
 
 --------------------------------------------------------------------------------
 -- get MGI gene-abstract links
@@ -164,7 +185,6 @@ delete `gene_abstract`
 from `gene_abstract` 
 inner join `toomanygenes` using (`abstract`);
 
--- delete genes with no associated abstracts
 create table homologene_gene_abstract
 select * from gene_abstract
 union
@@ -176,6 +196,7 @@ inner join `gene_abstract` ga on h2.`gene` = ga.`gene`;
 
 ALTER TABLE `homologene_gene_abstract` ADD INDEX `gene`(`gene`);
 
+-- delete genes with no associated abstracts
 delete `gene`
 from `gene`
 left join `homologene_gene_abstract`
@@ -186,13 +207,19 @@ where `homologene_gene_abstract`.`gene` is null;
 -- count abstracts for each gene
 
 update `gene`
-set `gene`.`abstracts` = (select count(distinct `abstract`) from `gene_abstract` where `gene_abstract`.`gene` = `gene`.`entrez_id`),
-`gene`.`homolog_abstracts` = (select count(distinct `abstract`) from `homologene_gene_abstract` where `homologene_gene_abstract`.`gene` = `gene`.`entrez_id`);
+set `gene`.`abstracts` = (
+    select count(distinct `abstract`) 
+    from `gene_abstract` 
+    where `gene_abstract`.`gene` = `gene`.`entrez_id`),
+`gene`.`homolog_abstracts` = (
+    select count(distinct `abstract`) 
+    from `homologene_gene_abstract` 
+    where `homologene_gene_abstract`.`gene` = `gene`.`entrez_id`);
 
 --------------------------------------------------------------------------------
 -- fetch abstracts
 
-CREATE TABLE  `new`.`abstract` (
+CREATE TABLE `abstract` (
   `pubmed_id` int(11) NOT NULL,
   `title` varchar(300) DEFAULT NULL,
   `authors` varchar(300) DEFAULT NULL,
@@ -202,11 +229,12 @@ CREATE TABLE  `new`.`abstract` (
   `volume` smallint(6) DEFAULT NULL,
   `issue` smallint(6) DEFAULT NULL,
   `pages` varchar(30) DEFAULT NULL,
-  `review` bool DEFAULT 0,
+  `review` tinyint(1) DEFAULT '0',
   `updated` datetime DEFAULT NULL,
   `indexed` datetime DEFAULT NULL,
+  `index_dirty` datetime DEFAULT NULL,
   PRIMARY KEY (`pubmed_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8
 
 insert ignore into `abstract` (`pubmed_id`)
 select `abstract` from `gene_abstract`;
@@ -254,15 +282,30 @@ delete from gene_crossrefs
 where entrez_id not in (select entrez_id from gene);
 
 -- add a primary key to make Django happy
-ALTER TABLE `production`.`gene_crossrefs` ADD COLUMN `id` INT  NOT NULL AUTO_INCREMENT FIRST,
+ALTER TABLE `gene_crossrefs` ADD COLUMN `id` INT  NOT NULL AUTO_INCREMENT FIRST,
  ADD PRIMARY KEY (`id`);
 
--- add keys for BioGPS (use Entrez Gene ID)
+-- add keys for BioGPS (use Entrez Gene ID) for humans and mice
 insert into gene_crossrefs
 select null, g.entrez_id, 'BioGPS', g.entrez_id
-from gene g;
+from gene g
+where g.tax_id = 9606 or g.tax_id = 10090;
 
--- add SGD keys
+-- delete GermOnline keys for yeast (keys don't work)
+delete from `gene_crossrefs` where `gene_crossrefs`.`idtype` = "GermOnline" and 
+((select g.`tax_id` from `gene` g where `gene_crossrefs`.entrez_id = g.entrez_id)) = 559292;
+
+-- get SGD keys from sgd_xrefs table
 insert into gene_crossrefs
 select null, `xref_id`, "SGD", `sgd_gene_id`
 from sgd_xrefs;
+
+----------------------------------------------------------------------------
+-- removed abstract table for updater
+
+CREATE TABLE `removed_abstracts` (
+  `abstract_pmid` int(11) NOT NULL,
+  `removed` datetime NOT NULL,
+  `reason` tinyint(4) NOT NULL COMMENT '1 for too many abstracts, 2 if the abstract couldn''t be fetched',
+  PRIMARY KEY (`abstract_pmid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8
