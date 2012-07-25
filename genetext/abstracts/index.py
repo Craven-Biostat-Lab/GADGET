@@ -20,9 +20,18 @@ else:
     # define the index fields
     class Schema(SchemaClass):
         pmid = NUMERIC(stored=True, unique=True, signed=False)
-        title = TEXT
+        genes = IDLIST(stored=True) # Entrez ID's
+        homolog_genes = IDLIST(stored=True) # Entrez ID's
+        title = TEXT(stored=True)
         abstract = TEXT
-        year = NUMERIC
+        authors = TEXT(stored=True)
+        year = NUMERIC(stored=True)
+        month = NUMERIC(stored=True)
+        day = NUMERIC(stored=True)
+        review = BOOLEAN(stored=True)
+        journal = STORED
+        volume = STORED
+        pages = STORED
         
     ix = index.create_in(ABSTRACT_INDEX_PATH, Schema)
 
