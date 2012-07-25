@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import atexit
 import whoosh.index as index
-from whoosh.fields import SchemaClass, TEXT, NUMERIC
+from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST, BOOLEAN, STORED
 from whoosh.qparser import MultifieldParser
 from whoosh.query import And, Term, ConstantScoreQuery, NullQuery
 from whoosh.scoring import BM25F
