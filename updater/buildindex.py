@@ -118,6 +118,8 @@ def mark_as_indexed(pmid, cursor):
 def write(articles, ix, db):
     """Given a list of articles as tuples, write them to the index ix.""" 
 
+    logger.debug('writing articles to index')
+
     # update the index with the articles
     writer = ix.writer()
     
@@ -149,13 +151,17 @@ def write(articles, ix, db):
         # mark the document as indexed
         mark_as_indexed(pmid, c)
         
-        # commit the index every 10,000 articles
-        if i % 10000 == 0:
+        # commit the index every 100,000 articles
+        if i % 100000 == 0 and i != 0:
             writer.commit(merge=False)
             writer = ix.writer()
-            print 'Commit.  Abstracts:', i
+            logger.debug('Commiting abstract index.  Abstracts: %s', i)
             
+    logger.info('wrote articles to index')
+
+    logger.info("committing and merging abstract index...")
     writer.commit(optimize=True) # Merge everything.  This will take a long time.
+    logger.info("committed and merged abstract index")
     c.close()
 
 
@@ -170,5 +176,33 @@ def update_index(db):
         logger.critical('could not write articles to index.  Error message: %s', e)
         raise
 
+    ix.close()
+
     logger.info('Wrote articles to index')
     
+
+def check_abstract_counts(db):
+    """Check to see if the index and database table have the same number of
+    abstracts (something is wrong if they don't.)"""
+    
+    # get index abstract count
+    ix = open_index(ABSTRACT_INDEX_PATH)
+    ix_count = ix.doc_count()
+    ix.close()
+
+    # get abstract count from database
+    c = getcursor(db)
+
+    c.execute("""
+    select count(*) from `abstract`
+    """)
+
+    db_count, = c.fetchone()
+    c.close()
+
+    if ix_count == db_count:
+        logger.info('database abstract count matches index abstract count (this is good.)  abstract count: %s', ix_count)
+        return True
+    else:
+        logger.warning('database abstract count does not match index abstract count.  database count: %s, index count: %s.  There may have been an error committing the index, or an abstract was removed from the abstract table.  If you can\'t figure out what caused the inconsistency, one way to fix it is to re-build the index from scratch (delete the contents of the index folder, set the `indexed` column in the `abstract` table to null for all rows, and run the updater script.  It will probably take a couple hours.')
+    return False

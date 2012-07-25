@@ -10,7 +10,7 @@ logfilename = 'updater.log'
 # minimum 'severity' of events to record in log.
 # valid options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL'.
 # see http://docs.python.org/howto/logging.html for log level descriptions.
-loglevel = 'WARNING'
+loglevel = 'DEBUG'
 
 # connection string for database
 dbparams = {'user': 'root', 'passwd': 'password', 'db': 'updater'}

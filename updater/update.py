@@ -97,6 +97,9 @@ if __name__ == '__main__':
     # 10: update abstract index - add new abstracts and "index_dirty" abstracts
     buildindex.update_index(db)
 
+    # make sure the index and database table have the same number of abstracts
+    buildindex.check_abstract_counts(db)
+
     # 11: update 'gene' table, count abstracts for each gene
     abstractqueries.count_genes(db)
 
