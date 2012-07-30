@@ -143,10 +143,11 @@ def decompress(source):
             return False
 
         else:
+            logger.info('decompressed file %s', source.compressedfilename)
             return True
 
     # return true if this is not a compressed file
-    logger.info('decompressed file %s', source.compressedfilename)
+    logger.info('%s is not a compressed file', source.filename)
     return True
 
 
