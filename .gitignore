@@ -1,4 +1,5 @@
 index
+gene-index
 *.swp
 *.pyc
 genetext/settings.py
