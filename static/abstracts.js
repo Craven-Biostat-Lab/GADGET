@@ -77,7 +77,7 @@ function fetchabstracts(unique)
     })
     .error(function()
     {
-        flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+        flasherror();
 
         // hide spinner and "more" link
         $("img.spinner[abs_unique='" + unique + "']").hide();

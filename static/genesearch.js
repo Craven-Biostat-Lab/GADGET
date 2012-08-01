@@ -40,14 +40,13 @@ $(document).ready(function()
         {
             // append new genes to table, show "more" button
             $("#generank").append(data.result);
-            stripetables();
             
             $("div#description").show();
             $("#results").fadeTo(200, 1);
             $("table#download").fadeIn('slow');
             
             $("#more").show();
-            hideflash();        
+            hidespinner();        
         }
         else
         {
@@ -55,7 +54,7 @@ $(document).ready(function()
             flash(data.errmsg);
         }
     })
-    .error(function() {flasherror();} );
+    .error(function() {hidespinner(); flasherror();} );
     
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
@@ -63,6 +62,9 @@ $(document).ready(function()
         var queryString = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
         offset += limit;
         
+        // hide "more" button while we're fetching more genes
+        $("input#more").hide();
+
         // get more genes
         spin();
         $.getJSON("genelist", queryString)
@@ -72,20 +74,22 @@ $(document).ready(function()
             {
                 // append new genes to table
                 $("#generank").append(data.result);
-                stripetables();
-                hideflash();
+                hidespinner();
+                $("input#more").show();
             }
             else
             {
-                // If "validresult" is false, we ran out of genes.  (Ot
-                flash("No more genes match your query.");
-                $("#more").hide(); 
+                // If "validresult" is false, we ran out of genes.  
+                hidespinner();
+                $("input#more").hide(); 
+                $("div#content").append("No more genes match your query!");
             }
         })
         .error(function() 
         {
+            hidespinner();
             flasherror();
-            $("#more").hide();    
+            $("input#more").hide();    
         });
         
     });
@@ -129,7 +133,7 @@ $(document).ready(function()
             })
             .error(function() 
             {
-                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                flasherror();
             });
         }
         else // the abstract pane exists
@@ -186,7 +190,7 @@ $(document).ready(function()
                 $("#generank tr#eventpreview" + gene + " td.pane div").remove(); // hide spinner
                 $("#generank tr#eventpreview" + gene + " td.pane").html('<div></div>');
                 hidepanes(gene);
-                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                flasherror();
             });
         }
         else // the tr for events exists
@@ -242,7 +246,7 @@ $(document).ready(function()
                     // collapse the pane, show an error message
                     $("#generank tr#crossrefs" + gene + " td.pane").html('<div></div>');
                     hidepanes(gene);
-                    flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                    flasherror();
                 }
             })
             .error(function()
@@ -250,7 +254,7 @@ $(document).ready(function()
                 $("#generank tr#crossrefs" + gene + " td.pane div").remove(); // hide spinner
                 $("#generank tr#crossrefs" + gene + " td.pane").html('<div></div>');
                 hidepanes(gene);
-                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                flasherror();
             });
             
         }
