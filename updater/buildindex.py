@@ -5,7 +5,6 @@ but not indexed, or 'indexed' date is older than 'index_dirty' date), and put
 them in the index.  Optimize the index when we're done.
 """
 
-import MySQLdb
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST, DATETIME, STORED, BOOLEAN
 from datetime import datetime
@@ -165,6 +164,26 @@ def write(articles, ix, db):
     c.close()
 
 
+def rollback(db):
+    """This should get called if the index writing failed.  Find all of the
+    abstracts in the index that have been indexed in the last 6 hours, and
+    mark them to be re-indexed."""
+
+    c = getcursor(db)
+
+    logger.debug('marking abstracts indexed in the last 6 hours to be re-indexed')
+
+    c.execute("""
+    update `abstract`
+    set `index_dirty` = now()
+    where `indexed` > date_sub(now(), interval 6 hour)
+    """)
+
+    logger.info('marked abstracts indexed in the last 6 hours to be re-indexed')
+
+    c.close()
+
+
 def update_index(db):
     ix = open_index(ABSTRACT_INDEX_PATH)
 
@@ -174,6 +193,7 @@ def update_index(db):
         write(articles(db), ix, db)
     except Exception as e:
         logger.critical('could not write articles to index.  Error message: %s', e)
+        rollback(db)
         raise
 
     ix.close()
