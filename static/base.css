@@ -279,8 +279,13 @@ table#generank td.countcol {
 
 table#generank td.linkcol {
     width: 15%;
-    line-height: 200%;
+    /*line-height: 200%;*/
     font-size: 90%;
+}
+
+table#generank td.linkcol a {
+    display: block;
+    padding-bottom: 0.5em;
 }
 
 table#generank tr td.pane {
