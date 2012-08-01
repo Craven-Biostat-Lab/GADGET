@@ -17,6 +17,14 @@ from genetext.abstracts.index import get_abstracts, corpus_size
 speciesnames = {'9606': 'Homo sapiens', '10090': 'Mus musculus', '559292': 'Saccharomyces cerevisiae'}
 specieschoices = (('9606', 'Homo sapiens'),('10090', 'Mus musculus'), ('559292', 'Saccharomyces cerevisiae'))
 
+def validatespecies(taxid):
+    """Return a validated species ID and speciesname.  Human by default"""
+    if taxid in speciesnames:
+        return taxid, speciesnames[taxid]
+    else:
+        return '9606', speciesnames['9606']
+
+
 def searchpage(request):
     """The search page for the word view (makes the forms)"""
     
@@ -31,17 +39,12 @@ def searchpage(request):
     # get form arguments from the query string
     q = request.GET.get('q', default='')
     genes_input = request.GET.get('genes', default='')
-    species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     orderby = request.GET.get('orderby', default='f1_score')
     
-    # validate species and look up name    
-    if species in speciesnames:
-        speciesname = speciesnames[species]
-    else:
-        species = '9606'
-        speciesname = 'Homo sapiens'
-    
+    # validate species
+    species, speciesname = validatespecies(request.GET.get('species'))
+
     # look up gene Entrez ID's and symbols
     if genes_input:
         try:
@@ -235,10 +238,10 @@ def genesearch(request):
     if not pvals: 
         return searchresponse(validresult=False, download=download, errmsg="Your query didn't match any genes.", query=keywords, genes=genes, usehomologs=usehomologs, species=species)
 
-    return searchresponse(validresult=True, download=download, results=results, genes=genes, pvals=pvals, offset=offset, orderby=orderby, query=keywords, limit=limit, usehomologs=usehomologs, species=species)
+    return searchresponse(validresult=True, download=download, results=results, genes=genes, pvals=pvals, offset=offset, orderby=orderby, query=keywords, limit=limit, usehomologs=usehomologs, species=species, query_abstract_count=query_abstract_count)
     
 
-def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None):
+def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None, query_abstract_count=None):
     """Return an HttpResponse object with gene search results, as either JSON, XML,
     or a CSV depending on the "download" argument.  "validresult" is True if "genes",
     "pvals", and "offset" represent a valid result, and False otherwise.  "errmsg" 
@@ -279,7 +282,7 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
 
         # render and return JSON
         response = HttpResponse()
-        json.dump({'validresult': validresult, 'errmsg': errmsg, 'result': resulthtml}, response)
+        json.dump({'validresult': validresult, 'errmsg': errmsg, 'result': resulthtml, 'abstractcount': query_abstract_count}, response)
         return response
 
 

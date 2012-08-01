@@ -40,7 +40,10 @@ $(document).ready(function()
         {
             // append new genes to table, show "more" button
             $("#generank").append(data.result);
-            stripetables();
+            
+            // show abstract count
+            if (data.abstractcount)
+                $("span#abstractcount").html(data.abstractcount).show();
             
             $("div#description").show();
             $("#results").fadeTo(200, 1);

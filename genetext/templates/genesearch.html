@@ -69,7 +69,7 @@ $(document).ready(function()
 </table>
 
 <div id="description" style="display:none">
-    Showing and scoring genes in abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} containing genes <b>{{ genesyms|join:', ' }}</b>{% endif %}<br />
+    Showing and scoring <span id="genecount" style="display:none"></span> genes in <span id="abstractcount" style="display:none"></span> abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} containing genes <b>{{ genesyms|join:', ' }}</b>{% endif %}<br />
     For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
 </div><br />
 
