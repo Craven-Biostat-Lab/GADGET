@@ -112,18 +112,38 @@ div#tabs span.tab a {
 #content {
     padding-top: 10px;
     margin: 0 5%;
+    background: white;
 }
 
-#flash {
+div#errorbox {
     position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background-color: #e4d9ff;
-    display: none;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    border: solid #613333;
+    border-width: 2px 0px;
+    font-weight: bold;
     padding: 10px;
-    border-radius: 10px;
-    border: solid 1px #968fa8;
-    max-width: 40%;
+    background: #E0B2B2;
+    color: #613333;
+}
+
+div#errorbox span#errormessage {
+    padding-right: 5em;
+}
+
+div#errorbox a {
+    color: #613333;
+    text-decoration: underline;
+}
+
+div#errorbox a#hideerror {
+    position: fixed;
+    right: 10px;
+}
+
+div#spinner {
+    padding-left: 25px;
 }
 
 #title {
@@ -160,7 +180,7 @@ table#download {
     padding: 0;
 
     display:inline;
-    background-color: #D9F4FF;
+    background-color: #EBF9FF;
     padding: 2px 8px;
     
     font-size: x-small;
@@ -189,13 +209,23 @@ table#download a {
 table#generank {
     table-layout: fixed;
     font-size: 90%;
+    border-spacing: 0px 10px;
+}
+
+table#generank tr#gene26281 td {
+    border-spacing: 0px;
+}
+
+table#generank tr.abstracts td {
+    border-spacing: 0px;
 }
 
 table#generank td {
     padding: 10px 10px;
     /*border-bottom: 10px solid #FFF;*/
-    border-spacing: 0px 10px;
+    /*border-spacing: 0px 10px;*/
     margin: 0px;
+    margin-bottom: 10px;
 } 
 
 table#generank td.rankcol {
@@ -228,6 +258,8 @@ table#generank td.infocol span.genesynonyms {
 table#generank td.scorecol {
     width: 18%;
     background-color: #EBF9FF;
+    border: solid 1px #426BA2;
+    border-right: none;
 }
 
 table#generank td.scorecol span.pvalue {
@@ -241,23 +273,29 @@ table#generank span.score.selected {
 table#generank td.countcol {
     width: 20%;
     background-color: #EBF9FF;
+    border: solid 1px #426BA2;
+    border-left: none;
 }
 
 table#generank td.linkcol {
     width: 15%;
+    line-height: 200%;
+    font-size: 90%;
 }
 
-table#generank tr.pane td {
-    padding: 10px 10% 5px 10%;
+table#generank tr td.pane {
+    padding: 10px 5% 5px 2%;
     width: 100%;
+    background-color:#EBF9FF; 
+    border: solid 1px #426BA2;
 }
 
-table#generank tr.pane td ul {
+table#generank tr td.pane ul {
     margin-top: 10px;
     margin-bottom: 0px;
 }
 
-table#generank tr.pane td ul li {
+table#generank tr td.pane ul li {
     padding-bottom: 10px;
 }
 
