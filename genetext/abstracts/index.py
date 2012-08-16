@@ -7,9 +7,10 @@ from whoosh.query import And, Term, ConstantScoreQuery, NullQuery
 from whoosh.scoring import BM25F
 from whoosh.sorting import MultiFacet
 
+from django.core.cache import cache
+
 try:
     from genetext.settings import ABSTRACT_INDEX_PATH
-    from django.core.cache import cache
 except ImportError:
     ABSTRACT_INDEX_PATH = '/home/genetext/gadget/index'
 
@@ -107,7 +108,6 @@ def get_abstracts(keywords=None, genes=None, genehomologs=True):
     results = [r['pmid'] for r in searcher.search(query, limit=None)]
     
     # remember the results for 10 * 60 seconds
-    #cache.set('q_' + query.replace(' ', '_'), results, 600) # remember the results for 10 * 60 seconds
     cache.set(key, results, 600)
     
     return results
