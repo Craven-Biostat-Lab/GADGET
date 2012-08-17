@@ -122,6 +122,10 @@ def write(articles, ix, db):
     # update the index with the articles
     writer = ix.writer()
     
+    # keep track of the articles we've written so far, so we cam mark them as
+    # indexed after a successful commit
+    writtenPMIDs = []
+
     c = getcursor(db)
 
     for i, article in enumerate(articles):
@@ -147,8 +151,8 @@ def write(articles, ix, db):
             title=title, abstract=abstract, authors=authors, year=year, month=month, 
             day=day, journal=journal, volume=volume, pages=pages, review=review)
         
-        # mark the document as indexed
-        mark_as_indexed(pmid, c)
+        # keep track of the articles we've written so far.
+        writtenPMIDs.append(pmid)
         
         # commit the index every 100,000 articles
         if i % 100000 == 0 and i != 0:
@@ -158,28 +162,15 @@ def write(articles, ix, db):
             
     logger.info('wrote articles to index')
 
+
     logger.debug("committing abstract index...")
     writer.commit() 
     logger.info("committed abstract index")
-    c.close()
 
 
-def rollback(db):
-    """This should get called if the index writing failed.  Find all of the
-    abstracts in the index that have been indexed in the last 6 hours, and
-    mark them to be re-indexed."""
-
-    c = getcursor(db)
-
-    logger.debug('marking abstracts indexed in the last 6 hours to be re-indexed')
-
-    c.execute("""
-    update `abstract`
-    set `index_dirty` = now()
-    where `indexed` > date_sub(now(), interval 6 hour)
-    """)
-
-    logger.info('marked abstracts indexed in the last 6 hours to be re-indexed')
+    # mark all of the indexed abstracts as indexed after a successful commit
+    for pmid in writtenPMIDs:
+        mark_as_indexed(pmid, c)
 
     c.close()
 
@@ -193,7 +184,6 @@ def update_index(db):
         write(articles(db), ix, db)
     except Exception as e:
         logger.critical('could not write articles to index.  Error message: %s', e)
-        rollback(db)
         raise
 
     ix.close()
