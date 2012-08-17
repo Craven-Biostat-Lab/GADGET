@@ -158,9 +158,9 @@ def write(articles, ix, db):
             
     logger.info('wrote articles to index')
 
-    logger.info("committing and merging abstract index...")
-    writer.commit(optimize=True) # Merge everything.  This will take a long time.
-    logger.info("committed and merged abstract index")
+    logger.debug("committing abstract index...")
+    writer.commit() 
+    logger.info("committed abstract index")
     c.close()
 
 
