@@ -175,7 +175,34 @@ def write(articles, ix, db):
     c.close()
 
 
+def remove_bad_abstracts(ix, db):
+    """Remove abatracts in the "removed_abstracts" database table from the
+    index."""
+
+    c = getcursor(db)
+
+    # get abstract PMIDs from the removed_abstract table
+    c.execute("""
+    select `abstract` from `removed_abstracts`
+    """)
+
+    logger.debug('Removing abstracts in the `removed_abstracts` table from the index')
+
+    # for each PMID in the query result, try to delete that abstract from
+    # the index.
+    writer = ix.writer()
+    for row in c:
+        pmid = row[0]
+
+        writer.delete_by_term('pmid', unicode(pmid))
+    
+    c.close()
+    logger.info('Removed abstracts in the `removed_abstracts` table from the index')
+
+
 def update_index(db):
+    """Find abstracts in the database that need to be updated, and update them
+    in the index."""
     ix = open_index(ABSTRACT_INDEX_PATH)
 
     logger.debug('Writing articles to index')
@@ -186,10 +213,15 @@ def update_index(db):
         logger.critical('could not write articles to index.  Error message: %s', e)
         raise
 
+    logger.info('Wrote articles to index')
+
+    try:
+        remove_bad_abstracts(ix, db)
+    except Exception as e:
+        logger.error('could not remove abstracts in the `removed_abstracts` table from the index.  Error message: %s', e)
+
     ix.close()
 
-    logger.info('Wrote articles to index')
-    
 
 def check_abstract_counts(db):
     """Check to see if the index and database table have the same number of
