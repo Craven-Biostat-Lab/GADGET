@@ -214,5 +214,5 @@ def check_abstract_counts(db):
         logger.info('database abstract count matches index abstract count (this is good.)  abstract count: %s', ix_count)
         return True
     else:
-        logger.warning('database abstract count does not match index abstract count.  database count: %s, index count: %s.  There may have been an error committing the index, or an abstract was removed from the abstract table.  If you can\'t figure out what caused the inconsistency, one way to fix it is to re-build the index from scratch (delete the contents of the index folder, set the `indexed` column in the `abstract` table to null for all rows, and run the updater script.  It will probably take a couple hours.')
-    return False
+        logger.warning('database abstract count does not match index abstract count.  database count: %s, index count: %s.  There may have been an error committing the index, or an abstract was removed from the abstract table.  If you can\'t figure out what caused the inconsistency, one way to fix it is to re-build the index from scratch (delete the contents of the index folder, set the `indexed` column in the `abstract` table to null for all rows, and run the updater script.  It will probably take a couple hours.', db_count, ix_count)
+        return False

@@ -8,7 +8,6 @@ import gzip
 
 
 # additional imports from config file below (to prevent circular imports)
-import config
 
 # set up logger
 import logging
@@ -94,7 +93,7 @@ def insertMGI(db, source):
 
 # load from config file down here to resolve cyclical imports
 #from config import datapath, getcursor, ga_sources
-
+import config
 
 def fetch(source):
     """Fetch and decompress the specified url into the filename, use logging.
