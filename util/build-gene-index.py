@@ -13,7 +13,7 @@ else:
     # define gene index fields
     class Schema(SchemaClass):
         entrezID = NUMERIC(unique=True, signed=False, stored=True)
-        tax = NUMERIC
+        tax = ID
         symbol = TEXT
         name = TEXT
         synonyms = TEXT
@@ -67,6 +67,8 @@ def write(genes, ix):
         entrezID, tax, symbol, name, synonyms = g
 
         # make all text fields unicode
+        if tax is not None:
+            tax = unicode(str(tax), 'utf-8')
         if symbol is not None:
             symbol = unicode(symbol, 'utf-8')
         if name is not None:
