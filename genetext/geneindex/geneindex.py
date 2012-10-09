@@ -2,7 +2,7 @@
 
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, ID
-from whoosh.query import And, Or, CompoundQuery, Term
+from whoosh.query import And, Or, CompoundQuery, Term, NullQuery
 from whoosh.qparser import MultifieldParser, OrGroup, AndGroup
 
 # Get index location out of the config file
@@ -38,26 +38,54 @@ searcher = ix.searcher()
 def lookup(query):
     """Look up entrezID's in the gene index that match the given whoosh query
     object.  Return a list of entrezID's that satisfy the query in no particular 
-    order."""
+    order.  Raise a LookupError if the query does not match any genes."""
 
-    return [g['entrezID'] for g in searcher.search(query, limit=None)]
+    genes = [g['entrezID'] for g in searcher.search(query, limit=None)]
+    if genes:
+        return genes
+    else:
+        raise LookupError()
 
 
 def convert_to_abstractquery(query, tax=None, genefield='genes'):
     """Convert a gene query to a query to be used on the abstract index.
     Takes an already-parsed query obect (for genes), and recursively 
     re-builds the query into a query for the abstract index, where all of the
-    leaf nodes are expanded into a set of entrezID's."""
+    leaf nodes are expanded into a set of entrezID's.  Throws a LookupError
+    if there is a query term that doesn't match any genes."""
 
-    if query.is_leaf():
+    if query == NullQuery:
+        return query
+
+    elif query.is_leaf():
         # if this node is a leaf, get the matching genes from the index, and
         # 'Or' them all together.
         
         # add the taxon constraint to the query
         if tax:
-            query = And([query, Term('tax', str(tax))])
+            taxquery = And([query, Term('tax', str(tax))])
+        else:
+            taxquery = query
         
-        return Or([Term(genefield, g) for g in lookup(query)])
+        # return the genes matched by the leaf, all OR'd together.
+        try:
+            # lookup will raise a LookupError if the query does not match any genes
+            return Or([Term(genefield, g) for g in lookup(taxquery)])
+
+        # if we get a LookupError, try to determine the bad text that caused it.
+        except LookupError:
+            print query
+            # try to get the text of the bad query term, and attach it to the error
+            try:
+                raise LookupError(query.text)
+            except AttributeError:
+                # no query.text, try query.words instead
+                try:
+                    raise LookupError(u'"' + u' '.join(query.words) + u'"')
+                except AttributeError:
+                    # no query.text or query.words
+                    raise LookupError()
+
 
     elif isinstance(query, CompoundQuery):
         # this node has a list of children
@@ -90,8 +118,9 @@ def parsequery(q, implicitOr=False):
 
 
 def parse_abstractquery(q, tax=None, implicitOr=False, genefield='genes'):
-    """Take a gene query as a string, and parse and convert it into
-    a Whoosh query object to be used against the abstract index."""
+    """Take a gene query as a string, and parse and convert it into a Whoosh 
+    query object to be used against the abstract index.  Raise a LookupError 
+    if there is a term in the query that doesn't match any genes."""
     
     genequery = parsequery(unicode(q), implicitOr)
     return convert_to_abstractquery(genequery, tax, genefield).normalize()
