@@ -1,6 +1,7 @@
 index
 gene-index
 *.swp
+*.swo
 *.pyc
 genetext/settings.py
 genetext/urls.py

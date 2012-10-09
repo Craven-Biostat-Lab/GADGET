@@ -2,7 +2,7 @@
 
 import MySQLdb
 import whoosh.index as index
-from whoosh.fields import SchemaClass, TEXT, NUMERIC
+from whoosh.fields import SchemaClass, TEXT, NUMERIC, ID
 
 GENE_INDEX_PATH = '/home/genetext/gadget/gene-index'
 
@@ -12,7 +12,7 @@ if index.exists_in(GENE_INDEX_PATH):
 else:
     # define gene index fields
     class Schema(SchemaClass):
-        entrezID = NUMERIC(unique=True, signed=False, stored=True)
+        entrezID = ID(unique=True, stored=True)
         tax = ID
         symbol = TEXT
         name = TEXT
@@ -67,6 +67,8 @@ def write(genes, ix):
         entrezID, tax, symbol, name, synonyms = g
 
         # make all text fields unicode
+        if entrezID is not None:
+            entrezID = unicode(str(entrezID), 'utf-8')
         if tax is not None:
             tax = unicode(str(tax), 'utf-8')
         if symbol is not None:

@@ -3,7 +3,7 @@
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, ID
 from whoosh.query import And, Or, CompoundQuery, Term, NullQuery
-from whoosh.qparser import MultifieldParser, OrGroup, AndGroup
+from whoosh.qparser import QueryParser, OrGroup, AndGroup
 
 # Get index location out of the config file
 # If we can't, use a hard-coded path
@@ -19,7 +19,7 @@ if index.exists_in(GENE_INDEX_PATH):
 else:
     # define gene index fields
     class Schema(SchemaClass):
-        entrezID = NUMERIC(unique=True, signed=False, stored=True)
+        entrezID = ID(unique=True, stored=True)
         tax = ID
         symbol = TEXT
         name = TEXT
@@ -30,8 +30,8 @@ else:
 # search 'symbol' and 'entrezID' fields by default
 # orParser uses an implicit OR between adjacent query terms ("foo bar" is "foo OR bar")
 # andParser uses an implicit AND ("foo bar" is "foo AND bar")
-orParser = MultifieldParser(fieldnames=('symbol', 'entrezID'), schema=ix.schema, group=OrGroup)
-andParser = MultifieldParser(fieldnames=('symbol', 'entrezID'), schema=ix.schema, group=AndGroup)
+orParser = QueryParser('symbol', schema=ix.schema, group=OrGroup)
+andParser = QueryParser('symbol', schema=ix.schema, group=AndGroup)
 searcher = ix.searcher()
 
 
@@ -61,6 +61,11 @@ def convert_to_abstractquery(query, tax=None, genefield='genes'):
         # if this node is a leaf, get the matching genes from the index, and
         # 'Or' them all together.
         
+        # if a term is numeric, check it against the entrezID field
+        if isinstance(query, Term):
+            if query.fieldname == 'symbol' and query.text.isdigit():
+                query = Term('entrezID', query.text)
+
         # add the taxon constraint to the query
         if tax:
             taxquery = And([query, Term('tax', str(tax))])
