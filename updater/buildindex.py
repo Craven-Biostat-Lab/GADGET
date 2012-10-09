@@ -5,7 +5,6 @@ but not indexed, or 'indexed' date is older than 'index_dirty' date), and put
 them in the index.  Optimize the index when we're done.
 """
 
-import MySQLdb
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST, DATETIME, STORED, BOOLEAN
 from datetime import datetime
@@ -123,6 +122,10 @@ def write(articles, ix, db):
     # update the index with the articles
     writer = ix.writer()
     
+    # keep track of the articles we've written so far, so we cam mark them as
+    # indexed after a successful commit
+    writtenPMIDs = []
+
     c = getcursor(db)
 
     for i, article in enumerate(articles):
@@ -148,8 +151,8 @@ def write(articles, ix, db):
             title=title, abstract=abstract, authors=authors, year=year, month=month, 
             day=day, journal=journal, volume=volume, pages=pages, review=review)
         
-        # mark the document as indexed
-        mark_as_indexed(pmid, c)
+        # keep track of the articles we've written so far.
+        writtenPMIDs.append(pmid)
         
         # commit the index every 100,000 articles
         if i % 100000 == 0 and i != 0:
@@ -159,13 +162,47 @@ def write(articles, ix, db):
             
     logger.info('wrote articles to index')
 
-    logger.info("committing and merging abstract index...")
-    writer.commit(optimize=True) # Merge everything.  This will take a long time.
-    logger.info("committed and merged abstract index")
+
+    logger.debug("committing abstract index...")
+    writer.commit() 
+    logger.info("committed abstract index")
+
+
+    # mark all of the indexed abstracts as indexed after a successful commit
+    for pmid in writtenPMIDs:
+        mark_as_indexed(pmid, c)
+
     c.close()
 
 
+def remove_bad_abstracts(ix, db):
+    """Remove abatracts in the "removed_abstracts" database table from the
+    index."""
+
+    c = getcursor(db)
+
+    # get abstract PMIDs from the removed_abstract table
+    c.execute("""
+    select `abstract` from `removed_abstracts`
+    """)
+
+    logger.debug('Removing abstracts in the `removed_abstracts` table from the index')
+
+    # for each PMID in the query result, try to delete that abstract from
+    # the index.
+    writer = ix.writer()
+    for row in c:
+        pmid = row[0]
+
+        writer.delete_by_term('pmid', unicode(pmid))
+    
+    c.close()
+    logger.info('Removed abstracts in the `removed_abstracts` table from the index')
+
+
 def update_index(db):
+    """Find abstracts in the database that need to be updated, and update them
+    in the index."""
     ix = open_index(ABSTRACT_INDEX_PATH)
 
     logger.debug('Writing articles to index')
@@ -176,10 +213,15 @@ def update_index(db):
         logger.critical('could not write articles to index.  Error message: %s', e)
         raise
 
+    logger.info('Wrote articles to index')
+
+    try:
+        remove_bad_abstracts(ix, db)
+    except Exception as e:
+        logger.error('could not remove abstracts in the `removed_abstracts` table from the index.  Error message: %s', e)
+
     ix.close()
 
-    logger.info('Wrote articles to index')
-    
 
 def check_abstract_counts(db):
     """Check to see if the index and database table have the same number of
@@ -204,5 +246,5 @@ def check_abstract_counts(db):
         logger.info('database abstract count matches index abstract count (this is good.)  abstract count: %s', ix_count)
         return True
     else:
-        logger.warning('database abstract count does not match index abstract count.  database count: %s, index count: %s.  There may have been an error committing the index, or an abstract was removed from the abstract table.  If you can\'t figure out what caused the inconsistency, one way to fix it is to re-build the index from scratch (delete the contents of the index folder, set the `indexed` column in the `abstract` table to null for all rows, and run the updater script.  It will probably take a couple hours.')
-    return False
+        logger.warning('database abstract count does not match index abstract count.  database count: %s, index count: %s.  There may have been an error committing the index, or an abstract was removed from the abstract table.  If you can\'t figure out what caused the inconsistency, one way to fix it is to re-build the index from scratch (delete the contents of the index folder, set the `indexed` column in the `abstract` table to null for all rows, and run the updater script.  It will probably take a couple hours.', db_count, ix_count)
+        return False

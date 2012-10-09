@@ -9,7 +9,6 @@ import gzip
 
 # additional imports from config file below (to prevent circular imports)
 
-
 # set up logger
 import logging
 logger = logging.getLogger('GADGET.updater.load_gene_abstract_links')
@@ -54,7 +53,7 @@ def insertMGI(db, source):
 
     logger.debug('Inserting MGI links into table using insertMGI function')
 
-    c = getcursor(db)
+    c = config.getcursor(db)
 
     # We need to insert the gene-abstract links one-by-one because we have more
     # than one link per row in the file.
@@ -64,7 +63,7 @@ def insertMGI(db, source):
     """insert ignore into `mgi_reference` (`mgi_marker`, `abstract_pmid`) values {values}"""
 
     try:
-        f = open(join(datapath, source.filename))
+        f = open(join(config.datapath, source.filename))
         for line in f:
             fields = line.split('\t')
             MGI_marker = fields[0]
@@ -93,8 +92,8 @@ def insertMGI(db, source):
     
 
 # load from config file down here to resolve cyclical imports
-from config import datapath, getcursor, ga_sources
-
+#from config import datapath, getcursor, ga_sources
+import config
 
 def fetch(source):
     """Fetch and decompress the specified url into the filename, use logging.
@@ -105,7 +104,7 @@ def fetch(source):
         name = source.compressedfilename or source.filename
 
         logger.debug('retrieving gene-abstract links from "%s", saving file as "%s"', source.url, name)
-        urllib.urlretrieve(source.url, join(datapath, name))
+        urllib.urlretrieve(source.url, join(config.datapath, name))
 
     except IOError as e:
         logger.error('could not retrieve a file, maybe the network connection is bad or the file moved.  file :"%s"   error :%s', source.url, e)
@@ -124,8 +123,8 @@ def decompress(source):
         logger.debug('decompressing file %s', source.compressedfilename)
 
         try:
-            f_in = gzip.open(join(datapath, source.compressedfilename), 'rb')
-            f_out = open(join(datapath, source.filename), 'wb')
+            f_in = gzip.open(join(config.datapath, source.compressedfilename), 'rb')
+            f_out = open(join(config.datapath, source.filename), 'wb')
 
             f_out.writelines(f_in)
            
@@ -143,10 +142,11 @@ def decompress(source):
             return False
 
         else:
+            logger.info('decompressed file %s', source.compressedfilename)
             return True
 
     # return true if this is not a compressed file
-    logger.info('decompressed file %s', source.compressedfilename)
+    logger.info('%s is not a compressed file', source.filename)
     return True
 
 
@@ -159,11 +159,11 @@ def insert(db, source):
     if source.insertfunction:
         return source.insertfunction(db, source)
 
-    c = getcursor(db)
+    c = config.getcursor(db)
 
     # otherwise insert by executing its 'insertquery'
     try:
-        c.execute(source.insertquery.format(path=join(datapath, source.filename)))
+        c.execute(source.insertquery.format(path=join(config.datapath, source.filename)))
     except Exception as e:
         logger.error('error inserting %s into gene_abstract database table.  Maybe the format of the file changed?  Error message: %s', source.filename, e)
         return False
@@ -189,7 +189,7 @@ def loadall(db):
     """Fetch, decompress, and insert all sources in the 'sources' list into 
     the database.  Return true if all loads were successful."""
     
-    return not (False in [load(db, source) for source in ga_sources])
+    return not (False in [load(db, source) for source in config.ga_sources])
 
 
 def cleanup(db):
@@ -197,7 +197,7 @@ def cleanup(db):
 
     logger.debug('Removing gene_abstracts with gene or abstract ID set to 0')
 
-    c = getcursor(db)
+    c = config.getcursor(db)
 
     try:
         c.execute("""

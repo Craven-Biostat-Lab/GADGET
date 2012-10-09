@@ -4,13 +4,19 @@ class Abstract(models.Model):
     pubmed_id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=900, blank=True)
     authors = models.CharField(max_length=900, blank=True)
-    year = models.IntegerField(null=True, blank=True)
-    month = models.CharField(max_length=9, blank=True)
+    pubdate = models.DateField(blank=True)
     journal = models.CharField(max_length=450, blank=True)
     volume = models.IntegerField(null=True, blank=True)
     issue = models.IntegerField(null=True, blank=True)
     pages = models.CharField(max_length=90, blank=True)
+    review = models.BooleanField(blank=True)
     
+    def year(self):
+        try:
+            return self.pubdate.year
+        except AttributeError:
+            return None
+
     class Meta:
         db_table = u'abstract'
         managed = False

@@ -20,9 +20,9 @@ function order(key)
 // collapse the slider panes in the gene results table for a specific gene
 function hidepanes(gene)
 {
-    $("#generank tr#abstracts" + gene + " td div").slideUp('fast', function() { $("#generank tr#abstracts" + gene).hide(); });
-    $("#generank tr#eventpreview" + gene + " td div").slideUp('fast', function() { $("#generank tr#eventpreview" + gene).hide(); });
-    $("#generank tr#crossrefs" + gene + " td div").slideUp('fast', function() { $("#generank tr#crossrefs" + gene).hide(); });
+    $("#generank tr#abstracts" + gene + " td.pane div").slideUp('fast', function() { $("#generank tr#abstracts" + gene).hide(); });
+    $("#generank tr#eventpreview" + gene + " td.pane div").slideUp('fast', function() { $("#generank tr#eventpreview" + gene).hide(); });
+    $("#generank tr#crossrefs" + gene + " td.pane div").slideUp('fast', function() { $("#generank tr#crossrefs" + gene).hide(); });
     $("#generank a#showabs" + gene).text("Show abstracts");
 }
 
@@ -40,14 +40,17 @@ $(document).ready(function()
         {
             // append new genes to table, show "more" button
             $("#generank").append(data.result);
-            stripetables();
+            
+            // show abstract count
+            if (data.abstractcount)
+                $("span#abstractcount").html(data.abstractcount).show();
             
             $("div#description").show();
             $("#results").fadeTo(200, 1);
             $("table#download").fadeIn('slow');
             
             $("#more").show();
-            hideflash();        
+            hidespinner();        
         }
         else
         {
@@ -55,7 +58,7 @@ $(document).ready(function()
             flash(data.errmsg);
         }
     })
-    .error(function() {flasherror();} );
+    .error(function() {hidespinner(); flasherror();} );
     
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
@@ -63,6 +66,9 @@ $(document).ready(function()
         var queryString = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
         offset += limit;
         
+        // hide "more" button while we're fetching more genes
+        $("input#more").hide();
+
         // get more genes
         spin();
         $.getJSON("genelist", queryString)
@@ -72,20 +78,22 @@ $(document).ready(function()
             {
                 // append new genes to table
                 $("#generank").append(data.result);
-                stripetables();
-                hideflash();
+                hidespinner();
+                $("input#more").show();
             }
             else
             {
-                // If "validresult" is false, we ran out of genes.  (Ot
-                flash("No more genes match your query.");
-                $("#more").hide(); 
+                // If "validresult" is false, we ran out of genes.  
+                hidespinner();
+                $("input#more").hide(); 
+                $("div#content").append("No more genes match your query!");
             }
         })
         .error(function() 
         {
+            hidespinner();
             flasherror();
-            $("#more").hide();    
+            $("input#more").hide();    
         });
         
     });
@@ -109,7 +117,7 @@ $(document).ready(function()
             var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&genesyms=" + genesyms + ',' + sym + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount; 
             
             // set up abstract pane
-            $("#generank tr#gene" + gene).after('<tr class="pane abstracts" id="abstracts' + gene + '"><td colspan="13"><img src="/static/spinner2.gif"></td></tr>');
+            $("#generank tr#gene" + gene).after('<tr class="abstracts" id="abstracts' + gene + '"><td></td><td class="pane" colspan="5"><img src="/static/spinner2.gif"></td></tr>');
             
             // change link text
             $(this).text("Hide abstracts");
@@ -119,17 +127,17 @@ $(document).ready(function()
             .success(function(result)
             {
                     // append abstracts to td
-                    $("#generank tr#abstracts" + gene + " td img").remove(); // hide spinner
-                    $("#generank tr#abstracts" + gene + " td").html(result); 
-                    $("#generank tr#abstracts" + gene + " td").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide abstracts</a>');
+                    $("#generank tr#abstracts" + gene + " td.pane img").remove(); // hide spinner
+                    $("#generank tr#abstracts" + gene + " td.pane").html(result); 
+                    $("#generank tr#abstracts" + gene + " td.pane").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide abstracts</a>');
                     
-                    $("#generank tr#abstracts" + gene + " td div").slideDown();
+                    $("#generank tr#abstracts" + gene + " td.pane div").slideDown();
                     fetchabstracts(gene);
                 
             })
             .error(function() 
             {
-                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                flasherror();
             });
         }
         else // the abstract pane exists
@@ -141,7 +149,7 @@ $(document).ready(function()
                 // show the abstract pane
                 hidepanes(gene);
                 $("#generank tr#abstracts" + gene).show();
-                $("#generank tr#abstracts" + gene + " td div").slideDown();
+                $("#generank tr#abstracts" + gene + " td.pane div").slideDown();
 
                 $(this).text("Hide abstracts");
             }
@@ -167,7 +175,7 @@ $(document).ready(function()
             hidepanes(gene);
         
             // the tr for events doesn't exist, so make one
-            $("#generank tr#gene" + gene).after('<tr class="pane eventpreview" id="eventpreview' + gene + '"><td colspan="13"><div><img src="/static/spinner2.gif"></div></td></tr>');
+            $("#generank tr#gene" + gene).after('<tr class="eventpreview" id="eventpreview' + gene + '"><td></td><td class="pane" colspan="5"><div><img src="/static/spinner2.gif"></div></td></tr>');
         
             // assemble querystring
             var querystring = "q=" + q + "&gene_symbols=" + genesyms + ',' + sym + "&detail=" + sym + "&limit=3&preview=1";
@@ -176,17 +184,17 @@ $(document).ready(function()
             $.get("eventlist.html", querystring)
             .success(function(result)
             {
-                $("#generank tr#eventpreview" + gene + " td div").remove(); // hide spinner
-                $("#generank tr#eventpreview" + gene + " td").html('<div style="display:none; padding-top:5px;">' + result + '</div>');
-                $("#generank tr#eventpreview" + gene + " td").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide interactions</a>');
-                $("#generank tr#eventpreview" + gene + " td div").slideDown();
+                $("#generank tr#eventpreview" + gene + " td.pane div").remove(); // hide spinner
+                $("#generank tr#eventpreview" + gene + " td.pane").html('<div style="display:none; padding-top:5px;">' + result + '</div>');
+                $("#generank tr#eventpreview" + gene + " td.pane").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide interactions</a>');
+                $("#generank tr#eventpreview" + gene + " td.pane div").slideDown();
             })
             .error(function()
             {
-                $("#generank tr#eventpreview" + gene + " td div").remove(); // hide spinner
-                $("#generank tr#eventpreview" + gene + " td").html('<div></div>');
+                $("#generank tr#eventpreview" + gene + " td.pane div").remove(); // hide spinner
+                $("#generank tr#eventpreview" + gene + " td.pane").html('<div></div>');
                 hidepanes(gene);
-                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                flasherror();
             });
         }
         else // the tr for events exists
@@ -198,7 +206,7 @@ $(document).ready(function()
                 // show the events pane
                 hidepanes(gene);
                 $("#generank tr#eventpreview" + gene).show();
-                $("#generank tr#eventpreview" + gene + " td div").slideDown();
+                $("#generank tr#eventpreview" + gene + " td.pane div").slideDown();
             }
             else
             {
@@ -220,7 +228,7 @@ $(document).ready(function()
             hidepanes(gene); // hide other panes
             
             // the tr for crossrefs doesn't exist, so make one
-            $("#generank tr#gene" + gene).after('<tr class="pane crossrefs" id="crossrefs' + gene + '"><td colspan="13"><div><img src="/static/spinner2.gif"></div></td></tr>');
+            $("#generank tr#gene" + gene).after('<tr class="crossrefs" id="crossrefs' + gene + '"><td></td><td class="pane" colspan="5"><div><img src="/static/spinner2.gif"></div></td></tr>');
         
             // assemble querystring
             var querystring = "gene=" + gene + "&genesymbol=" + sym;
@@ -229,28 +237,28 @@ $(document).ready(function()
             $.getJSON("genecrossrefs", querystring)
             .success(function(data)
             {
-                $("#generank tr#crossrefs" + gene + " td div").remove(); // hide spinner
+                $("#generank tr#crossrefs" + gene + " td.pane div").remove(); // hide spinner
                 if (data.validresult)
                 {
                     // display the cross references 
-                    $("#generank tr#crossrefs" + gene + " td").html('<div style="display:none; padding-top:5px;">' + data.result + '</div>');
-                    $("#generank tr#crossrefs" + gene + " td").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide external links</a>');
-                    $("#generank tr#crossrefs" + gene + " td div").slideDown();
+                    $("#generank tr#crossrefs" + gene + " td.pane").html('<div style="display:none; padding-top:5px;">' + data.result + '</div>');
+                    $("#generank tr#crossrefs" + gene + " td.pane").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide external links</a>');
+                    $("#generank tr#crossrefs" + gene + " td.pane div").slideDown();
                 }
                 else
                 {
                     // collapse the pane, show an error message
-                    $("#generank tr#crossrefs" + gene + " td").html('<div></div>');
+                    $("#generank tr#crossrefs" + gene + " td.pane").html('<div></div>');
                     hidepanes(gene);
-                    flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                    flasherror();
                 }
             })
             .error(function()
             {
-                $("#generank tr#crossrefs" + gene + " td div").remove(); // hide spinner
-                $("#generank tr#crossrefs" + gene + " td").html('<div></div>');
+                $("#generank tr#crossrefs" + gene + " td.pane div").remove(); // hide spinner
+                $("#generank tr#crossrefs" + gene + " td.pane").html('<div></div>');
                 hidepanes(gene);
-                flash("An error occurred!  Please check your internet connection and try again.  If the error persists, please contact us.");
+                flasherror();
             });
             
         }

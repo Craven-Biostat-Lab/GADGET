@@ -56,10 +56,11 @@ def getcursor(db):
 # into the database.  If no 'insertfunction' is given, the script will execute
 # the SQL 'insertquery', formatted with the path to the file.
 
-from load_gene_abstract_links import linksource, insertMGI
+#from load_gene_abstract_links import linksource, insertMGI
+import load_gene_abstract_links as ga
 ga_sources = [    
     # gene2pubmed
-    linksource(
+    ga.linksource(
         url = 'ftp://ftp.ncbi.nih.gov/gene/DATA/gene2pubmed.gz',
         filename = 'gene2pubmed',
         compressiontype = 'gzip',
@@ -74,7 +75,7 @@ ga_sources = [
     
     # SGD
     # requires "sgd_xrefs" table
-    linksource(
+    ga.linksource(
         url = 'http://downloads.yeastgenome.org/curation/literature/gene_literature.tab',
         filename = 'SGD_gene_literature.tab',
         insertquery = \
@@ -88,9 +89,9 @@ ga_sources = [
     # MGI
     # requires mgi_entrez_gene (must be populated) 
     # and mgi_reference (can be enpty) tables
-    linksource(
+    ga.linksource(
         url = 'ftp://ftp.informatics.jax.org/pub/reports/MRK_Reference.rpt',
         filename = 'MGI_MRK_Reference.rpt',
-        insertfunction = insertMGI,
+        insertfunction = ga.insertMGI,
     ),
     ]
