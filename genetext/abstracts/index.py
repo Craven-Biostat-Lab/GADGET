@@ -3,7 +3,7 @@ import atexit
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST, BOOLEAN, STORED
 from whoosh.qparser import MultifieldParser
-from whoosh.query import And, Term, ConstantScoreQuery, NullQuery
+from whoosh.query import And, Term, ConstantScoreQuery, NullQuery, Query
 from whoosh.scoring import BM25F
 from whoosh.sorting import MultiFacet
 
@@ -57,7 +57,7 @@ def cachekey(keywords='', genes=[], genehomologs=True):
     
     return 'query_k:{0}_g:{1}_h:{2}'.format(
         keywords.replace(' ', '_'),
-        ','.join(str(g) for g in genes),
+        hash(genes),
         genehomologs)
 
 
@@ -68,9 +68,12 @@ def buildquery(keywords=None, genes=None, genehomologs=True, onlyreviews=False, 
     # using homologs
     genefield = 'homolog_genes' if genehomologs else 'genes'
     
-    # build gene branch of query
+    # build gene branch of query.  If genes is a list, AND the entries together.
     if genes is not None:   
-        genebranch = And([Term(genefield, unicode(g)) for g in genes])
+        if isinstance(genes, Query):
+            genebranch = genes
+        else:
+            genebranch = And([Term(genefield, unicode(g)) for g in genes])
     else:
         genebranch = NullQuery()
         

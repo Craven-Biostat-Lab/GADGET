@@ -9,7 +9,7 @@
 {% if q or genes %}
 <script type="text/javascript">
     var q = "{{ q|urlencode }}";
-    var genes = "{{ genes|join:','|urlencode }}";
+    var genes = "{{ genes|urlencode }}";
     var genesyms = "{{ genesyms|join:', '|urlencode }}";
     var species = "{{ species|urlencode }}";
     var usehomologs = "{{ usehomologs|urlencode }}";

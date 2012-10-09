@@ -12,6 +12,7 @@ import rpy2.robjects as robjects
 
 from genetext.geneview.models import Gene, GeneAbstract, Abstract
 from genetext.abstracts.index import get_abstracts, corpus_size
+from genetext.geneindex.geneindex import parse_abstractquery 
 
 # allowable species (specieschoices should be in order, with the default first)
 speciesnames = {'9606': 'Homo sapiens', '10090': 'Mus musculus', '559292': 'Saccharomyces cerevisiae'}
@@ -30,7 +31,7 @@ def searchpage(request):
     
     # get form arguments from the query string
     q = request.GET.get('q', default='')
-    genes_input = request.GET.get('genes', default='')
+    genes = request.GET.get('genes', default='')
     species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     orderby = request.GET.get('orderby', default='f1_score')
@@ -42,59 +43,14 @@ def searchpage(request):
         species = '9606'
         speciesname = 'Homo sapiens'
     
-    # look up gene Entrez ID's and symbols
-    if genes_input:
-        try:
-            genes = gene_lookup(genes_input, species)
-        except KeyError as (e,):
-            # we couldn't find a gene symbol
-            return render_to_response('genesearch.html', {'form': form, 'errormsg': 'No genes match "{0}" for {1}'.format(e, speciesname)})
-        
-        genesyms = [g.symbol for g in Gene.objects.filter(entrez_id__in=genes)]
-    else:
-        genes = ''
-        genesyms = ''
+    # FIXME: get rid of gene symbols in interface
+    genesyms = ''
     
     usehomologs = parseboolean(usehomologs_input)
     
     return render_to_response('genesearch.html', {'form': form, 'q': q, 
-        'genes': map(str, genes), 'genesyms': genesyms, 'species': species, 'speciesname': speciesname,
+        'genes': genes, 'genesyms': genesyms, 'species': species, 'speciesname': speciesname,
         'usehomologs': usehomologs, 'orderby': orderby})
-
-
-def gene_lookup(genes_input, species=None):
-    """Given a list of gene Entrez ID's and symbols (as a comma-separated
-     string), return a list of Entrez ID's"""
-    
-    if genes_input is None:
-        return None
-    
-    genes = []
-    for i in genes_input.split(','):
-        g = i.strip()
-        
-        if g == '':
-            continue
-        
-        try:
-            genes.append(int(g))
-        except ValueError:
-        
-            # switch to MySQL wildcard matching
-            g = g.replace('*', '%').replace('?', '_')
-        
-            if species:
-                newgenes = [r.entrez_id for r in Gene.objects.filter(symbol__iexact=g, tax_id=species)]
-                newgenes = [r.entrez_id for r in Gene.objects.filter(tax_id=species).extra(where=['`symbol` LIKE %s'], params=[g])]
-            else:
-                newgenes = [r.entrez_id for r in Gene.objects.extra(where=['`symbol` LIKE %s'], params=[g])]
-            
-            if newgenes:
-                genes.extend(newgenes)
-            else:
-                raise KeyError(g) # we couldn't find a match for one of the genes
-                
-    return genes
 
 
 def parseboolean(s):
@@ -147,26 +103,27 @@ def genesearch(request):
     geneinput = request.GET.get('genes')
     if geneinput:
         try:
-            genes = gene_lookup(geneinput, species)
-        except KeyError as (e,):
-            return searchresponse(validresult=False, download=download, errmsg='No genes match "{0}" for species {1}'.format(e, species))
+            # get a query to run against the abstract index
+            genequery = parse_abstractquery(geneinput, species, usehomologs=usehomologs)
+        except LookupError as e:
+            return searchresponse(validresult=False, download=download, errmsg='No genes match <b>{0}</b> for species {1}'.format(e.args[0], species))
     else:
-        genes = None
+        genequery = None
     
     # get keywords
     keywords = request.GET.get('q')
     
     # don't do anything if we don't have a query
-    if not genes and not keywords:
+    if not genequery and not keywords:
         return searchresponse(validresult=False, download=download, errmsg="Please enter gene symbols or a keyword query.")
     
     # get abstracts matching keywords and genes
-    abstracts = get_abstracts(keywords, genes, usehomologs)
+    abstracts = get_abstracts(keywords, genequery, usehomologs)
     query_abstract_count = len(abstracts)
 
     # error if no abstracts matched the query
     if abstracts == []:
-        return searchresponse(validresult=False, download=download, errmsg="Your query did not match any abstracts.", query=keywords, genes=genes, usehomologs=usehomologs)
+        return searchresponse(validresult=False, download=download, errmsg="Your query did not match any abstracts.", query=keywords, genes=geneinput, usehomologs=usehomologs)
 
     # get corpus size
     total_abstract_count = corpus_size()
@@ -233,9 +190,9 @@ def genesearch(request):
     pvals = ['{0:.2e}'.format(phyper(g.hits-1, query_abstract_count, total_abstract_count-query_abstract_count, g.abstracts_display, lower_tail=False)[0]) for g in results]
 
     if not pvals: 
-        return searchresponse(validresult=False, download=download, errmsg="Your query didn't match any genes.", query=keywords, genes=genes, usehomologs=usehomologs, species=species)
+        return searchresponse(validresult=False, download=download, errmsg="Your query didn't match any genes.", query=keywords, genes=geneinput, usehomologs=usehomologs, species=species)
 
-    return searchresponse(validresult=True, download=download, results=results, genes=genes, pvals=pvals, offset=offset, orderby=orderby, query=keywords, limit=limit, usehomologs=usehomologs, species=species)
+    return searchresponse(validresult=True, download=download, results=results, genes=geneinput, pvals=pvals, offset=offset, orderby=orderby, query=keywords, limit=limit, usehomologs=usehomologs, species=species)
     
 
 def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None):

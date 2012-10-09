@@ -5,8 +5,9 @@ from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
 
-from genetext.geneview.geneview import gene_lookup, parseboolean
+from genetext.geneview.geneview import  parseboolean
 from genetext.abstracts.index import abstracts_page
+from genetext.geneindex.geneindex import parse_abstractquery
 from genetext.geneview.models import Abstract
 
 def abstracts(request):
@@ -22,11 +23,11 @@ def abstracts(request):
     # get query arguments from query string
     keywords = request.GET.get('q')
     try:
-        genes = gene_lookup(request.GET.get('genes'), species)
-    except KeyError:
+        genes = parse_abstractquery(request.GET.get('genes'), species)
+    except LookupError as e:
         # bad gene query
         response = HttpResponse()
-        json.dump({'validresult': False, 'errmsg': 'Bad gene query.  Check your gene symbols.'}, response)
+        json.dump({'validresult': False, 'errmsg': 'Bad gene query.  Check your gene symbols: {0}.'.format(e.args[0])}, response)
         return response
     
     # figure out if we should include homologs
@@ -70,10 +71,6 @@ def abstracts(request):
         json.dump({'validresult': False, 'errmsg': 'No more abstracts!'}, response)
         return response
     
-    
-    # fetch rows from database
-    #abstracts = Abstract.objects.filter(pubmed_id__in=abstract_ids)
-   
     # create response
     resulthtml = render_to_string('abstracts.html', {'abstracts': abstracts})
     response = HttpResponse()

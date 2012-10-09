@@ -70,7 +70,7 @@ def convert_to_abstractquery(query, tax=None, genefield='genes'):
         # return the genes matched by the leaf, all OR'd together.
         try:
             # lookup will raise a LookupError if the query does not match any genes
-            return Or([Term(genefield, g) for g in lookup(taxquery)])
+            return Or([Term(genefield, str(g)) for g in lookup(taxquery)])
 
         # if we get a LookupError, try to determine the bad text that caused it.
         except LookupError:
@@ -117,10 +117,13 @@ def parsequery(q, implicitOr=False):
         return andParser.parse(q)
 
 
-def parse_abstractquery(q, tax=None, implicitOr=False, genefield='genes'):
+def parse_abstractquery(q, tax=None, implicitOr=False, usehomologs=False):
     """Take a gene query as a string, and parse and convert it into a Whoosh 
     query object to be used against the abstract index.  Raise a LookupError 
     if there is a term in the query that doesn't match any genes."""
     
+    # decide which gene field to use on the abstract index
+    genefield = 'homolog_genes' if usehomologs else 'genes'
+
     genequery = parsequery(unicode(q), implicitOr)
     return convert_to_abstractquery(genequery, tax, genefield).normalize()
