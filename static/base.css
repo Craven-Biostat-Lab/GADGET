@@ -66,6 +66,21 @@ div#header {
     padding: 3px 5px;
 }
 
+#search form ul {
+    display: inline;
+    padding: 0;
+    margin: 0;
+}
+
+#search form ul li {
+    display: inline;
+    list-style-type: none;
+}
+
+#search form ul li  {
+
+}
+
 #header img#smalllogo {
     border:0;
     margin: 3px 20px;

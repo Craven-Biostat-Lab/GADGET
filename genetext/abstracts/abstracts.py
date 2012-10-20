@@ -20,22 +20,34 @@ def abstracts(request):
     except (KeyError, ValueError):
         species = 9606
     
-    # get query arguments from query string
-    keywords = request.GET.get('q')
+    # get gene operator (any (or) / all (and))
     try:
-        genes = parse_abstractquery(request.GET.get('genes'), species)
+        geneop = request.GET['geneop'].lower()
+        if geneop == 'any':
+            implicitOr = True
+        else:
+            implicitOr = False
+    except KeyError:
+        implicitOr = False
+
+    # figure out if we should include homologs
+    try:
+        usehomologs = parseboolean(request.GET['usehomologs'])
+    except (KeyError, ValueError):
+        usehomologs = False  
+        
+    # get keyword arguments from query string
+    keywords = request.GET.get('q')
+
+    # get genes from query string
+    try:
+        genes = parse_abstractquery(request.GET.get('genes'), species, implicitOr, usehomologs)
     except LookupError as e:
         # bad gene query
         response = HttpResponse()
         json.dump({'validresult': False, 'errmsg': 'Bad gene query.  Check your gene symbols: {0}.'.format(e.args[0])}, response)
         return response
-    
-    # figure out if we should include homologs
-    try:
-        usehomologs = parseboolean(request.GET['usehomologs'])
-    except (KeyError, ValueError):
-        usehomologs = False
-    
+
     # should we only include reviews?
     try:
         onlyreviews = parseboolean(request.GET['onlyreviews'])
@@ -84,6 +96,7 @@ def abstractview(request):
     species = request.GET.get('species')
     genes = request.GET.get('genes')
     genesyms = request.GET.get('genesyms')
+    geneop = request.GET.get('geneop')
     usehomologs = request.GET.get('usehomologs')
     onlyreviews = request.GET.get('onlyreviews')
     orderby = request.GET.get('orderby')
@@ -103,7 +116,7 @@ def abstractview(request):
         onlyreviews = parseboolean(onlyreviews)
 
     return render_to_response('abstractview.html', {'q':q,
-        'species':species, 'genes':genes, 'genesyms': genesyms, 
+        'species':species, 'genes':genes, 'genesyms': genesyms, 'geneop': geneop,
         'usehomologs':usehomologs, 'onlyreviews':onlyreviews, 
         'orderby':orderby, 'offset':offset,
         'unique':unique, 'abstractcount':abstractcount})

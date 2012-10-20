@@ -18,6 +18,14 @@ from genetext.geneindex.geneindex import parse_abstractquery
 speciesnames = {'9606': 'Homo sapiens', '10090': 'Mus musculus', '559292': 'Saccharomyces cerevisiae'}
 specieschoices = (('9606', 'Homo sapiens'),('10090', 'Mus musculus'), ('559292', 'Saccharomyces cerevisiae'))
 
+geneoperators = (('any', 'any'), ('all','all'))
+    
+# dict of valid orderby options, and corresponding terms for SQL query
+query_orderbys = {'adjusted_precision': 'precision',
+    'matching_abstracts': 'hits', 'total_abstracts': 'abstracts_display',
+    'f1_score': 'f1_score'}
+
+
 def validatespecies(taxid):
     """Return a validated species ID and speciesname.  Human by default"""
     if taxid in speciesnames:
@@ -32,6 +40,7 @@ def searchpage(request):
     class SearchForm(forms.Form):
         q = forms.CharField(label='Keywords')
         genes = forms.CharField(label='Gene symbols')
+        geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, initial='all', widget=forms.RadioSelect)
         species = forms.ChoiceField(label='Species', choices=specieschoices, initial='9606')
         usehomologs = forms.BooleanField(label='Use homologs', widget=forms.CheckboxInput(check_test=parseboolean))
     
@@ -40,6 +49,7 @@ def searchpage(request):
     # get form arguments from the query string
     q = request.GET.get('q', default='')
     genes = request.GET.get('genes', default='')
+    geneop = request.GET.get('geneop', default=geneoperators[1])
     species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     orderby = request.GET.get('orderby', default='f1_score')
@@ -47,14 +57,14 @@ def searchpage(request):
     # validate species
     species, speciesname = validatespecies(request.GET.get('species'))
 
-    # FIXME: get rid of gene symbols in interface
-    genesyms = ''
+    # gene input to display to the user
+    genesyms = genes
     
     usehomologs = parseboolean(usehomologs_input)
     
     return render_to_response('genesearch.html', {'form': form, 'q': q, 
-        'genes': genes, 'genesyms': genesyms, 'species': species, 'speciesname': speciesname,
-        'usehomologs': usehomologs, 'orderby': orderby})
+        'genes': genes, 'geneop': geneop, 'genesyms': genesyms, 'species': species, 
+        'speciesname': speciesname, 'usehomologs': usehomologs, 'orderby': orderby})
 
 
 def parseboolean(s):
@@ -72,6 +82,63 @@ def parseboolean(s):
         return True
 
 
+class genesearchparams:
+    """Struct for arguments passed to the gene search via the query string.
+    Parses the arguments out of the request object when initialized."""
+
+    def __init__(self, request):
+        # format to return the results in (blank for JSON to display in the browser)
+        self.download = request.GET.get('download')
+
+        # get species, default=human
+        try:
+            self.species = int(request.GET['species'])
+        except (KeyError, ValueError):
+            self.species = 9606
+            
+        # get homology option
+        try:
+            self.usehomologs = parseboolean(request.GET['usehomologs'])
+        except (KeyError, ValueError):
+            self.usehomologs = False
+        
+        # get keywords
+        self.keywords = request.GET.get('q')
+
+        # get gene operator (any (or) / all (and))
+        try:
+            self.geneop = request.GET['geneop'].lower()
+            if self.geneop == 'any':
+                self.implicitOr = True
+            else:
+                self.geneop = 'all'
+                self.implicitOr = False
+        except KeyError:
+            self.geneop = 'all'
+            self.implicitOr = False
+    
+        # get genes
+        self.genes = request.GET.get('genes')
+
+        # get offset (how many genes to skip, from the start of the list)
+        try: self.offset = int(request.GET.get('offset'))
+        except: self.offset = 0
+        
+        # get limit (max number of genes to return)
+        try: 
+            self.limit = int(request.GET.get('limit')) # limit to display to user
+            self.query_limit = self.limit # limit to insert into SQL
+        except: 
+            self.limit = None
+            self.query_limit = 9999999999999999999 # arbitrary large number
+        
+        # get the order from the query string
+        self.orderby = request.GET.get('orderby', default='f1_score')
+        # make sure that the order-by option is valid, to prevent SQL injection
+        if self.orderby not in query_orderbys:
+            self.orderby = 'f1_score'
+
+
 def genesearch(request):
     """Does the actual search for the gene search.  Given a keyword query,
     a list of genes, species, homology option, offset, limit, sorting
@@ -79,81 +146,43 @@ def genesearch(request):
     genes relevent to the query via the index and database, and returns the 
     appropriate response."""
     
-    # format to return the results in (blank for JSON to display in the browser)
-    download = request.GET.get('download')
-    
-    # get species, default=human
-    try:
-        species = int(request.GET['species'])
-    except (KeyError, ValueError):
-        species = 9606
-        
-    # get homology option
-    try:
-        usehomologs = parseboolean(request.GET['usehomologs'])
-    except (KeyError, ValueError):
-        usehomologs = False
+    params = genesearchparams(request)
         
     # use homology option to decide which gene-abstract table and which
     # abstract-count column to use.
-    if usehomologs:
+    if params.usehomologs:
         geneabstract_tablename = 'homologene_gene_abstract'
         abstract_col = 'homolog_abstracts'
     else:
         geneabstract_tablename = 'gene_abstract'
         abstract_col = 'abstracts'
     
-    # get genes
-    geneinput = request.GET.get('genes')
-    if geneinput:
+    if params.genes:
         try:
             # get a query to run against the abstract index
-            genequery = parse_abstractquery(geneinput, species, usehomologs=usehomologs)
+            genequery = parse_abstractquery(params.genes, params.species, params.implicitOr, params.usehomologs)
         except LookupError as e:
-            return searchresponse(validresult=False, download=download, errmsg='No genes match <b>{0}</b> for species {1}'.format(e.args[0], species))
+            # a term in the gene query couldn't be matched to any genes.
+            return searchresponse(validresult=False, download=params.download, errmsg='No genes match <b>{0}</b> for species {1}'.format(e.args[0], params.species))
     else:
         genequery = None
     
-    # get keywords
-    keywords = request.GET.get('q')
-    
     # don't do anything if we don't have a query
-    if not genequery and not keywords:
-        return searchresponse(validresult=False, download=download, errmsg="Please enter gene symbols or a keyword query.")
+    if not genequery and not params.keywords:
+        return searchresponse(validresult=False, download=params.download, errmsg="Please enter gene symbols or a keyword query.")
     
     # get abstracts matching keywords and genes
-    abstracts = get_abstracts(keywords, genequery, usehomologs)
+    abstracts = get_abstracts(params.keywords, genequery, params.usehomologs)
     query_abstract_count = len(abstracts)
 
     # error if no abstracts matched the query
     if abstracts == []:
-        return searchresponse(validresult=False, download=download, errmsg="Your query did not match any abstracts.", query=keywords, genes=geneinput, usehomologs=usehomologs)
+        return searchresponse(validresult=False, download=params.download, errmsg="Your query did not match any abstracts.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs)
 
     # get corpus size
     total_abstract_count = corpus_size()
 
-    # get limit and offset from query string
-    try: offset = int(request.GET.get('offset'))
-    except: offset = 0
-    
-    try: 
-        limit = int(request.GET.get('limit')) # limit to display to user
-        query_limit = limit # limit to insert into SQL
-    except: 
-        limit = None
-        query_limit = 18446744073709551615 # arbitrary large number (no better way to do this.)
-    
-    # dict of valid orderby options, and corresponding terms for SQL query
-    _query_orderbys = {'adjusted_precision': 'precision',
-        'matching_abstracts': 'hits', 'total_abstracts': 'abstracts_display',
-        'f1_score': 'f1_score'}
-    
-    # get the order from the query string
-    orderby = request.GET.get('orderby', default='f1_score')
-    # make sure that the order-by option is valid, to prevent SQL injection
-    if orderby not in _query_orderbys:
-        orderby = 'f1_score'
-    query_orderby = _query_orderbys[orderby] # orderby term to insert into SQL
+    query_orderby = query_orderbys[params.orderby] # orderby term to insert into SQL
 
     def paramstring(l):
         """Return a string of comma-separated %s's of length l
@@ -182,24 +211,24 @@ def genesearch(request):
         paramstring=paramstring(len(abstracts)), 
         orderby=query_orderby, 
         query_abstract_count=query_abstract_count,
-        species=species,
+        species=params.species,
         geneabstract_tablename=geneabstract_tablename,
         abstract_col=abstract_col)
     
     # execute sql query, get genes
-    results = Gene.objects.raw(sqlquery, abstracts + [species, offset, query_limit])
+    results = Gene.objects.raw(sqlquery, abstracts + [params.species, params.offset, params.query_limit])
     
     # calculate p values
     phyper = robjects.r['phyper']
     pvals = ['{0:.2e}'.format(phyper(g.hits-1, query_abstract_count, total_abstract_count-query_abstract_count, g.abstracts_display, lower_tail=False)[0]) for g in results]
 
     if not pvals: 
-        return searchresponse(validresult=False, download=download, errmsg="Your query didn't match any genes.", query=keywords, genes=geneinput, usehomologs=usehomologs, species=species)
+        return searchresponse(validresult=False, download=params.download, errmsg="Your query didn't match any genes.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, species=params.species)
 
-    return searchresponse(validresult=True, download=download, results=results, genes=geneinput, pvals=pvals, offset=offset, orderby=orderby, query=keywords, limit=limit, usehomologs=usehomologs, species=species, query_abstract_count=query_abstract_count)
+    return searchresponse(validresult=True, download=params.download, results=results, genes=params.genes, geneop=params.geneop, pvals=pvals, offset=params.offset, orderby=params.orderby, query=params.keywords, limit=params.limit, usehomologs=params.usehomologs, species=params.species, query_abstract_count=query_abstract_count)
     
 
-def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None, query_abstract_count=None):
+def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], geneop=None, pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None, query_abstract_count=None):
     """Return an HttpResponse object with gene search results, as either JSON, XML,
     or a CSV depending on the "download" argument.  "validresult" is True if "genes",
     "pvals", and "offset" represent a valid result, and False otherwise.  "errmsg" 
@@ -213,18 +242,16 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
             # create, package, and return a CSV file
             response = HttpResponse(mimetype='text/csv')
             response['Content-Disposition'] = \
-                'attachment; filename=gadget-{0}-{1}.csv'.format(quote(query), ','.join([str(g) for g in genes]) if genes else '')
+                'attachment; filename=gadget-{0}-{1}.csv'.format(quote(query) if query else '', quote(genes) if genes else '')
             response.write(makeCSV(results, pvals, offset))
             return response
             
         elif download.lower() == 'xml':
             # render the XML template
-            # look up gene symbols in database
-            generecs = Gene.objects.filter(entrez_id__in=genes).only('entrez_id', 'symbol') if genes else []
             response = render_to_response('genelist.xml', 
                 {'results': zip(results, pvals), 'pvals': pvals, 'offset': offset, 
                 'orderby':orderby, 'q':query, 'limit':limit, 'errmsg': errmsg,
-                'genes': generecs, 'usehomologs': usehomologs, 'species':species})
+                'genes': genes, 'geneop': geneop, 'usehomologs': usehomologs, 'species':species})
             response['Content-Type'] = 'text/xml'
             return response
             

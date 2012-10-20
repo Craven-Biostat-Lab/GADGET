@@ -46,11 +46,11 @@ datefacet.add_field('year')
 datefacet.add_field('month')
 datefacet.add_field('day')
 
-def cachekey(keywords='', genes=[], genehomologs=True):
+def cachekey(keywords='', genes=(), genehomologs=True):
     """Return a key to use for cached query results"""
     
     if genes is None:
-        genes = []
+        genes = ()
         
     if keywords is None:
         keywords=''

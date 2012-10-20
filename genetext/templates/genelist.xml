@@ -3,12 +3,8 @@
 <genelist>
   <description>{% if q %}
     <query>{{ q|safe }}</query>{% endif %}{% if genes %}
-    <input_genes>{% for ig in genes %}
-      <input_gene>
-        <entrez_id>{{ ig.entrez_id }}</entrez_id>
-        <symbol>{{ ig.symbol }}</symbol>
-      </input_gene>{% endfor %}
-    </input_genes>{% endif %}
+    <input_genes>{{genes}}</input_genes>{% endif %}{% if geneop %}
+    <gene_operator>{{ geneop }}</gene_operator>{% endif %}
     <species>{{ species }}</species>
     <using_homologs>{{ usehomologs }}</using_homologs>{% if orderby %}
     <orderby>{{ orderby }}</orderby>{% endif %}{% if limit %}

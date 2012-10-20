@@ -13,7 +13,7 @@ var abstractlimit = 15;
 // build the query string and redirect to a page with the new ordering
 function order(key)
 {
-    var querystring = "q=" + q + "&genes=" + genesyms + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key;
+    var querystring = "q=" + q + "&genes=" + genesyms + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key;
     window.location = "genesearch?" + querystring;
 }
 
@@ -28,7 +28,7 @@ function hidepanes(gene)
 
 $(document).ready(function()
 {
-    var queryString = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit;
+    var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit;
     offset += initialLimit;
     
     // get initial results
@@ -63,7 +63,7 @@ $(document).ready(function()
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
     {
-        var queryString = "q=" + q + "&genes=" + genes + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
+        var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
         offset += limit;
         
         // hide "more" button while we're fetching more genes
@@ -114,7 +114,7 @@ $(document).ready(function()
             var abstractcount = $("tr#gene" + gene).attr("hits");
 
             // assemble querystring
-            var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&genesyms=" + genesyms + ',' + sym + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount; 
+            var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&geneop=" + geneop + "&genesyms=" + genesyms + ' AND ' + sym + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount; 
             
             // set up abstract pane
             $("#generank tr#gene" + gene).after('<tr class="abstracts" id="abstracts' + gene + '"><td></td><td class="pane" colspan="5"><img src="/static/spinner2.gif"></td></tr>');
@@ -296,6 +296,7 @@ $(document).ready(function()
 
 var initialquery = null;
 var initialgenes = null;
+var initialgeneop = null; //TODO
 var initialspecies = null;
 var initialhomologs = null;
 
