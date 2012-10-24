@@ -307,6 +307,14 @@ $(window).bind('pageshow', function() {
     if (initialgenes == null) {initialgenes = $("input#id_genes").val();}
     else {$("input#id_genes").val(initialgenes);}
     
+    // if neither gene operator is selected, select 'any' by default
+    // the django field 'inital' field doesn't work because the form is bound to the request.
+    if($("input[name='geneop']:checked").length==0)
+        {$("input[name='geneop'][value='any']").attr('checked', 'checked');}
+
+    if (initialgeneop == null) {initialgeneop = $("input[name='geneop']:checked").attr('value');}
+    else {$("input[name='geneop'][value='" + initialgeneop + "']").attr('checked', 'checked');}
+
     if (initialspecies == null) {initialspecies = $("select#id_species").val();}
     else {$("select#id_species").val(initialspecies);}
     

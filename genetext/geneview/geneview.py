@@ -40,7 +40,7 @@ def searchpage(request):
     class SearchForm(forms.Form):
         q = forms.CharField(label='Keywords')
         genes = forms.CharField(label='Gene symbols')
-        geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, initial='all', widget=forms.RadioSelect)
+        geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='any')
         species = forms.ChoiceField(label='Species', choices=specieschoices, initial='9606')
         usehomologs = forms.BooleanField(label='Use homologs', widget=forms.CheckboxInput(check_test=parseboolean))
     
@@ -49,7 +49,7 @@ def searchpage(request):
     # get form arguments from the query string
     q = request.GET.get('q', default='')
     genes = request.GET.get('genes', default='')
-    geneop = request.GET.get('geneop', default=geneoperators[1])
+    geneop = request.GET.get('geneop', default=geneoperators[0][0])
     species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     orderby = request.GET.get('orderby', default='f1_score')
@@ -108,14 +108,14 @@ class genesearchparams:
         # get gene operator (any (or) / all (and))
         try:
             self.geneop = request.GET['geneop'].lower()
-            if self.geneop == 'any':
-                self.implicitOr = True
-            else:
-                self.geneop = 'all'
+            if self.geneop == 'all':
                 self.implicitOr = False
+            else:
+                self.geneop = 'any'
+                self.implicitOr = True
         except KeyError:
-            self.geneop = 'all'
-            self.implicitOr = False
+            self.geneop = 'any'
+            self.implicitOr = True
     
         # get genes
         self.genes = request.GET.get('genes')

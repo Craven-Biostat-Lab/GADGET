@@ -75,10 +75,12 @@ div#header {
 #search form ul li {
     display: inline;
     list-style-type: none;
+    font-size: 90%;
 }
 
-#search form ul li  {
-
+#search form ul li input {
+    margin: 0;
+    margin-top: 3px;
 }
 
 #header img#smalllogo {
@@ -175,6 +177,7 @@ input#more {
 
 div#description {
     padding-bottom: 5px;
+    width: 80%;
 }
 
 div#description ul {
