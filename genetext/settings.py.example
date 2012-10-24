@@ -103,4 +103,7 @@ INSTALLED_APPS = (
 )
 
 # directory where the index of abstracts lives
-ABSTRACT_INDEX_PATH = '/home/genetext/gadget/index'
+ABSTRACT_INDEX_PATH = '/home/genetext/gadget/index/abstracts'
+
+# directory with the index of genes
+GENE_INDEX_PATH = '/home/genetext/gadget/index/genes'

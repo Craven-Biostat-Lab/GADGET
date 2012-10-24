@@ -16,7 +16,7 @@ loglevel = 'DEBUG'
 dbparams = {'user': 'root', 'passwd': 'password', 'db': 'updater'}
 
 # path to abstract Whoosh index to update
-ABSTRACT_INDEX_PATH = '../index'
+ABSTRACT_INDEX_PATH = '../index/abstracts'
 
 # directory to store downloaded files
 # (nothing needs to be in here when the script runs, but the script will not
