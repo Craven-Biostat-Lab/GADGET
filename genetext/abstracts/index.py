@@ -106,7 +106,7 @@ def get_abstracts(keywords=None, genes=None, genehomologs=True):
     
     # parse the query
     query = buildquery(keywords, genes, genehomologs)
-    
+
     # search the index
     results = [r['pmid'] for r in searcher.search(query, limit=None)]
     
@@ -167,7 +167,3 @@ def corpus_size():
 @atexit.register
 def close(): # close the index when the module is unloaded
     ix.close()
-
-if __name__ == '__main__':
-    print 'Updating the index...'
-    updateIndex()

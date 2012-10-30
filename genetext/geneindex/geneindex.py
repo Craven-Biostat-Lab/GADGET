@@ -79,7 +79,6 @@ def convert_to_abstractquery(query, tax=None, genefield='genes'):
 
         # if we get a LookupError, try to determine the bad text that caused it.
         except LookupError:
-            print query
             # try to get the text of the bad query term, and attach it to the error
             try:
                 raise LookupError(query.text)

@@ -23,12 +23,14 @@ def abstracts(request):
     # get gene operator (any (or) / all (and))
     try:
         geneop = request.GET['geneop'].lower()
-        if geneop == 'any':
-            implicitOr = True
-        else:
+        if geneop == 'all':
             implicitOr = False
+        else:
+            geneop = 'any'
+            implicitOr = True
     except KeyError:
-        implicitOr = False
+        geneop = 'any'
+        implicitOr = True
 
     # figure out if we should include homologs
     try:
@@ -103,6 +105,7 @@ def abstractview(request):
     offset = request.GET.get('offset')
     unique = request.GET.get('unique')
     abstractcount = request.GET.get('abstractcount')
+    rowgene = request.GET.get('rowgene')
 
     # clean up gene symbols
     if genesyms:
@@ -119,4 +122,4 @@ def abstractview(request):
         'species':species, 'genes':genes, 'genesyms': genesyms, 'geneop': geneop,
         'usehomologs':usehomologs, 'onlyreviews':onlyreviews, 
         'orderby':orderby, 'offset':offset,
-        'unique':unique, 'abstractcount':abstractcount})
+        'unique':unique, 'abstractcount':abstractcount, 'rowgene':rowgene})

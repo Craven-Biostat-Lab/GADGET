@@ -113,8 +113,11 @@ $(document).ready(function()
             // how many abstracts for this gene?
             var abstractcount = $("tr#gene" + gene).attr("hits");
 
+            // genes query string argument
+            var genearg = genesyms ? "(" + genesyms + ") AND " + sym : sym;
+
             // assemble querystring
-            var querystring = "q=" + q + "&genes=" + genes + "," + gene + "&geneop=" + geneop + "&genesyms=" + genesyms + ' AND ' + sym + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount; 
+            var querystring = "q=" + q + "&genes=" + genearg + "&geneop=" + geneop + "&genesyms=" + genesyms + "&rowgene=" + sym + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount; 
             
             // set up abstract pane
             $("#generank tr#gene" + gene).after('<tr class="abstracts" id="abstracts' + gene + '"><td></td><td class="pane" colspan="5"><img src="/static/spinner2.gif"></td></tr>');
