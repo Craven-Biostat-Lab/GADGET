@@ -1,0 +1,49 @@
+-- set up keyphrase table
+CREATE TABLE `keyphrase` (
+  `id` INT  NOT NULL,
+  `numtokens` TINYINT UNSIGNED NOT NULL,
+  `string` VARCHAR(200)  CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`id`)
+)
+ENGINE = MyISAM
+CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+-- populate keyphrase table
+load data local infile '~/process-data/out/db.keyphrasefile'
+into table `keyphrase`
+fields terminated by '|'
+(`id`, `numtokens`, `string`, @knumgenes, @knumabstracts, @kgeneabstractvalue);
+
+-- create table to store keyphrase/abstract links
+CREATE TABLE `keyphrase_abstract` (
+  `keyphrase` INT NOT NULL,
+  `abstract` INT NOT NULL,
+  PRIMARY KEY (`keyphrase`, `abstract`),
+  KEY `abstract` (`abstract`)
+)
+ENGINE = MyISAM
+CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+-- create temporary table to link abstract ID's in output to pubmed ID's
+CREATE temporary TABLE `file_abstractIDs` (
+  `file_id` INTEGER  NOT NULL,
+  `pubmed_id` INTEGER  NOT NULL,
+  PRIMARY KEY (`file_id`)
+)
+ENGINE = MyISAM;
+
+-- populate file_abstractIDs table
+load data local infile '~/process-data/out/db.abstractfile'
+into table `file_abstractIDs`
+fields terminated by '|'
+(`file_id`, `pubmed_id`);
+
+-- populate keyphrase_abstract table
+load data local infile '~/process-data/out/db.kgafile'
+ignore
+into table `keyphrase_abstract`
+fields terminated by '|'
+(`keyphrase`, @gid, @file_abstract_id, @startoffset, @endoffset)
+set `abstract` := (select `pubmed_id` from `file_abstractIDs` where `file_id` = @file_abstract_id);
+
+
