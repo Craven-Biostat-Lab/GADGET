@@ -131,3 +131,24 @@ def parse_abstractquery(q, tax=None, implicitOr=False, usehomologs=False):
 
     genequery = parsequery(unicode(q), implicitOr)
     return convert_to_abstractquery(genequery, tax, genefield).normalize()
+    
+
+def flatten_query(query):
+    """Given a query produced by parse_abstractquery, return a set of the text
+    of all of the terms in the query (a set of all of the gene ID's as unicode
+    strings.)"""
+
+    # if this is the null query, return the empty set
+    if query == NullQuery:
+        return set()
+    
+    # if this query is a single term, return a set containing the text of the term    
+    if isinstance(query, Term):
+        return set([query.text])
+    
+    # otherwise, return the union of the terms of the query's children    
+    else:
+        union = set()
+        for c in query.children():
+            union.update(flatten_query(c))
+        return union

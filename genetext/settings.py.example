@@ -96,6 +96,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'genetext.eventview',
     'genetext.geneview',
+    'genetext.keyphraseview',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

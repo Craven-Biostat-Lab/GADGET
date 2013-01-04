@@ -82,9 +82,10 @@ def parseboolean(s):
         return True
 
 
-class genesearchparams:
+class searchparams:
     """Struct for arguments passed to the gene search via the query string.
-    Parses the arguments out of the request object when initialized."""
+    Parses the arguments out of the request object when initialized.
+    Also used by the keyphrase search."""
 
     def __init__(self, request):
         # format to return the results in (blank for JSON to display in the browser)
@@ -146,7 +147,7 @@ def genesearch(request):
     genes relevent to the query via the index and database, and returns the 
     appropriate response."""
     
-    params = genesearchparams(request)
+    params = searchparams(request)
         
     # use homology option to decide which gene-abstract table and which
     # abstract-count column to use.

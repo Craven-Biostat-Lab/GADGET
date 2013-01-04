@@ -1,0 +1,20 @@
+{% autoescape on %}
+{% if result %}
+  <table>
+  <tr><th>rank</th><th>id</th><th>string</th><th>total genes</th><th>query genes</th>
+  <th>recall</th><th>precision</th></th>f1</th></tr>
+  {% for k in result %}
+    <tr>  
+      <td>{{ forloop.counter }}</td>
+      <td>{{ k.id }}</td>
+      <td>{{ k.string }}</td>
+      <td>{{ k.all_genes }}</td>
+      <td>{{ k.query_genes }}</td>
+      <td>{{ k.recall|floatformat:-3 }}</td>
+      <td>{{ k.kprecision|floatformat:-3 }}</td>
+      <td>{{ k.f1_score|floatformat:-3 }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+{% endif %}
+{% endautoescape %}
