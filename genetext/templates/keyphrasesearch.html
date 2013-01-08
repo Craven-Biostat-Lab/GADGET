@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}GADGET{% if q or genesyms %}: keywords for{% if q %} {{ q|safe }}{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} {{ genesyms|safe }}{% endif %}{% endif %}{% endblock %}
+
+
+{% block head %}
+{% if q or genes %}
+<script type="text/javascript">
+    var q = "{{ q|urlencode }}";
+    var genes = "{{ genes|urlencode }}";
+    var geneop = "{{ geneop|urlencode }}"; // any/all
+    var genesyms = "{{ genesyms|urlencode }}";
+    var species = "{{ species|urlencode }}";
+    var usehomologs = "{{ usehomologs|urlencode }}";
+    var orderby = "{{ orderby|urlencode }}";
+</script>
+<script type="text/javascript" src="/static/keyphrasesearch.js"></script>
+{% endif %}
+{% if errormsg %}
+<script type="text/javascript">
+$(document).ready(function()
+{
+    flash("{{ errormsg|escapejs }} ");
+});
+</script>
+{% endif %}
+{% endblock %}
+
+
+{% block header %}
+<form name="search" action="" method="get">
+    <table>
+        <tr>
+            <td>{{ form.q.label }}: {{ form.q }}</td>
+            <td>{{ form.genes.label }}: {{ form.geneop }}{{ form.genes }}</td>
+            
+            <td rowspan="2"><input type="submit" value="Search Genes" /></td>
+        </tr>
+        <tr>
+            <td>{{ form.species.label }}: {{ form.species }}</td>
+            <td style="text-align:left">{{ form.usehomologs.label }}: {{ form.usehomologs }}</td>
+        </tr>
+    </table>
+</form><br />
+<div class="searchtips" style="padding-left:100px">
+    Search tips:
+    <a target="_blank" href="/manual.html#queryterms">Keywords</a>
+    <a target="_blank" href="/manual.html#geneentry">Gene symbols</a>
+    <a target="_blank" href="/manual.html#species">Species</a>
+    <a target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
+</div>
+
+{% endblock %}
+
+
+{% block tabs %}
+<span class="tab"><a href="genesearch?{% if q %}&q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|urlencode }}{% endif %}{% if geneop %}&geneop={{ geneop|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}">Gene search</a></span>
+<span class="tab"><a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|urlencode }}{% endif %}">Interaction search</a></span>
+<span class="tab selected">Keyword search</span>
+{% endblock %}
+
+
+{% block content %}
+<div id="description" style="display:none">
+    Showing and scoring keywords in <span id="abstractcount" style="display:none"></span> abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} containing <b>{{ geneop|safe }}</b> of genes <b>{{ genesyms|safe }}</b>{% endif %}<br />
+    For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
+</div><br />
+
+<div id="results" style="display:none">
+    <table id="keywords">
+        <tr>
+            <th>rank</th>
+            <th>id</th>
+            <th>string</th>
+            <th>total genes</th>
+            <th>query genes</th>
+            <th>recall</th>
+            <th>precision</th>
+            <th>f1</th>
+        </tr>
+    </table>
+</div>
+
+<input type="button" id="more" value="More keywords..." style="display:none" />
+{% endblock %}

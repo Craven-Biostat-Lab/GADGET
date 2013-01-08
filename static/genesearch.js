@@ -1,14 +1,15 @@
 // script for gene search page
 // requires jquery
 
-// string variables "q", "genes", "species", "usehomologs" and "orderby"
-// declared on html page (from query string arguments)
+// string variables "q", "genes", "geneop", "genesyms", "species", "usehomologs"
+// and "orderby" declared on html page (from query string arguments)
 
+// number of genes to fetch on page load
 var initialLimit = 100;
+
+// number of genes to fetch when the "more" button is pressed
 var limit = 100;
 var offset = 0;
-
-var abstractlimit = 15;
 
 // build the query string and redirect to a page with the new ordering
 function order(key)
@@ -299,7 +300,7 @@ $(document).ready(function()
 
 var initialquery = null;
 var initialgenes = null;
-var initialgeneop = null; //TODO
+var initialgeneop = null;
 var initialspecies = null;
 var initialhomologs = null;
 
