@@ -34,7 +34,7 @@ $(document).ready(function()
             <td>{{ form.q.label }}: {{ form.q }}</td>
             <td>{{ form.genes.label }}: {{ form.geneop }}{{ form.genes }}</td>
             
-            <td rowspan="2"><input type="submit" value="Search Genes" /></td>
+            <td rowspan="2"><input type="submit" value="Search Keywords" /></td>
         </tr>
         <tr>
             <td>{{ form.species.label }}: {{ form.species }}</td>
@@ -67,16 +67,37 @@ $(document).ready(function()
 </div><br />
 
 <div id="results" style="display:none">
+
+    <b>Sort by:</b> 
+    {% if genes %}
+        {% if orderby == 'total_genes' %}<b>Total Genes</b>{% else %}<a href="javascript:order('total_genes');">Total Genes</a>{% endif %},
+        {% if orderby == 'query_genes' %}<b>Query Genes</b>{% else %}<a href="javascript:order('query_genes');">Query Genes</a>{% endif %},
+        {% if orderby == 'gene_precision' %}<b>Gene Precision</b>{% else %}<a href="javascript:order('gene_precision');">Gene Precision</a>{% endif %},
+        {% if orderby == 'gene_recall' %}<b>Gene Recall</b>{% else %}<a href="javascript:order('gene_recall');">Gene Recall</a>{% endif %},
+        {% if orderby == 'gene_f1_score' %}<b>Gene F1 Score</b>{% else %}<a href="javascript:order('gene_f1_score');">Gene F1 Score</a>{% endif %},<br />
+    {% endif %}
+    
+    {% if orderby == 'total_abstracts' %}<b>Total Abstracts</b>{% else %}<a href="javascript:order('total_abstracts');">Total Abstracts</a>{% endif %},
+    {% if orderby == 'query_abstracts' %}<b>Query Abstracts</b>{% else %}<a href="javascript:order('query_abstracts');">Query Abstracts</a>{% endif %},
+    {% if orderby == 'abstract_precision' %}<b>Abstract Precision</b>{% else %}<a href="javascript:order('abstract_precision');">Abstract Precision</a>{% endif %},
+    {% if orderby == 'abstract_recall' %}<b>Abstract Recall</b>{% else %}<a href="javascript:order('abstract_recall');">Abstract Recall</a>{% endif %},
+    {% if orderby == 'abstract_f1_score' %}<b>Abstract F1 Score</b>{% else %}<a href="javascript:order('abstract_f1_score');">Abstract F1 Score</a>{% endif %}
+    <br /><br />
+        
     <table id="keywords">
         <tr>
             <th>rank</th>
-            <th>id</th>
             <th>string</th>
             <th>total genes</th>
             <th>query genes</th>
-            <th>recall</th>
-            <th>precision</th>
-            <th>f1</th>
+            <th>gene recall</th>
+            <th>gene precision</th>
+            <th>gene f1</th>
+            <th>total abstracts</th>
+            <th>query abstracts</th>
+            <th>abstract precision</th>
+            <th>abstract recall</th>
+            <th>abstract f1</th>
         </tr>
     </table>
 </div>

@@ -139,7 +139,7 @@ def flatten_query(query):
     strings.)"""
 
     # if this is the null query, return the empty set
-    if query == NullQuery:
+    if query is None or query == NullQuery:
         return set()
     
     # if this query is a single term, return a set containing the text of the term    

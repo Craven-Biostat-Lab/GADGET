@@ -2,13 +2,17 @@
 {% for k in result %}
 <tr>  
   <td>{{ forloop.counter|add:params.offset }}</td>
-  <td>{{ k.id }}</td>
   <td>{{ k.string }}</td>
-  <td>{{ k.all_genes }}</td>
-  <td>{{ k.query_genes }}</td>
-  <td>{{ k.gene_recall|floatformat:-3 }}</td>
-  <td>{{ k.gene_precision|floatformat:-3 }}</td>
-  <td>{{ k.gene_f1_score|floatformat:-3 }}</td>
+  <td>{{ k.total_genes }}</td>
+  <td>{% if k.query_genes %}{{ k.query_genes }}{% else %}&ndash;{% endif %}</td>
+  <td>{% if k.gene_recall %}{{ k.gene_recall|floatformat:-3 }}{% else %}&ndash;{% endif %}</td>
+  <td>{% if k.gene_precision %}{{ k.gene_precision|floatformat:-3 }}{% else %}&ndash;{% endif %}</td>
+  <td>{% if k.gene_f1_score %}{{ k.gene_f1_score|floatformat:-3 }}{% else %}&ndash;{% endif %}</td>
+  <td>{{ k.total_abstracts }}</td>
+  <td>{{ k.query_abstracts }}</td>
+  <td>{{ k.abstract_precision|floatformat:-3 }}</td>
+  <td>{{ k.abstract_recall|floatformat:-3 }}</td>
+  <td>{{ k.abstract_f1_score|floatformat:-3 }}</td>
 </tr>
 {% endfor %}
 {% endautoescape %}

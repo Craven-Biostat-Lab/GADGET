@@ -134,10 +134,7 @@ class searchparams:
             self.query_limit = 9999999999999999999 # arbitrary large number
         
         # get the order from the query string
-        self.orderby = request.GET.get('orderby', default='f1_score')
-        # make sure that the order-by option is valid, to prevent SQL injection
-        if self.orderby not in query_orderbys:
-            self.orderby = 'f1_score'
+        self.orderby = request.GET.get('orderby', default='f1_score').lower()
 
 
 def genesearch(request):
@@ -183,7 +180,10 @@ def genesearch(request):
     # get corpus size
     total_abstract_count = corpus_size()
 
-    query_orderby = query_orderbys[params.orderby] # orderby term to insert into SQL
+    if params.orderby in query_orderbys:
+        query_orderby = query_orderbys[params.orderby] # orderby term to insert into SQL
+    else:
+        query_orderby = params.orderby = 'f1_score'
 
     def paramstring(l):
         """Return a string of comma-separated %s's of length l

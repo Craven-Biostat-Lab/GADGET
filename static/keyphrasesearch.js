@@ -11,6 +11,13 @@ var initialLimit = 100;
 var limit = 100;
 var offset = 0;
 
+// build the query string and redirect to a page with the new ordering
+function order(key)
+{
+    var querystring = "q=" + q + "&genes=" + genesyms + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key;
+    window.location = "keywordsearch?" + querystring;
+}
+
 $(document).ready(function()
 {
     var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit;
@@ -24,6 +31,10 @@ $(document).ready(function()
         if (data.validresult)
         {
             $("table#keywords").append(data.result);
+         
+            // show abstract count
+            if (data.abstractcount)
+                $("span#abstractcount").html(data.abstractcount).show();
             
             $("div#description").show();
             $("#results").fadeTo(200, 1);

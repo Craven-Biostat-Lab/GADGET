@@ -1,18 +1,17 @@
 -- set up keyphrase table
 CREATE TABLE `keyphrase` (
-  `id` INT  NOT NULL,
-  `numtokens` TINYINT UNSIGNED NOT NULL,
-  `string` VARCHAR(200)  CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `id` int(11) NOT NULL,
+  `numtokens` tinyint(3) unsigned NOT NULL,
+  `string` varchar(200) NOT NULL,
+  `abstractcount` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-)
-ENGINE = MyISAM
-CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- populate keyphrase table
 load data local infile '~/process-data/out/db.keyphrasefile'
 into table `keyphrase`
 fields terminated by '|'
-(`id`, `numtokens`, `string`, @knumgenes, @knumabstracts, @kgeneabstractvalue);
+(`id`, `numtokens`, `string`, @knumgenes, `abstractcount`, @kgeneabstractvalue);
 
 -- create table to store keyphrase/abstract links
 CREATE TABLE `keyphrase_abstract` (
@@ -46,4 +45,8 @@ fields terminated by '|'
 (`keyphrase`, @gid, @file_abstract_id, @startoffset, @endoffset)
 set `abstract` := (select `pubmed_id` from `file_abstractIDs` where `file_id` = @file_abstract_id);
 
-
+-- get abstract counts for keyphrases
+update `keyphrase` 
+set abstractcount := (
+    select count(*) from `keyphrase_abstract` 
+    where `keyphrase`.`id` = `keyphrase_abstract`.`keyphrase`)
