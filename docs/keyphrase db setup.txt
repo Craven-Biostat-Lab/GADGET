@@ -50,3 +50,47 @@ update `keyphrase`
 set abstractcount := (
     select count(*) from `keyphrase_abstract` 
     where `keyphrase`.`id` = `keyphrase_abstract`.`keyphrase`)
+    
+-- pre-count genes associated with each keyphrase, for each taxon with and
+-- without homologs    
+CREATE TABLE  `production`.`keyphrase_genecounts` (
+  `keyphrase` int(11) NOT NULL,
+  `tax` int(11) NOT NULL,
+  `genecount` int(11) NOT NULL,
+  `homolog_genecount` int(11) NOT NULL,
+  PRIMARY KEY (`keyphrase`,`tax`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+insert ignore into keyphrase_genecounts
+select distinct
+  ka.`keyphrase` `keyphrase`,
+  g.`tax_id` `tax`,
+  null `genecount`,
+  null `homolog_genecount`
+from `keyphrase_abstract` ka
+inner join `homologene_gene_abstract` ga
+on ga.abstract = ka.abstract
+inner join `gene` g
+on g.`entrez_id` = ga.`gene`
+group by ka.`keyphrase`, g.`tax_id`;
+
+-- HOMOLOG COUNTS ARE WRONG.  FIX THESE.
+update keyphrase_genecounts
+set genecount := (
+  select count(distinct `gene`.`entrez_id`) genecount
+  from `keyphrase_abstract`
+  inner join `gene_abstract`
+  on `keyphrase_abstract`.`abstract` = `gene_abstract`.`abstract`
+  inner join `gene`
+  on `gene`.`entrez_id` = `gene_abstract`.`gene`
+  where `keyphrase_abstract`.`keyphrase` = `keyphrase_genecounts`.`keyphrase`
+  and `gene`.`tax_id` = `keyphrase_genecounts`.`tax`),
+homolog_genecount := (
+  select count(distinct `gene`.`entrez_id`) genecount
+  from `keyphrase_abstract`
+  inner join `homologene_gene_abstract`
+  on `keyphrase_abstract`.`abstract` = `homologene_gene_abstract`.`abstract`
+  inner join `gene`
+  on `gene`.`entrez_id` = `homologene_gene_abstract`.`gene`
+  where `keyphrase_abstract`.`keyphrase` = `keyphrase_genecounts`.`keyphrase`
+  and `gene`.`tax_id` = `keyphrase_genecounts`.`tax`)

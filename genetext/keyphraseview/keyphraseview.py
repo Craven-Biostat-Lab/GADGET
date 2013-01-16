@@ -113,15 +113,15 @@ def keyphrasesearch(request):
         select
         k.`id`,
         k.`string` string,
-        count(distinct g_all.`entrez_id`) total_genes,
+        kgc.`genecount` total_genes,
         count(distinct ga_query.`gene`) query_genes,
         
         count(distinct ga_query.`gene`) / {gene_list_size} gene_recall,
-        count(distinct ga_query.`gene`) / count(distinct g_all.`entrez_id`) gene_precision,
+        count(distinct ga_query.`gene`) / kgc.`genecount` gene_precision,
 
-        2 * (count(distinct ga_query.`gene`) / count(distinct g_all.`entrez_id`))
+        2 * (count(distinct ga_query.`gene`) / kgc.`genecount`)
         * (count(distinct ga_query.`gene`) / {gene_list_size}) /
-        ((count(distinct ga_query.`gene`) / count(distinct g_all.`entrez_id`))
+        ((count(distinct ga_query.`gene`) / kgc.`genecount`)
         + (count(distinct ga_query.`gene`) / {gene_list_size})) gene_f1_score,
       
         k.`abstractcount` total_abstracts,
@@ -139,17 +139,16 @@ def keyphrasesearch(request):
         inner join `keyphrase_abstract` ka
         on ka.`keyphrase` = k.`id`
 
-        left join `{geneabstract_tablename}` ga_all
-        on ka.`abstract` = ga_all.`abstract`
-        inner join `gene` g_all
-        on g_all.`entrez_id` = ga_all.`gene`
+        inner join `keyphrase_genecounts` kgc
+        on kgc.`keyphrase` = ka.`keyphrase`
 
-        left join `{geneabstract_tablename}` ga_query
+        inner join `{geneabstract_tablename}` ga_query
         on ka.abstract = ga_query.abstract
 
         where ka.abstract in ({abstract_param_list})
         and ga_query.`gene` in ({genes_param_list})
-        and g_all.`tax_id` = %s
+        
+        and kgc.`tax` = %s
 
         group by k.`id`
         order by {query_orderby} desc
@@ -160,6 +159,9 @@ def keyphrasesearch(request):
         gene_list_size=len(genelist),
         abstract_list_size=len(abstracts),
         query_orderby=query_orderby)
+        
+        with open('keywordquery.sql', 'w') as f:
+            f.write(sqlquery % tuple(abstracts + genelist + [params.species, params.offset, params.query_limit]))
         
         result = KeyPhrase.objects.raw(sqlquery, abstracts + genelist + [params.species, params.offset, params.query_limit])
         
@@ -205,6 +207,10 @@ def keyphrasesearch(request):
         """.format(abstract_param_list=paramstring(len(abstracts)),
         abstract_list_size=len(abstracts),
         query_orderby=query_orderby)
+    
+        with open('keywordquery.sql', 'w') as f:
+            f.write(sqlquery % tuple(abstracts + [params.offset, params.query_limit]))
+        
     
         result = KeyPhrase.objects.raw(sqlquery, abstracts + [params.offset, params.query_limit])
     
