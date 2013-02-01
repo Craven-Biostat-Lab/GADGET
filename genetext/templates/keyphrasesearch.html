@@ -61,6 +61,15 @@ $(document).ready(function()
 
 
 {% block content %}
+
+<table id="download" style="display:none">
+    <tr><td colspan="2">Download results:</td></tr>
+    <tr>
+        <td><a href="keywordlist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}&download=csv">CSV</a></td>
+        <!-- <td><a href="keywordlist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}&download=xml" target="_blank">XML</a></td> -->
+    </tr>
+</table>
+
 <div id="description" style="display:none">
     Showing and scoring keywords in <span id="abstractcount" style="display:none"></span> abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} containing <b>{{ geneop|safe }}</b> of genes <b>{{ genesyms|safe }}</b>{% endif %}<br />
     For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />

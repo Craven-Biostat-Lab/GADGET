@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import json
+from urllib import quote
 
 from django.shortcuts import render_to_response
 from django.template.loader import render_to_string
@@ -75,13 +76,15 @@ def keyphrasesearch(request):
     
     # don't do anything if we don't have a query
     if not genequery and not params.keywords:
-        return searchresponse(validresult=False, download=params.download, errmsg="Please enter gene symbols or a keyword query.")
+        return searchresponse(False, params, errmsg="Please enter gene symbols or a keyword query.")
     
     # use homology option to decide which gene-abstract table to use
     if params.usehomologs:
         geneabstract_tablename = 'homologene_gene_abstract'
+        genecount_column = 'homolog_genecount'
     else:
         geneabstract_tablename = 'gene_abstract'
+        genecount_column = 'homolog_genecount'
     
     # from the gene query, get a list of the gene ID's in the query (as strings)    
     genelist = map(str, flatten_query(genequery))
@@ -113,15 +116,15 @@ def keyphrasesearch(request):
         select
         k.`id`,
         k.`string` string,
-        kgc.`genecount` total_genes,
+        kgc.`{genecount_column}` total_genes,
         count(distinct ga_query.`gene`) query_genes,
         
         count(distinct ga_query.`gene`) / {gene_list_size} gene_recall,
-        count(distinct ga_query.`gene`) / kgc.`genecount` gene_precision,
+        count(distinct ga_query.`gene`) / kgc.`{genecount_column}` gene_precision,
 
-        2 * (count(distinct ga_query.`gene`) / kgc.`genecount`)
+        2 * (count(distinct ga_query.`gene`) / kgc.`{genecount_column}`)
         * (count(distinct ga_query.`gene`) / {gene_list_size}) /
-        ((count(distinct ga_query.`gene`) / kgc.`genecount`)
+        ((count(distinct ga_query.`gene`) / kgc.`{genecount_column}`)
         + (count(distinct ga_query.`gene`) / {gene_list_size})) gene_f1_score,
       
         k.`abstractcount` total_abstracts,
@@ -154,14 +157,12 @@ def keyphrasesearch(request):
         order by {query_orderby} desc
         limit %s, %s
         """.format(geneabstract_tablename=geneabstract_tablename,
+        genecount_column=genecount_column,
         abstract_param_list=paramstring(len(abstracts)),
         genes_param_list=paramstring(len(genelist)),
         gene_list_size=len(genelist),
         abstract_list_size=len(abstracts),
         query_orderby=query_orderby)
-        
-        with open('keywordquery.sql', 'w') as f:
-            f.write(sqlquery % tuple(abstracts + genelist + [params.species, params.offset, params.query_limit]))
         
         result = KeyPhrase.objects.raw(sqlquery, abstracts + genelist + [params.species, params.offset, params.query_limit])
         
@@ -208,10 +209,6 @@ def keyphrasesearch(request):
         abstract_list_size=len(abstracts),
         query_orderby=query_orderby)
     
-        with open('keywordquery.sql', 'w') as f:
-            f.write(sqlquery % tuple(abstracts + [params.offset, params.query_limit]))
-        
-    
         result = KeyPhrase.objects.raw(sqlquery, abstracts + [params.offset, params.query_limit])
     
     # Check to see if the resultset is empty.  Django's RawQuerySet object 
@@ -226,18 +223,61 @@ def keyphrasesearch(request):
 
 
 def searchresponse(validresult, params, result=[], errmsg=None, abstractcount=None):
-    if validresult:
-        # render results to html
-        resulthtml = render_to_string('keyphraselist.html', {'result':result, 
-            'params':params, 'abstractcount':abstractcount})
+    if params.download:
+        if params.download.lower() == 'csv':
+        # create, package, and return a CSV file
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = \
+                'attachment; filename=gadget-keywords-{0}-{1}.csv'.format(quote(params.keywords) if params.keywords else '', quote(params.genes) if params.genes else '')
+            if validresult:
+                response.write(makecsv(params, result))
+            else:
+                response.write('Error: ' + str(errmsg))
+            return response
+
     else:
-        resulthtml = None
-       
-    # render and return JSON    
-    response = HttpResponse()
-    json.dump({'validresult': validresult, 'errmsg': errmsg, 'result': resulthtml,
-        'abstractcount':abstractcount}, response)
-    return response
+        # no download option, display results in web browser
+        if validresult:
+            # render results to html
+            resulthtml = render_to_string('keyphraselist.html', {'result':result, 
+                'params':params, 'abstractcount':abstractcount})
+        else:
+            resulthtml = None
+           
+        # render and return JSON    
+        response = HttpResponse()
+        json.dump({'validresult': validresult, 'errmsg': errmsg, 'result': resulthtml,
+            'abstractcount':abstractcount}, response)
+        return response
         
         
+def makecsv(params, result):
+    """Create a CSV file from keyphrase results"""
+    header = 'rank,text,total_genes,query_genes,gene_precision,gene_recall,gene_f1,total_abstracts,query_abstracts,abstract_precision,abstract_recall,abstract_f1\n'
+    try:
+        body = '\n'.join([','.join(
+            (
+            str(rank), 
+            k.string, 
+            str(k.total_genes) if k.total_genes else '-', 
+            str(k.query_genes) if k.query_genes else '-', 
+            '{0:0.3f}'.format(k.gene_precision) if k.gene_precision else '-', 
+            '{0:0.3f}'.format(k.gene_recall) if k.gene_recall else '-', 
+            '{0:0.3f}'.format(k.gene_f1_score) if k.gene_f1_score else '-', 
+            str(k.total_abstracts), 
+            str(k.query_abstracts), 
+            '{0:0.3f}'.format(k.abstract_precision), 
+            '{0:0.3f}'.format(k.abstract_recall), 
+            '{0:0.3f}'.format(k.abstract_f1_score)  )
+            )
+            for rank, k in enumerate(result, start=1+params.offset)])
+    except:
+        print rank, k.string, k.total_genes, k.query_genes, k.gene_precision, k.gene_recall, k.gene_f1_score, k.total_abstracts, k.query_abstracts, k.abstract_precision, k.abstract_recall, k.abstract_f1_score
+        raise
+        
+    return header + body
+        
+
+
+
         

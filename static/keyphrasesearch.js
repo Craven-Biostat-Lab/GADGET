@@ -38,6 +38,7 @@ $(document).ready(function()
             
             $("div#description").show();
             $("#results").fadeTo(200, 1);
+            $("table#download").fadeIn('slow');
             
             $("#more").show();
             hidespinner();     

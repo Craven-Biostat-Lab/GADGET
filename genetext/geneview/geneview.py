@@ -135,6 +135,12 @@ class searchparams:
         
         # get the order from the query string
         self.orderby = request.GET.get('orderby', default='f1_score').lower()
+        
+    def __str__(self):
+        return str(locals())
+    
+    def __repr__(self):
+        return repr(locals())
 
 
 def genesearch(request):
