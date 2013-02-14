@@ -68,11 +68,19 @@ def keyphrasesearch(request):
         try:
             # get a gene query to run against the abstract index
             genequery = parse_abstractquery(params.genes, params.species, params.implicitOr, params.usehomologs)
+            
+            # from the gene query, get a list of the gene ID's in the query (as strings)
+            if params.usehomologs:
+                genelist = map(str, flatten_query(parse_abstractquery(params.genes, params.species, params.implicitOr, False)))
+            else:
+                 genelist = map(str, flatten_query(genequery))
+            
         except LookupError as e:
             # a term in the gene query couldn't be matched to any genes.
             return searchresponse(False, params, errmsg='No genes match <b>{0}</b> for species {1}'.format(e.args[0], params.species))
     else:
         genequery = None
+        genelist = []
     
     # don't do anything if we don't have a query
     if not genequery and not params.keywords:
@@ -81,13 +89,8 @@ def keyphrasesearch(request):
     # use homology option to decide which gene-abstract table to use
     if params.usehomologs:
         geneabstract_tablename = 'homologene_gene_abstract'
-        genecount_column = 'homolog_genecount'
     else:
         geneabstract_tablename = 'gene_abstract'
-        genecount_column = 'homolog_genecount'
-    
-    # from the gene query, get a list of the gene ID's in the query (as strings)    
-    genelist = map(str, flatten_query(genequery))
     
     # get abstracts matching keywords and genes
     abstracts = get_abstracts(params.keywords, genequery, params.usehomologs)
@@ -116,15 +119,15 @@ def keyphrasesearch(request):
         select
         k.`id`,
         k.`string` string,
-        kgc.`{genecount_column}` total_genes,
+        kgc.`genecount` total_genes,
         count(distinct ga_query.`gene`) query_genes,
         
         count(distinct ga_query.`gene`) / {gene_list_size} gene_recall,
-        count(distinct ga_query.`gene`) / kgc.`{genecount_column}` gene_precision,
+        count(distinct ga_query.`gene`) / kgc.`genecount` gene_precision,
 
-        2 * (count(distinct ga_query.`gene`) / kgc.`{genecount_column}`)
+        2 * (count(distinct ga_query.`gene`) / kgc.`genecount`)
         * (count(distinct ga_query.`gene`) / {gene_list_size}) /
-        ((count(distinct ga_query.`gene`) / kgc.`{genecount_column}`)
+        ((count(distinct ga_query.`gene`) / kgc.`genecount`)
         + (count(distinct ga_query.`gene`) / {gene_list_size})) gene_f1_score,
       
         k.`abstractcount` total_abstracts,
@@ -157,12 +160,14 @@ def keyphrasesearch(request):
         order by {query_orderby} desc
         limit %s, %s
         """.format(geneabstract_tablename=geneabstract_tablename,
-        genecount_column=genecount_column,
         abstract_param_list=paramstring(len(abstracts)),
         genes_param_list=paramstring(len(genelist)),
         gene_list_size=len(genelist),
         abstract_list_size=len(abstracts),
         query_orderby=query_orderby)
+        
+        with open('/home/genetext/query.sql', 'w') as f:
+            f.write(sqlquery % tuple(abstracts + genelist + [params.species, params.offset, params.query_limit]))
         
         result = KeyPhrase.objects.raw(sqlquery, abstracts + genelist + [params.species, params.offset, params.query_limit])
         
@@ -208,6 +213,9 @@ def keyphrasesearch(request):
         """.format(abstract_param_list=paramstring(len(abstracts)),
         abstract_list_size=len(abstracts),
         query_orderby=query_orderby)
+    
+        with open('/home/genetext/query.sql', 'w') as f:
+            f.write(sqlquery % tuple(abstracts + [params.offset, params.query_limit]))
     
         result = KeyPhrase.objects.raw(sqlquery, abstracts + [params.offset, params.query_limit])
     
