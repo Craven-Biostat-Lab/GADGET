@@ -3,16 +3,17 @@ import atexit
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST, BOOLEAN, STORED
 from whoosh.qparser import MultifieldParser
-from whoosh.query import And, Term, ConstantScoreQuery, NullQuery, Query
+from whoosh.query import And, Or, Term, ConstantScoreQuery, NullQuery, Query
 from whoosh.scoring import BM25F
 from whoosh.sorting import MultiFacet
+from whoosh.support.numeric import int_to_text
 
 from django.core.cache import cache
 
 try:
     from genetext.settings import ABSTRACT_INDEX_PATH
 except ImportError:
-    ABSTRACT_INDEX_PATH = '/home/genetext/gadget/index'
+    ABSTRACT_INDEX_PATH = '/home/genetext/gadget/index/abstracts'
 
 # open or create the index
 if index.exists_in(ABSTRACT_INDEX_PATH):
@@ -61,7 +62,7 @@ def cachekey(keywords='', genes=(), genehomologs=True):
         genehomologs)
 
 
-def buildquery(keywords=None, genes=None, genehomologs=True, onlyreviews=False, scored=False):
+def buildquery(keywords=None, genes=None, genehomologs=True, onlyreviews=False, scored=False, abstractlist=None):
     """Return a whoosh query object for searching the index"""
     
     # decide which index field to use for genes, based upon whether we're
@@ -80,13 +81,20 @@ def buildquery(keywords=None, genes=None, genehomologs=True, onlyreviews=False, 
     # get keyword branch of query
     keywordbranch = parser.parse(unicode(keywords)) if keywords else NullQuery()
     
+    # include only reviews?
     reviewbranch = Term('review', u't') if onlyreviews else NullQuery()
+    
+    # restrict to a certain set of abstracts?
+    if abstractlist:
+        abstractbranch = Or([Term('pmid', int_to_text(a, signed=False)) for a in abstractlist])
+    else:
+        abstractbranch = NullQuery()
 
     # return query, don't score each abstract
     if scored:
-        return genebranch & keywordbranch & reviewbranch
+        return genebranch & keywordbranch & reviewbranch & abstractbranch
     else:
-        return ConstantScoreQuery(genebranch & keywordbranch & reviewbranch)
+        return ConstantScoreQuery(genebranch & keywordbranch & reviewbranch & abstractbranch)
 
 
 def get_abstracts(keywords=None, genes=None, genehomologs=True):
@@ -116,7 +124,7 @@ def get_abstracts(keywords=None, genes=None, genehomologs=True):
     return results
 
 
-def abstracts_page(keywords=None, genes=None, genehomologs=True, limit=None, offset=None, orderby='relevance', onlyreviews=False):
+def abstracts_page(keywords=None, genes=None, genehomologs=True, limit=None, offset=None, orderby='relevance', onlyreviews=False, abstractlist=None):
     """Return a page of abstracts (as a Whoosh result object) matching a keyword/gene
     query.  Optionally specify limit and offset, orderby, whether to include gene
     homologs and whether to include only reviews.
@@ -126,6 +134,9 @@ def abstracts_page(keywords=None, genes=None, genehomologs=True, limit=None, off
     
     Valid options for "orderby" are 'relevance', 'oldest', and 'newest'.  Other
     orderby values will not order the results.
+    
+    If given an "abstractlist" option (as a list of pubmed ID's), this function 
+    will return only abstracts in that list.
     """
     
     # raise an error if orderby is invalid
@@ -139,14 +150,16 @@ def abstracts_page(keywords=None, genes=None, genehomologs=True, limit=None, off
     # build a query, scored if we're sorting by relevance
     # (don't score abstracts unles we have to, because scoring abstracts is slow.)
     if orderby == 'relevance':
-        query = buildquery(keywords, genes, genehomologs, onlyreviews, scored=True)
+        query = buildquery(keywords, genes, genehomologs, onlyreviews, True, abstractlist)
     else:
-        query = buildquery(keywords, genes, genehomologs, onlyreviews, scored=False)
+        query = buildquery(keywords, genes, genehomologs, onlyreviews, False, abstractlist)
     
     # we have to apply the limit before the offset, so add the offset to
     # the limit so we still get back the correct number of abstracts
     if limit and offset:
         limit += offset
+
+    print query
 
     # search the index and return abstracts.  
     # whoosh page numbers start at 1

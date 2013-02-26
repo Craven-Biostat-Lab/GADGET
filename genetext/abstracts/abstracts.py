@@ -8,7 +8,7 @@ from django.shortcuts import render_to_response
 from genetext.geneview.geneview import  parseboolean
 from genetext.abstracts.index import abstracts_page
 from genetext.geneindex.geneindex import parse_abstractquery
-from genetext.geneview.models import Abstract
+from genetext.abstracts.models import Abstract, KeyPhrase
 
 def abstracts(request):
     """Return a list of abstracts (as HTML wrapped in JSON) for a keyword
@@ -76,8 +76,16 @@ def abstracts(request):
     try: limit = int(request.GET.get('limit'))
     except: limit = None
     
+    # get keyword ID from query string
+    keywordID = request.GET.get('keywordnum')
+    if keywordID:
+        keyword_abstracts = [a.pubmed_id for a in Abstract.objects.filter(ka_abstract__keyphrase=keywordID).only('pubmed_id')]
+        print keyword_abstracts
+    else:
+        keyword_abstracts = None
+    
     # get abstract ID's from index
-    abstracts = abstracts_page(keywords, genes, usehomologs, limit, offset, orderby, onlyreviews)
+    abstracts = abstracts_page(keywords, genes, usehomologs, limit, offset, orderby, onlyreviews, keyword_abstracts)
     
     # error if no abstracts
     if not abstracts:
@@ -106,6 +114,7 @@ def abstractview(request):
     unique = request.GET.get('unique')
     abstractcount = request.GET.get('abstractcount')
     rowgene = request.GET.get('rowgene')
+    keywordnum = request.GET.get('keywordnum')
 
     # clean up gene symbols
     if genesyms:
@@ -117,9 +126,16 @@ def abstractview(request):
     # turn onlyreviews into a boolean
     if onlyreviews:
         onlyreviews = parseboolean(onlyreviews)
+        
+    # look up keyword string
+    if keywordnum:
+        keywordstring = KeyPhrase.objects.get(pk=keywordnum).string
+    else:
+        keywordstring = None
 
     return render_to_response('abstractview.html', {'q':q,
         'species':species, 'genes':genes, 'genesyms': genesyms, 'geneop': geneop,
         'usehomologs':usehomologs, 'onlyreviews':onlyreviews, 
         'orderby':orderby, 'offset':offset,
-        'unique':unique, 'abstractcount':abstractcount, 'rowgene':rowgene})
+        'unique':unique, 'abstractcount':abstractcount, 'rowgene':rowgene,
+        'keywordnum': keywordnum, 'keywordstring': keywordstring})

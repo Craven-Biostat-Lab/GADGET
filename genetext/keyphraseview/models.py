@@ -46,6 +46,7 @@ class KeyPhrase(models.Model):
     id = models.IntegerField(primary_key=True)
     numtokens = models.IntegerField(null=True, blank=True)
     string = models.CharField(max_length=200, blank=True)
+    abstractcount = models.IntegerField(null=True, blank=True)
     
     class Meta:
         db_table = u'keyphrase'
@@ -55,3 +56,7 @@ class KeyphraseAbstract(models.Model):
     id = models.IntegerField(primary_key=True)
     keyphrase = models.ForeignKey(KeyPhrase, db_column='keyphrase')
     abstract = models.ForeignKey(Abstract, db_column='abstract')
+    
+    class Meta:
+        db_table = u'keyphrase_abstract'
+        managed = False
