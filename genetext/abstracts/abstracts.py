@@ -43,7 +43,7 @@ def abstracts(request):
 
     # get genes from query string
     try:
-        genes = parse_abstractquery(request.GET.get('genes'), species, implicitOr, usehomologs)
+        genes = parse_abstractquery(request.GET.get('genes', ''), species, implicitOr, usehomologs)
     except LookupError as e:
         # bad gene query
         response = HttpResponse()
