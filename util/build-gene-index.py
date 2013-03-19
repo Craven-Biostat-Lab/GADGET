@@ -4,7 +4,7 @@ import MySQLdb
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, ID
 
-GENE_INDEX_PATH = '/home/genetext/gadget/gene-index'
+GENE_INDEX_PATH = '/home/genetext/gadget/index/genes'
 
 # open gene index
 if index.exists_in(GENE_INDEX_PATH):
@@ -58,13 +58,50 @@ def getgenes(db):
     c.close()
 
 
-def write(genes, ix):
+def synonyms_dict(db):
+    """Return a set of (symbol, taxon) tuples, and a dict of (synonym, taxon) 
+    tuples and associated gene counts in the genes table for weeding out ambiguous 
+    synonyms"""
+
+    symbols = set()
+    synonyms = dict() # (synonym, taxon) tuple is key, gene count is value
+    
+    for g in getgenes(db):
+        tax = g[1]
+        
+        symbols.add((g[2].lower(), tax))
+        
+        for syn in g[4].split(','):
+            syn = syn.strip().lower()
+            
+            if (syn, tax) in synonyms:
+                synonyms[syn, tax] += 1
+            else:
+                synonyms[syn, tax] = 1
+                
+    return symbols, synonyms
+
+
+def ambiguous(syn, tax, symbols, synonyms):
+    """Return true if a symbol is ambiguous (if it is a symbol or a synonym for
+    another gene for the same taxon."""
+    
+    s = syn.strip().lower()
+    return ((s,tax) in symbols) or (synonyms[s, tax] > 1)
+
+
+def write(genes, ix, all_symbols, all_synonyms):
     """Write and commit the supplied genes to the index."""
 
     writer = ix.writer()
 
     for g in genes:
         entrezID, tax, symbol, name, synonyms = g
+
+        # remove ambiguous synonyms
+        if synonyms is not None:
+            synonyms = ' '.join([s.strip() for s in synonyms.split(',') 
+                if not ambiguous(s, tax, all_symbols, all_synonyms)])
 
         # make all text fields unicode
         if entrezID is not None:
@@ -87,4 +124,5 @@ def write(genes, ix):
 
 if __name__ == '__main__':
     genes = getgenes(db)
-    write(genes, ix)
+    symbols, synonyms = synonyms_dict(db)
+    write(genes, ix, symbols, synonyms)

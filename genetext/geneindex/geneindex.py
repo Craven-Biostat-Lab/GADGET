@@ -35,15 +35,34 @@ andParser = QueryParser('symbol', schema=ix.schema, group=AndGroup)
 searcher = ix.searcher()
 
 
-def lookup(query):
+def setfield_entrezID(q):
+    """Sets the 'fieldname' of a query object to 'entrezID' and returns it"""
+    q.fieldname = 'entrezID'
+    return q
+    
+def setfield_synonyms(q):
+    """Sets the 'fieldname' of a query object to 'synonyms' and returns it"""
+    q.fieldname = 'synonyms'
+    return q
+
+def lookup(q, tax):
     """Look up entrezID's in the gene index that match the given whoosh query
     object.  Return a list of entrezID's that satisfy the query in no particular 
     order.  Raise a LookupError if the query does not match any genes."""
+
+    # add entrezID and synonyms fields to query (do this instead of using a
+    # multifield parser so we can detect when a token didn't match any genes)
+    query = Or((q, q.copy().accept(setfield_entrezID), q.copy().accept(setfield_synonyms)))
+    
+    # add the taxon constraint to the query
+    if tax:
+        query = And([query, Term('tax', str(tax))])
 
     genes = [g['entrezID'] for g in searcher.search(query, limit=None)]
     if genes:
         return genes
     else:
+        print query
         raise LookupError()
 
 
@@ -59,23 +78,12 @@ def convert_to_abstractquery(query, tax=None, genefield='genes'):
 
     elif query.is_leaf():
         # if this node is a leaf, get the matching genes from the index, and
-        # 'Or' them all together.
-        
-        # if a term is numeric, check it against the entrezID field
-        if isinstance(query, Term):
-            if query.fieldname == 'symbol' and query.text.isdigit():
-                query = Term('entrezID', query.text)
-
-        # add the taxon constraint to the query
-        if tax:
-            taxquery = And([query, Term('tax', str(tax))])
-        else:
-            taxquery = query
+        # 'Or' them all together
         
         # return the genes matched by the leaf, all OR'd together.
         try:
             # lookup will raise a LookupError if the query does not match any genes
-            return Or([Term(genefield, str(g)) for g in lookup(taxquery)])
+            return Or([Term(genefield, str(g)) for g in lookup(query, tax)])
 
         # if we get a LookupError, try to determine the bad text that caused it.
         except LookupError:
