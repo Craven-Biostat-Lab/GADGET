@@ -117,8 +117,8 @@ def keyphrasesearch(request):
         sqlquery = \
         """
         select
-        k.`id`,
-        k.`string` string,
+        ka.`keyphrase` `id`,
+        ka.`string` string,
         kgc.`genecount` total_genes,
         count(distinct ga_query.`gene`) query_genes,
         
@@ -130,20 +130,18 @@ def keyphrasesearch(request):
         ((count(distinct ga_query.`gene`) / kgc.`genecount`)
         + (count(distinct ga_query.`gene`) / {gene_list_size})) gene_f1_score,
       
-        k.`abstractcount` total_abstracts,
+        ka.`abstractcount` total_abstracts,
         count(distinct ka.`abstract`) query_abstracts,
         
-        count(distinct ka.`abstract`) / k.`abstractcount` abstract_precision,
+        count(distinct ka.`abstract`) / ka.`abstractcount` abstract_precision,
         count(distinct ka.`abstract`) / {abstract_list_size} abstract_recall,
         
-        2 * (count(distinct ka.`abstract`) / k.`abstractcount`)
+        2 * (count(distinct ka.`abstract`) / ka.`abstractcount`)
         * (count(distinct ka.`abstract`) / {abstract_list_size}) /
-        ((count(distinct ka.`abstract`) / k.`abstractcount`)
+        ((count(distinct ka.`abstract`) / ka.`abstractcount`)
         + (count(distinct ka.`abstract`) / {abstract_list_size})) abstract_f1_score
         
-        from `keyphrase` k
-        inner join `keyphrase_abstract` ka
-        on ka.`keyphrase` = k.`id`
+        from `keyphrase_abstract_count` ka
 
         inner join `keyphrase_genecounts` kgc
         on kgc.`keyphrase` = ka.`keyphrase`
@@ -156,7 +154,7 @@ def keyphrasesearch(request):
         
         and kgc.`tax` = %s
 
-        group by k.`id`
+        group by ka.`keyphrase`
         order by {query_orderby} desc
         limit %s, %s
         """.format(geneabstract_tablename=geneabstract_tablename,
@@ -182,8 +180,8 @@ def keyphrasesearch(request):
         sqlquery = \
         """
         select
-        k.`id`,
-        k.`string` string,
+        ka.`keyphrase` `id`,
+        ka.`string` string,
         
         null total_genes,
         null query_genes,
@@ -191,23 +189,21 @@ def keyphrasesearch(request):
         null gene_precision,
         null gene_f1_score,
         
-        k.`abstractcount` total_abstracts,
+        ka.`abstractcount` total_abstracts,
         count(distinct ka.`abstract`) query_abstracts,
         
-        count(distinct ka.`abstract`) / k.`abstractcount` abstract_precision,
+        count(distinct ka.`abstract`) / ka.`abstractcount` abstract_precision,
         count(distinct ka.`abstract`) / {abstract_list_size} abstract_recall,
         
-        2 * (count(distinct ka.`abstract`) / k.`abstractcount`)
+        2 * (count(distinct ka.`abstract`) / ka.`abstractcount`)
         * (count(distinct ka.`abstract`) / {abstract_list_size}) /
-        ((count(distinct ka.`abstract`) / k.`abstractcount`)
+        ((count(distinct ka.`abstract`) / ka.`abstractcount`)
         + (count(distinct ka.`abstract`) / {abstract_list_size})) abstract_f1_score
         
-        from `keyphrase` k
-        inner join `keyphrase_abstract` ka
-        on ka.`keyphrase` = k.`id`
+        from `keyphrase_abstract_count` ka
         
-        where ka.abstract in ({abstract_param_list})
-        group by k.`id`
+        where ka.`abstract` in ({abstract_param_list})
+        group by ka.`keyphrase`
         order by {query_orderby} desc
         limit %s, %s
         """.format(abstract_param_list=paramstring(len(abstracts)),
