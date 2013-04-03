@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response
 
 from genetext.geneview.geneview import  parseboolean
 from genetext.abstracts.index import abstracts_page
-from genetext.geneindex.geneindex import parse_abstractquery
+from genetext.geneindex.geneindex import parse_abstractquery, symbol_list
 from genetext.abstracts.models import Abstract, KeyPhrase
 
 def abstracts(request):
@@ -115,6 +115,7 @@ def abstractview(request):
     abstractcount = request.GET.get('abstractcount')
     rowgene = request.GET.get('rowgene')
     keywordnum = request.GET.get('keywordnum')
+    genefilter = request.GET.get('genefilter')
 
     # clean up gene symbols
     if genesyms:
@@ -133,9 +134,20 @@ def abstractview(request):
     else:
         keywordstring = None
 
+    # get gene list (from gene query)
+    if genes:
+        gene_symbol_list = symbol_list(genes)
+        if genefilter not in gene_symbol_list:
+            genefilter = None # show gene filter option, but with none selected
+    else:
+        genefilter = None
+        gene_symbol_list = []
+
     return render_to_response('abstractview.html', {'q':q,
         'species':species, 'genes':genes, 'genesyms': genesyms, 'geneop': geneop,
         'usehomologs':usehomologs, 'onlyreviews':onlyreviews, 
         'orderby':orderby, 'offset':offset,
         'unique':unique, 'abstractcount':abstractcount, 'rowgene':rowgene,
-        'keywordnum': keywordnum, 'keywordstring': keywordstring})
+        'keywordnum': keywordnum, 'keywordstring': keywordstring,
+        'gene_symbol_list': gene_symbol_list})
+        

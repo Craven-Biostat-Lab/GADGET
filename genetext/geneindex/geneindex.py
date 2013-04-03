@@ -5,6 +5,8 @@ from whoosh.fields import SchemaClass, TEXT, NUMERIC, ID
 from whoosh.query import And, Or, CompoundQuery, Term, NullQuery
 from whoosh.qparser import QueryParser, OrGroup, AndGroup
 
+from genetext.geneview.models import Gene
+
 # Get index location out of the config file
 # If we can't, use a hard-coded path
 try:
@@ -160,3 +162,9 @@ def flatten_query(query):
         for c in query.children():
             union.update(flatten_query(c))
         return union
+
+
+def symbol_list(q):
+    """Return a sorted list of gene symbols for a given gene query"""
+    return sorted([Gene.objects.get(pk=g).symbol for g in flatten_query(parse_abstractquery(q))])
+    
