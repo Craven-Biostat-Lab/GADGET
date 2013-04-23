@@ -116,47 +116,53 @@ def keyphrasesearch(request):
         
         sqlquery = \
         """
-        select
-        ka.`keyphrase` `id`,
-        ka.`string` string,
-        kgc.`genecount` total_genes,
-        count(distinct ga_query.`gene`) query_genes,
+        select a.*, k.`string` `string`
+        from (
         
-        count(distinct ga_query.`gene`) / {gene_list_size} gene_recall,
-        count(distinct ga_query.`gene`) / kgc.`genecount` gene_precision,
+          select
+          ka.`keyphrase` `id`,
+          kgc.`genecount` total_genes,
+          count(distinct ga_query.`gene`) query_genes,
+          
+          count(distinct ga_query.`gene`) / {gene_list_size} gene_recall,
+          count(distinct ga_query.`gene`) / kgc.`genecount` gene_precision,
 
-        2 * (count(distinct ga_query.`gene`) / kgc.`genecount`)
-        * (count(distinct ga_query.`gene`) / {gene_list_size}) /
-        ((count(distinct ga_query.`gene`) / kgc.`genecount`)
-        + (count(distinct ga_query.`gene`) / {gene_list_size})) gene_f1_score,
-      
-        ka.`abstractcount` total_abstracts,
-        count(distinct ka.`abstract`) query_abstracts,
+          2 * (count(distinct ga_query.`gene`) / kgc.`genecount`)
+          * (count(distinct ga_query.`gene`) / {gene_list_size}) /
+          ((count(distinct ga_query.`gene`) / kgc.`genecount`)
+          + (count(distinct ga_query.`gene`) / {gene_list_size})) gene_f1_score,
         
-        count(distinct ka.`abstract`) / ka.`abstractcount` abstract_precision,
-        count(distinct ka.`abstract`) / {abstract_list_size} abstract_recall,
+          ka.`abstractcount` total_abstracts,
+          count(distinct ka.`abstract`) query_abstracts,
+          
+          count(distinct ka.`abstract`) / ka.`abstractcount` abstract_precision,
+          count(distinct ka.`abstract`) / {abstract_list_size} abstract_recall,
+          
+          2 * (count(distinct ka.`abstract`) / ka.`abstractcount`)
+          * (count(distinct ka.`abstract`) / {abstract_list_size}) /
+          ((count(distinct ka.`abstract`) / ka.`abstractcount`)
+          + (count(distinct ka.`abstract`) / {abstract_list_size})) abstract_f1_score
+          
+          from `keyphrase_abstract` ka
+
+          inner join `keyphrase_genecounts` kgc
+          on kgc.`keyphrase` = ka.`keyphrase`
+
+          inner join `{geneabstract_tablename}` ga_query
+          on ka.abstract = ga_query.abstract
+
+          where ka.abstract in ({abstract_param_list})
+          and ga_query.`gene` in ({genes_param_list})
+          
+          and kgc.`tax` = %s
+
+          group by ka.`keyphrase`
+          order by {query_orderby} desc
+          limit %s, %s
         
-        2 * (count(distinct ka.`abstract`) / ka.`abstractcount`)
-        * (count(distinct ka.`abstract`) / {abstract_list_size}) /
-        ((count(distinct ka.`abstract`) / ka.`abstractcount`)
-        + (count(distinct ka.`abstract`) / {abstract_list_size})) abstract_f1_score
-        
-        from `keyphrase_abstract_count` ka
-
-        inner join `keyphrase_genecounts` kgc
-        on kgc.`keyphrase` = ka.`keyphrase`
-
-        inner join `{geneabstract_tablename}` ga_query
-        on ka.abstract = ga_query.abstract
-
-        where ka.abstract in ({abstract_param_list})
-        and ga_query.`gene` in ({genes_param_list})
-        
-        and kgc.`tax` = %s
-
-        group by ka.`keyphrase`
-        order by {query_orderby} desc
-        limit %s, %s
+        ) a
+        inner join `keyphrase` k
+        on k.`id` = a.`id`;
         """.format(geneabstract_tablename=geneabstract_tablename,
         abstract_param_list=paramstring(len(abstracts)),
         genes_param_list=paramstring(len(genelist)),
@@ -179,33 +185,39 @@ def keyphrasesearch(request):
         
         sqlquery = \
         """
-        select
-        ka.`keyphrase` `id`,
-        ka.`string` string,
+        select a.*, k.`string`       
+
+        from 
+        (
+          select
+          ka.`keyphrase` `id`,
         
-        null total_genes,
-        null query_genes,
-        null gene_recall,
-        null gene_precision,
-        null gene_f1_score,
-        
-        ka.`abstractcount` total_abstracts,
-        count(distinct ka.`abstract`) query_abstracts,
-        
-        count(distinct ka.`abstract`) / ka.`abstractcount` abstract_precision,
-        count(distinct ka.`abstract`) / {abstract_list_size} abstract_recall,
-        
-        2 * (count(distinct ka.`abstract`) / ka.`abstractcount`)
-        * (count(distinct ka.`abstract`) / {abstract_list_size}) /
-        ((count(distinct ka.`abstract`) / ka.`abstractcount`)
-        + (count(distinct ka.`abstract`) / {abstract_list_size})) abstract_f1_score
-        
-        from `keyphrase_abstract_count` ka
-        
-        where ka.`abstract` in ({abstract_param_list})
-        group by ka.`keyphrase`
-        order by {query_orderby} desc
-        limit %s, %s
+          null total_genes,
+          null query_genes,
+          null gene_recall,
+          null gene_precision,
+          null gene_f1_score,
+          
+          ka.`abstractcount` total_abstracts,
+          count(distinct ka.`abstract`) query_abstracts,
+          
+          count(distinct ka.`abstract`) / ka.`abstractcount` abstract_precision,
+          count(distinct ka.`abstract`) / {abstract_list_size} abstract_recall,
+          
+          2 * (count(distinct ka.`abstract`) / ka.`abstractcount`)
+          * (count(distinct ka.`abstract`) / {abstract_list_size}) /
+          ((count(distinct ka.`abstract`) / ka.`abstractcount`)
+          + (count(distinct ka.`abstract`) / {abstract_list_size})) abstract_f1_score
+          
+          from `keyphrase_abstract` ka
+   
+          where ka.`abstract` in ({abstract_param_list})
+          group by ka.`keyphrase`
+          order by {query_orderby} desc
+          limit %s, %s
+        ) a
+        inner join `keyphrase` k
+        on k.`id` = a.`id`
         """.format(abstract_param_list=paramstring(len(abstracts)),
         abstract_list_size=len(abstracts),
         query_orderby=query_orderby)
