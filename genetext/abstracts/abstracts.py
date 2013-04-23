@@ -136,7 +136,7 @@ def abstractview(request):
 
     # get gene list (from gene query)
     if genes:
-        gene_symbol_list = symbol_list(genes)
+        gene_symbol_list = symbol_list(genes, species)
         if genefilter not in gene_symbol_list:
             genefilter = None # show gene filter option, but with none selected
     else:
