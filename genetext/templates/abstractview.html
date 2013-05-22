@@ -1,11 +1,21 @@
 <b>Abstracts</b><br />
 Showing abstracts{% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% endif %}{% if rowgene %} for <b>{{ rowgene|safe }}</b>{% endif %} for{% if genesyms %}{% if geneop %} <b>{{ geneop }}</b> of{% endif %} <b>{{ genesyms|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}<br /><br />
+
+{% if gene_symbol_list %}
+  Filter by gene: 
+  {% for s in gene_symbol_list %}
+    <a href="javascript:void(0);" class="genefilter{% if genefilter == s %} selected{% endif %}" abs_unique="{{ unique|escapejs }}">{{ s|safe }}</a>,
+  {% endfor %}
+  <a href="javascripy:void(0);" class="genefilter{% if not genefilter %} selected{% endif %}" abs_unique="{{ unique|escapejs }}">none</a>
+  <br /><br />
+{% endif %}
+
 Sort by: 
 <a href="javascript:void(0);" class="sortabstracts{% if orderby == 'relevance'%} selected{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="relevance">relevance</a>,
 <a href="javascript:void(0);" class="sortabstracts{% if orderby == 'newest'%} selected{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="newest">newest</a>,
 <a href="javascript:void(0);" class="sortabstracts{% if orderby == 'oldest'%} selected{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="oldest">oldest</a><br />
 <label>Only show reviews: <input type="checkbox" class="onlyreviews" abs_unique="{{ unique|escapejs }}" {% if onlyreviews %}checked="checked"{% endif %} /></label><br />
-<div class="abstractcontainer" abs_unique="{{ unique|escapejs }}" onlyreviews="{{ onlyreviews|urlencode }}" orderby="{{ orderby|urlencode }}" offset="0" abstractcount="{{ abstractcount|escapejs }}"
+<div class="abstractcontainer" abs_unique="{{ unique|escapejs }}" onlyreviews="{{ onlyreviews|urlencode }}" orderby="{{ orderby|urlencode }}" genefilter="{{ genefilter|escapejs }}" offset="0" abstractcount="{{ abstractcount|escapejs }}"
     query="abstracts?{% if q %}&q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if geneop %}&geneop={{ geneop }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if keywordnum %}&keywordnum={{ keywordnum|urlencode }}{% endif %}"><ul></ul></div>
 <img class="spinner" src="/static/spinner2.gif" abs_unique="{{ unique|escapejs }}" style="display:none">
 <a href="javascript:void(0);" class="moreabstracts" abs_unique="{{ unique|escapejs }}" style="display:none">More abstracts...</a>
