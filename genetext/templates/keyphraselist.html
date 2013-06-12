@@ -2,7 +2,7 @@
 {% for k in result %}
 <tr id="keyphrase{{ k.id }}" hits="{{ k.query_abstracts }}">  
   <td>{{ forloop.counter|add:params.offset }}</td>
-  <td>{{ k.string }} - {{k.id }}</td>
+  <td>{{ k.string }}</td>
   <td>{{ k.total_genes }}</td>
   <td>{% if k.query_genes %}{{ k.query_genes }}{% else %}&ndash;{% endif %}</td>
   <td>{% if k.gene_recall %}{{ k.gene_recall|floatformat:-3 }}{% else %}&ndash;{% endif %}</td>

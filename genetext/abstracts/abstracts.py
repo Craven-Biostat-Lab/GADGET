@@ -7,8 +7,8 @@ from django.shortcuts import render_to_response
 
 from genetext.geneview.geneview import  parseboolean
 from genetext.abstracts.index import abstracts_page
-from genetext.geneindex.geneindex import parse_abstractquery, symbol_list
-from genetext.abstracts.models import Abstract, KeyPhrase
+from genetext.geneindex.geneindex import parse_abstractquery, gene_id_list
+from genetext.abstracts.models import Abstract, KeyPhrase, KeyphraseAbstract, Gene
 
 def abstracts(request):
     """Return a list of abstracts (as HTML wrapped in JSON) for a keyword
@@ -100,6 +100,18 @@ def abstracts(request):
     return response
 
 
+def filter_genes(genelist, keywordnum=None, geneID=None):
+    """Given a list of gene ID's and a keyword ID, return a list of gene symbols
+    from the genes in the list that are related to the keyword in the database"""
+    
+    genes = Gene.objects.only('symbol').distinct().filter(entrez_id__in=genelist)
+    
+    if keywordnum:
+      genes = genes.filter(geneabstract__abstract__ka_abstract__keyphrase=keywordnum)
+  
+    return [g.symbol for g in genes]
+  
+
 def abstractview(request):
     """Render the container page for displaying abstracts"""
     q = request.GET.get('q')
@@ -136,7 +148,8 @@ def abstractview(request):
 
     # get gene list (from gene query)
     if genes:
-        gene_symbol_list = symbol_list(genes, species)
+        gene_symbol_list = filter_genes(gene_id_list(genes, species), keywordnum=keywordnum)
+        
         if genefilter not in gene_symbol_list:
             genefilter = None # show gene filter option, but with none selected
     else:

@@ -6,7 +6,7 @@ Showing abstracts{% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% en
   {% for s in gene_symbol_list %}
     <a href="javascript:void(0);" class="genefilter{% if genefilter == s %} selected{% endif %}" abs_unique="{{ unique|escapejs }}">{{ s|safe }}</a>,
   {% endfor %}
-  <a href="javascripy:void(0);" class="genefilter{% if not genefilter %} selected{% endif %}" abs_unique="{{ unique|escapejs }}">none</a>
+  <a href="javascript:void(0);" class="genefilter{% if not genefilter %} selected{% endif %}" abs_unique="{{ unique|escapejs }}">none</a>
   <br /><br />
 {% endif %}
 

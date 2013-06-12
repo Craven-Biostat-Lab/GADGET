@@ -322,7 +322,7 @@ table#generank tr td.pane ul li {
     padding-bottom: 10px;
 }
 
-a.sortabstracts.selected {
+a.sortabstracts.selected, a.genefilter.selected {
     font-weight: bold;
     text-decoration: none;
     color: #000;

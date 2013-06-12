@@ -164,7 +164,7 @@ def flatten_query(query):
         return union
 
 
-def symbol_list(q, tax):
-    """Return a sorted list of gene symbols for a given gene query"""
-    return sorted([Gene.objects.get(pk=g).symbol for g in flatten_query(parse_abstractquery(q, tax))])
+def gene_id_list(q, tax):
+    """Return a sorted list of gene entrez ID's for a given gene query"""
+    return sorted([Gene.objects.get(pk=g).entrez_id for g in flatten_query(parse_abstractquery(q, tax))])
     

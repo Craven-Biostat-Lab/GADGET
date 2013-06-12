@@ -35,3 +35,32 @@ class KeyphraseAbstract(models.Model):
     class Meta:
         db_table = u'keyphrase_abstract'
         managed = False
+        
+
+class Gene(models.Model):
+    tax_id = models.IntegerField()
+    entrez_id = models.IntegerField(primary_key=True)
+    symbol = models.CharField(max_length=30)
+    locustag = models.CharField(max_length=100)
+    synonyms = models.CharField(max_length=250)
+    description = models.CharField(max_length=250)
+    chromosome = models.CharField(max_length=7)
+    maplocation = models.CharField(max_length=100)
+    abstracts = models.IntegerField()
+
+    def __unicode__(self):
+        return self.symbol
+
+    class Meta:
+        db_table = 'gene'
+        managed = False
+        
+        
+class GeneAbstract(models.Model):
+    id = models.IntegerField(primary_key=True)
+    gene = models.ForeignKey(Gene, db_column='gene')
+    abstract = models.ForeignKey(Abstract, db_column='abstract')
+    
+    class Meta:
+        db_table = 'gene_abstract'
+        managed = False
