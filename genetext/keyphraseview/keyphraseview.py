@@ -170,8 +170,8 @@ def keyphrasesearch(request):
         abstract_list_size=len(abstracts),
         query_orderby=query_orderby)
         
-        with open('/home/genetext/query.sql', 'w') as f:
-            f.write(sqlquery % tuple(abstracts + genelist + [params.species, params.offset, params.query_limit]))
+        #with open('/home/genetext/query.sql', 'w') as f:
+        #    f.write(sqlquery % tuple(abstracts + genelist + [params.species, params.offset, params.query_limit]))
         
         result = KeyPhrase.objects.raw(sqlquery, abstracts + genelist + [params.species, params.offset, params.query_limit])
         
@@ -222,8 +222,8 @@ def keyphrasesearch(request):
         abstract_list_size=len(abstracts),
         query_orderby=query_orderby)
     
-        with open('/home/genetext/query.sql', 'w') as f:
-            f.write(sqlquery % tuple(abstracts + [params.offset, params.query_limit]))
+        #with open('/home/genetext/query.sql', 'w') as f:
+        #    f.write(sqlquery % tuple(abstracts + [params.offset, params.query_limit]))
     
         result = KeyPhrase.objects.raw(sqlquery, abstracts + [params.offset, params.query_limit])
     

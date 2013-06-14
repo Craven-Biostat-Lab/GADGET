@@ -27,7 +27,7 @@ function fetchabstracts(unique)
     $("img.spinner[abs_unique='" + unique + "']").show();
     
     // build query string
-    var query = abstractdiv.attr("query") + "&orderby=" + abstractdiv.attr("orderby") + "&onlyreviews=" + abstractdiv.attr("onlyreviews") + "&limit=" + abstractlimit + "&offset=" + abstractdiv.attr("offset");
+    var query = abstractdiv.attr("query") + "&orderby=" + abstractdiv.attr("orderby") + "&onlyreviews=" + abstractdiv.attr("onlyreviews") + "&limit=" + abstractlimit + "&offset=" + abstractdiv.attr("offset") + "&genefilter=" + abstractdiv.attr("genefilter");
     
     $.getJSON(query)
     .success(function(data)
@@ -92,7 +92,7 @@ $(document).delegate("a.moreabstracts", "click", function() {
     fetchabstracts($(this).attr("abs_unique"));
 });
 
-// re-sort abstracts when the user clicks a link
+// re-sort abstracts when the user clicks a sorting link
 $(document).delegate("a.sortabstracts", "click", function() {
     var unique = $(this).attr("abs_unique");
     
@@ -100,15 +100,41 @@ $(document).delegate("a.sortabstracts", "click", function() {
     $("a.sortabstracts[abs_unique='" + unique + "']").removeClass("selected");
     $(this).addClass("selected");
     
+    // set "orderby" attribute of abstractcontainer div
     $("div.abstractcontainer[abs_unique='" + unique + "']").attr("orderby", $(this).attr("orderby"));
     resetabstracts(unique);
     fetchabstracts(unique);
 });
 
+
+// filter by gene
+$(document).delegate("a.genefilter", "click", function() {
+    var unique = $(this).attr("abs_unique");
+    
+    // change link styles
+    $("a.genefilter[abs_unique='" + unique + "']").removeClass("selected");
+    $(this).addClass("selected");
+    
+    // set "genefilter" attribute on abstractcontainer div
+    if ($(this).hasClass("nogenefilter"))
+    {
+        // special case for "none" link
+        $("div.abstractcontainer[abs_unique='" + unique + "']").attr("genefilter", "");
+    }
+    else
+    {
+        $("div.abstractcontainer[abs_unique='" + unique + "']").attr("genefilter", $(this).text());
+    }
+    
+    resetabstracts(unique);
+    fetchabstracts(unique);
+});
+
+
+// "only reviews" checkbox
 $(document).delegate("input.onlyreviews", "change", function() {
     var unique = $(this).attr("abs_unique");
 
-    
     $("div.abstractcontainer[abs_unique='" + unique + "']").attr("onlyreviews", $(this).is(":checked"));
 
     resetabstracts(unique);

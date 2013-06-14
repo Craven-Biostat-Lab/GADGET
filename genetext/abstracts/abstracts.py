@@ -43,7 +43,13 @@ def abstracts(request):
 
     # get genes from query string
     try:
-        genes = parse_abstractquery(request.GET.get('genes', ''), species, implicitOr, usehomologs)
+        gene_query = request.GET.get('genes', '')
+        
+        # apply gene filter
+        if request.GET.get('genefilter'):
+          gene_query = request.GET['genefilter'] + ' AND ( ' + gene_query + ' )'
+        
+        genes = parse_abstractquery(gene_query, species, implicitOr, usehomologs)
     except LookupError as e:
         # bad gene query
         response = HttpResponse()
@@ -80,7 +86,7 @@ def abstracts(request):
     keywordID = request.GET.get('keywordnum')
     if keywordID:
         keyword_abstracts = [a.pubmed_id for a in Abstract.objects.filter(ka_abstract__keyphrase=keywordID).only('pubmed_id')]
-        print keyword_abstracts
+        #print keyword_abstracts
     else:
         keyword_abstracts = None
     
@@ -147,7 +153,8 @@ def abstractview(request):
         keywordstring = None
 
     # get gene list (from gene query)
-    if genes:
+    # only if this is a keyword search (for now)
+    if keywordnum and genes:
         gene_symbol_list = filter_genes(gene_id_list(genes, species), keywordnum=keywordnum)
         
         if genefilter not in gene_symbol_list:

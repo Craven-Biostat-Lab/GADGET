@@ -159,7 +159,7 @@ def abstracts_page(keywords=None, genes=None, genehomologs=True, limit=None, off
     if limit and offset:
         limit += offset
 
-    print query
+    #print query
 
     # search the index and return abstracts.  
     # whoosh page numbers start at 1
