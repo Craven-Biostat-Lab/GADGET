@@ -5,7 +5,7 @@ from whoosh.fields import SchemaClass, TEXT, NUMERIC, ID
 from whoosh.query import And, Or, CompoundQuery, Term, NullQuery
 from whoosh.qparser import QueryParser, OrGroup, AndGroup
 
-from genetext.geneview.models import Gene
+from genetext.geneindex.models import Gene, UploadedGeneFile
 
 # Get index location out of the config file
 # If we can't, use a hard-coded path
@@ -131,10 +131,35 @@ def parsequery(q, implicitOr=False):
         return andParser.parse(q)
 
 
-def parse_abstractquery(q, tax=None, implicitOr=False, usehomologs=False):
+class BadGenefileError(Exception):
+    pass
+
+
+def genefile_lookup(genefileID, implicitOr=False, usehomologs=False):
+    """Return a whoosh query object containing all of the genes for an uploaded
+    gene file ID.  If the file doesn't exist in the database,
+    raise a BadGenefileError."""
+
+    genefield = 'homolog_genes' if usehomologs else 'genes'
+
+    genes = UploadedGeneFile.objects.get(id=genefileID).uploadedgene_set.all()
+
+    if not genes:
+        raise BadGenefileError
+    
+    terms = [Term(genefield, str(g.gene)) for g in genes]
+
+    if implicitOr:
+        return Or(terms)
+    else:
+        return And(terms)
+
+
+def parse_gene_abstractquery(q, tax=None, implicitOr=False, usehomologs=False):
     """Take a gene query as a string, and parse and convert it into a Whoosh 
     query object to be used against the abstract index.  Raise a LookupError 
-    if there is a term in the query that doesn't match any genes."""
+    if there is a term in the query that doesn't match any genes.
+    """
     
     # decide which gene field to use on the abstract index
     genefield = 'homolog_genes' if usehomologs else 'genes'
@@ -144,7 +169,7 @@ def parse_abstractquery(q, tax=None, implicitOr=False, usehomologs=False):
     
 
 def flatten_query(query):
-    """Given a query produced by parse_abstractquery, return a set of the text
+    """Given a query produced by parse_gene_abstractquery, return a set of the text
     of all of the terms in the query (a set of all of the gene ID's as unicode
     strings.)"""
 
@@ -166,5 +191,5 @@ def flatten_query(query):
 
 def gene_id_list(q, tax):
     """Return a sorted list of gene entrez ID's for a given gene query"""
-    return sorted([Gene.objects.get(pk=g).entrez_id for g in flatten_query(parse_abstractquery(q, tax))])
+    return sorted([Gene.objects.get(pk=g).entrez_id for g in flatten_query(parse_gene_abstractquery(q, tax))])
     

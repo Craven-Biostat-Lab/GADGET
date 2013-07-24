@@ -51,6 +51,8 @@ $(document).ready(function()
     <a target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
 </div>
 
+<a id="uploadgenes" href="javascript:void(0);">Upload a file of gene ID's</a>
+
 {% endblock %}
 
 {% block tabs %}
@@ -60,6 +62,8 @@ $(document).ready(function()
 {% endblock %}
 
 {% block content %}
+
+<div id="geneuploadbox" style="display:none"></div>
 
 <table id="download" style="display:none">
     <tr><td colspan="2">Download results:</td></tr>

@@ -7,7 +7,7 @@ from django.shortcuts import render_to_response
 
 from genetext.geneview.geneview import  parseboolean
 from genetext.abstracts.index import abstracts_page
-from genetext.geneindex.geneindex import parse_abstractquery, gene_id_list
+from genetext.geneindex.geneindex import parse_gene_abstractquery, gene_id_list
 from genetext.abstracts.models import Abstract, KeyPhrase, KeyphraseAbstract, Gene
 
 def abstracts(request):
@@ -49,7 +49,7 @@ def abstracts(request):
         if request.GET.get('genefilter'):
           gene_query = request.GET['genefilter'] + ' AND ( ' + gene_query + ' )'
         
-        genes = parse_abstractquery(gene_query, species, implicitOr, usehomologs)
+        genes = parse_gene_abstractquery(gene_query, species, implicitOr, usehomologs)
     except LookupError as e:
         # bad gene query
         response = HttpResponse()

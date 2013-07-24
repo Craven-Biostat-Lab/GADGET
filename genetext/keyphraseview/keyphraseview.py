@@ -11,7 +11,7 @@ from genetext.keyphraseview.models import KeyPhrase
 from genetext.abstracts.index import get_abstracts
 from genetext.geneview.geneview import searchparams, speciesnames, \
     specieschoices, geneoperators, parseboolean, validatespecies
-from genetext.geneindex.geneindex import parse_abstractquery, flatten_query
+from genetext.geneindex.geneindex import parse_gene_abstractquery, flatten_query
 
 # set of valid orderby options when genes are not provided
 abstract_query_orderbys = set(['total_abstracts', 'query_abstracts',
@@ -67,11 +67,11 @@ def keyphrasesearch(request):
     if params.genes:
         try:
             # get a gene query to run against the abstract index
-            genequery = parse_abstractquery(params.genes, params.species, params.implicitOr, params.usehomologs)
+            genequery = parse_gene_abstractquery(params.genes, params.species, params.implicitOr, params.usehomologs)
             
             # from the gene query, get a list of the gene ID's in the query (as strings)
             if params.usehomologs:
-                genelist = map(str, flatten_query(parse_abstractquery(params.genes, params.species, params.implicitOr, False)))
+                genelist = map(str, flatten_query(parse_gene_abstractquery(params.genes, params.species, params.implicitOr, False)))
             else:
                  genelist = map(str, flatten_query(genequery))
             

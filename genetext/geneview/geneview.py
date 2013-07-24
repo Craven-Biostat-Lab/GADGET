@@ -12,7 +12,7 @@ import rpy2.robjects as robjects
 
 from genetext.geneview.models import Gene, GeneAbstract, Abstract
 from genetext.abstracts.index import get_abstracts, corpus_size
-from genetext.geneindex.geneindex import parse_abstractquery 
+from genetext.geneindex.geneindex import parse_gene_abstractquery, genefile_lookup, BadGenefileError
 
 # allowable species (specieschoices should be in order, with the default first)
 speciesnames = {'9606': 'Homo sapiens', '10090': 'Mus musculus', '559292': 'Saccharomyces cerevisiae'}
@@ -70,6 +70,9 @@ def searchpage(request):
 def parseboolean(s):
     """Get a boolean argument from the query string, and decide if it's true or false"""
     
+    if s is None:
+        return False
+
     if type(s) is bool:
         return s
     
@@ -83,9 +86,9 @@ def parseboolean(s):
 
 
 class searchparams:
-    """Struct for arguments passed to the gene search via the query string.
-    Parses the arguments out of the request object when initialized.
-    Also used by the keyphrase search."""
+    """Struct for arguments passed to the gene search via the query string
+    and from cookies.  Parses the arguments out of the request object when 
+    initialized.  Also used by the keyphrase search."""
 
     def __init__(self, request):
         # format to return the results in (blank for JSON to display in the browser)
@@ -135,6 +138,11 @@ class searchparams:
         
         # get the order from the query string
         self.orderby = request.GET.get('orderby', default='f1_score').lower()
+
+        self.usegenefile = parseboolean(request.GET.get('usegenefile'))
+        self.genefilename = request.COOKIES.get('genefilename')
+        self.genefileID = request.COOKIES.get('genefileID')
+
         
     def __str__(self):
         return str(locals())
@@ -161,13 +169,18 @@ def genesearch(request):
         geneabstract_tablename = 'gene_abstract'
         abstract_col = 'abstracts'
     
-    if params.genes:
+    if params.genes or params.usegenefile:
         try:
             # get a query to run against the abstract index
-            genequery = parse_abstractquery(params.genes, params.species, params.implicitOr, params.usehomologs)
+            if params.usegenefile:
+                genequery = genefile_lookup(params.genefileID)
+            else:
+                genequery = parse_gene_abstractquery(q=params.genes, tax=params.species, implicitOr=params.implicitOr, usehomologs=params.usehomologs)
         except LookupError as e:
             # a term in the gene query couldn't be matched to any genes.
             return searchresponse(validresult=False, download=params.download, errmsg='No genes match <b>{0}</b> for species {1}'.format(e.args[0], params.species))
+        except BadGenefileError:
+            return searchresponse(validresult=False, download=params.download, errmsg="Can't find this gene file!  It probably expired.  Please upload it again.""")
     else:
         genequery = None
     
