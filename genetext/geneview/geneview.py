@@ -232,10 +232,10 @@ def genesearch(request):
     if not pvals: 
         return searchresponse(validresult=False, download=params.download, errmsg="Your query didn't match any genes.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, species=params.species)
 
-    return searchresponse(validresult=True, download=params.download, results=results, genes=params.genes, geneop=params.geneop, pvals=pvals, offset=params.offset, orderby=params.orderby, query=params.keywords, limit=params.limit, usehomologs=params.usehomologs, species=params.species, query_abstract_count=query_abstract_count)
+    return searchresponse(validresult=True, download=params.download, results=results, genes=params.genes, geneop=params.geneop, pvals=pvals, offset=params.offset, orderby=params.orderby, query=params.keywords, limit=params.limit, usehomologs=params.usehomologs, species=params.species, query_abstract_count=query_abstract_count, abstracts=abstracts)
     
 
-def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], geneop=None, pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None, query_abstract_count=None):
+def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], geneop=None, pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None, query_abstract_count=None, abstracts=None):
     """Return an HttpResponse object with gene search results, as either JSON, XML,
     or a CSV depending on the "download" argument.  "validresult" is True if "genes",
     "pvals", and "offset" represent a valid result, and False otherwise.  "errmsg" 
@@ -262,6 +262,14 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
             response['Content-Type'] = 'text/xml'
             return response
             
+        elif download.lower() == 'abstracts':
+            # dump query abstracts
+            response = HttpResponse(mimetype='text')
+            for ab in abstracts:
+                response.write(str(ab))
+                response.write('\n')
+            return response
+
         else:
             raise Http404 # 404 if invalid "download" argument
         
