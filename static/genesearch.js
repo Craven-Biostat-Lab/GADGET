@@ -1,8 +1,8 @@
 // script for gene search page
 // requires jquery
 
-// string variables "q", "genes", "geneop", "genesyms", "species", "usehomologs"
-// and "orderby" declared on html page (from query string arguments)
+// string variables "q", "genes", "geneop", "genesyms", "species", "usehomologs",
+// 'usegenefile', and "orderby" declared on html page (from query string arguments)
 
 // number of genes to fetch on page load
 var initialLimit = 100;
@@ -14,7 +14,7 @@ var offset = 0;
 // build the query string and redirect to a page with the new ordering
 function order(key)
 {
-    var querystring = "q=" + q + "&genes=" + genesyms + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key;
+    var querystring = "q=" + q + "&genes=" + genesyms + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key + "&usegenefile=" + usegenefile;
     window.location = "genesearch?" + querystring;
 }
 
@@ -29,7 +29,7 @@ function hidepanes(gene)
 
 $(document).ready(function()
 {
-    var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit;
+    var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit + "&usegenefile=" + usegenefile;
     offset += initialLimit;
     
     // get initial results
@@ -64,7 +64,7 @@ $(document).ready(function()
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
     {
-        var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
+        var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset + "&usegenefile" + usegenefile;
         offset += limit;
         
         // hide "more" button while we're fetching more genes

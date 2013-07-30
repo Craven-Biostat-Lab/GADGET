@@ -52,6 +52,7 @@ def searchpage(request):
     genes = request.GET.get('genes', default='')
     geneop = request.GET.get('geneop', default=geneoperators[0][0])
     usegenefile_input = request.GET.get('usegenefile', default=False)
+    genefilename = request.COOKIES.get('genefilename')
     species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     orderby = request.GET.get('orderby', default='f1_score')
@@ -68,7 +69,7 @@ def searchpage(request):
     return render_to_response('genesearch.html', {'form': form, 'q': q, 
         'genes': genes, 'geneop': geneop, 'genesyms': genesyms, 'species': species, 
         'speciesname': speciesname, 'usehomologs': usehomologs, 'orderby': orderby,
-        'usegenefile': usegenefile})
+        'usegenefile': usegenefile, 'genefilename': genefilename})
 
 
 def parseboolean(s):
@@ -177,7 +178,7 @@ def genesearch(request):
         try:
             # get a query to run against the abstract index
             if params.usegenefile:
-                genequery = genefile_lookup(params.genefileID)
+                genequery = genefile_lookup(params.genefileID, implicitOr=params.implicitOr, usehomologs=params.usehomologs)
             else:
                 genequery = parse_gene_abstractquery(q=params.genes, tax=params.species, implicitOr=params.implicitOr, usehomologs=params.usehomologs)
         except LookupError as e:
@@ -187,7 +188,7 @@ def genesearch(request):
             return searchresponse(validresult=False, download=params.download, errmsg="Can't find this gene file!  It probably expired.  Please upload it again.""")
     else:
         genequery = None
-    
+
     # don't do anything if we don't have a query
     if not genequery and not params.keywords:
         return searchresponse(validresult=False, download=params.download, errmsg="Please enter gene symbols or a keyword query.")
