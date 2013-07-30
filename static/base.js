@@ -31,44 +31,79 @@ function flasherror()
     flash(errormessage);
 }
 
-// stuff for gene file upload
-// call on $(document).ready()
-//function bindGeneUploadEvents()
 
+// bind events for gene file upload
 $(document).ready( function ()
 {
     // show upload form on "upload gene file" click
-    $("div#header").delegate("a#uploadgenes", "click", function() 
+    $("div#header a#uploadgenes").click( function() 
     {
-        $("div#geneuploadbox").html("<img src='static/spinner.gif' />");
-        $("div#geneuploadbox").fadeIn();
-
-        $.getJSON("/gadget/genefileupload")
-        .success(function(data) 
-        {
-            $("div#geneuploadbox").html(data.page);
-        })
-        .error(flasherror);
+        showUploadForm();
     });
 
-
-    $("div#geneuploadbox").delegate("form", "submit", function()
+    // clear hidden form field when "clear" link is clicked
+    $("div#header a#cleargenefile").click( function()
     {
-        $.post($(this).attr("action"), $(this).serialize())
-        .success( function(data)
-        {
-            if (data.success)
-            {
-                // gene UI changes here
-                $("div#uploadbox").fadeOut();
-            }
-            else
-            {
-                $("div#uploadbox").html(data.page);
-            }
-        })
-        .error(flasherror);
-
-        return false; // stops the normal form submitting
+        $("input#id_usegenefile").val("").trigger("change");
     });
+
+    $("input#id_usegenefile").change(updategenebox);
+
+    $("body").delegate("div#pagecover", "click", hideUploadForm);
 });
+
+
+// called from the gene upload iframe if a file upload succeeds
+function genefileUploadSuccess()
+{
+    $("input#id_usegenefile").val(true).trigger("change");
+    window.setTimeout(hideUploadForm, 2000);
+}
+
+
+// grey out the gene input box if we're using a file
+// called when the hidden "usegenefile" field is updated,
+// and when the page is shown
+function updategenebox()
+{
+    if ($("input#id_usegenefile").val())
+    {
+        // disable gene box if we're using a gene file
+        $("input#id_genes").attr('disabled', 'disabled');
+        $("input#id_genes").val("using file: " + getCookie("genefilename"));
+    }
+    else
+    {
+        if ($("input#id_genes").attr("disabled"))
+        {
+            // if we're not using a gene file and the gene box is disabled, 
+            // enable the gene box
+            $("input#id_genes").val("").removeAttr("disabled")
+        }
+    }
+}
+$(window).bind('pageshow', updategenebox);
+
+
+// from http://www.sitepoint.com/how-to-deal-with-cookies-in-javascript
+function getCookie(name) 
+{
+    var regexp = new RegExp("(?:^" + name + "|;\\s*"+ name + ")=(.*?)(?:;|$)", "g");
+    var result = regexp.exec(document.cookie);
+    return (result === null) ? null : result[1];
+}
+
+
+function showUploadForm() 
+{
+    $("div#pagecover").css("opacity",0.6).fadeIn(); 
+    $("div#geneuploadbox").html("<iframe src='/gadget/genefileupload' />");
+    $("div#geneuploadbox").fadeIn();
+}
+
+
+function hideUploadForm()
+{
+    $("div#pagecover").fadeOut();
+    $("div#geneuploadbox").fadeOut();
+}

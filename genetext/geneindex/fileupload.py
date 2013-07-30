@@ -9,9 +9,7 @@ check species of genes?
 
 """
 
-import json
-
-from django.template.loader import render_to_string
+from django.shortcuts import render_to_response
 from django import forms
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
@@ -51,7 +49,6 @@ def loadfile(file):
     # insert each gene into the database
     for g in genes:
         ug = UploadedGene(genefile=gf, gene=g)
-        print ug.genefile
         ug.save()
 
     file.close()
@@ -71,15 +68,14 @@ def uploadpage(request):
     if request.method == 'POST':
         form = GeneFileForm(request.POST, request.FILES)
         message = ""
-        print('debug 1')
         if form.is_valid():
-            print('debug 2')
             try:
                 fileID, filename = loadfile(request.FILES['genefile'])
                 
+                message = "The file upload succeeded!"
+                response = render_to_response('genefileupload.html', 
+                    {'form':form, 'message':message, 'success':True})
 
-                response = HttpResponse()
-                json.dump({'success': True, 'page': None}, response)
                 response.set_cookie('genefileID', fileID)
                 response.set_cookie('genefilename', filename)
                 return response
@@ -93,8 +89,6 @@ def uploadpage(request):
         message = "no file yet!"
         form = GeneFileForm()
 
-    formpage = render_to_string('genefileupload.html', 
-        {'form':form, 'message':message})
-    response = HttpResponse()
-    json.dump({'success': False, 'page': formpage}, response)
+    response = render_to_response('genefileupload.html', 
+        {'form':form, 'message':message, 'success': False})
     return response

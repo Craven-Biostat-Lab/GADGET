@@ -30,6 +30,7 @@ $(document).ready(function()
 
 {% block header %}
 <form name="search" action="" method="get">
+{{ form.usegenefile }}
     <table>
         <tr>
             <td>{{ form.q.label }}: {{ form.q }}</td>
@@ -52,6 +53,7 @@ $(document).ready(function()
 </div>
 
 <a id="uploadgenes" href="javascript:void(0);">Upload a file of gene ID's</a>
+<a id="cleargenefile" href="javascript:void(0);">Clear gene file</a>
 
 {% endblock %}
 

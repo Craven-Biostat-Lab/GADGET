@@ -39,6 +39,28 @@ div.searchtips a {
     font-weight: normal;
 }
 
+div#pagecover {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index=9998;
+    top: 0;
+    left: 0;
+}
+
+div#geneuploadbox {
+    position: fixed;
+    z-index: 9999;
+    background: white;
+    width: 400px;
+    left: 50%;
+    margin-left: -200px;
+    top: 20%;
+    border-radius: 3px;
+}
+
+
 
 /*******************************************************************************
 * Gene search and interaction search
@@ -194,8 +216,7 @@ table#download {
     position: absolute;
     right: 7%;
     /*top: 4px;*/
-    display: inline;
-    padding: 0;
+    z-index:0;
 
     display:inline;
     background-color: #EBF9FF;
@@ -218,6 +239,12 @@ table#download a {
     font-weight: bold;
     color: #485154;
     text-decoration: none;
+}
+
+iframe {
+    border: none;
+    margin: 20px 0;
+    padding: 0;
 }
 
 /*******************************************************************************

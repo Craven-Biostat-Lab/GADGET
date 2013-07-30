@@ -1,6 +1,25 @@
-<form enctype="multipart/form-data" action="/gadget/genefileupload" method="post">
-  {{ form.as_p }}
-  <input type="submit" value="Upload" />
-</form>
+<!DOCTYPE html PUBLIC
+  "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
-{{ message }}
+<html>
+<head>
+    <title>GADGET gene file upload</title>
+    <link rel="stylesheet" type="text/css" href="/static/base.css">
+    
+    {% if success %}
+    <script type="text/javascript">
+        window.parent.genefileUploadSuccess();
+    </script>
+    {% endif %}
+
+</head>
+    <body>
+    <form enctype="multipart/form-data" action="/gadget/genefileupload" method="post">
+      {{ form.as_p }}
+      <input type="submit" value="Upload" />
+    </form>
+
+    {{ message }}
+</body>
+</html>

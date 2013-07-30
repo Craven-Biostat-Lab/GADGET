@@ -41,8 +41,9 @@ def searchpage(request):
         q = forms.CharField(label='Keywords')
         genes = forms.CharField(label='Gene symbols')
         geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='any')
+        usegenefile = forms.BooleanField(initial=False, widget=forms.HiddenInput())
         species = forms.ChoiceField(label='Species', choices=specieschoices, initial='9606')
-        usehomologs = forms.BooleanField(label='Use homologs', widget=forms.CheckboxInput(check_test=parseboolean))
+        usehomologs = forms.BooleanField(label='Use homologs', widget=forms.CheckboxInput(check_test=parseboolean), initial=True)
     
     form = SearchForm(request.GET)
     
@@ -50,6 +51,7 @@ def searchpage(request):
     q = request.GET.get('q', default='')
     genes = request.GET.get('genes', default='')
     geneop = request.GET.get('geneop', default=geneoperators[0][0])
+    usegenefile_input = request.GET.get('usegenefile', default=False)
     species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     orderby = request.GET.get('orderby', default='f1_score')
@@ -61,10 +63,12 @@ def searchpage(request):
     genesyms = genes
     
     usehomologs = parseboolean(usehomologs_input)
+    usegenefile = parseboolean(usegenefile_input)
     
     return render_to_response('genesearch.html', {'form': form, 'q': q, 
         'genes': genes, 'geneop': geneop, 'genesyms': genesyms, 'species': species, 
-        'speciesname': speciesname, 'usehomologs': usehomologs, 'orderby': orderby})
+        'speciesname': speciesname, 'usehomologs': usehomologs, 'orderby': orderby,
+        'usegenefile': usegenefile})
 
 
 def parseboolean(s):
