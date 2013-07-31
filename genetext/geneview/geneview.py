@@ -53,6 +53,7 @@ def searchpage(request):
     geneop = request.GET.get('geneop', default=geneoperators[0][0])
     usegenefile_input = request.GET.get('usegenefile', default=False)
     genefilename = request.COOKIES.get('genefilename')
+    genefileID = request.COOKIES.get('genefileID')
     species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     orderby = request.GET.get('orderby', default='f1_score')
@@ -69,7 +70,8 @@ def searchpage(request):
     return render_to_response('genesearch.html', {'form': form, 'q': q, 
         'genes': genes, 'geneop': geneop, 'genesyms': genesyms, 'species': species, 
         'speciesname': speciesname, 'usehomologs': usehomologs, 'orderby': orderby,
-        'usegenefile': usegenefile, 'genefilename': genefilename})
+        'usegenefile': usegenefile, 'genefilename': genefilename,
+        'genefileID': genefileID})
 
 
 def parseboolean(s):
@@ -145,8 +147,8 @@ class searchparams:
         self.orderby = request.GET.get('orderby', default='f1_score').lower()
 
         self.usegenefile = parseboolean(request.GET.get('usegenefile'))
-        self.genefilename = request.COOKIES.get('genefilename')
-        self.genefileID = request.COOKIES.get('genefileID')
+        self.genefilename = request.GET.get('genefilename')
+        self.genefileID = request.GET.get('genefileID')
 
         
     def __str__(self):
@@ -199,7 +201,7 @@ def genesearch(request):
 
     # error if no abstracts matched the query
     if abstracts == []:
-        return searchresponse(validresult=False, download=params.download, errmsg="Your query did not match any abstracts.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs)
+        return searchresponse(validresult=False, download=params.download, errmsg="Your query did not match any abstracts.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, usegenefile=params.usegenefile)
 
     # get corpus size
     total_abstract_count = corpus_size()
@@ -248,19 +250,19 @@ def genesearch(request):
     pvals = ['{0:.2e}'.format(phyper(g.hits-1, query_abstract_count, total_abstract_count-query_abstract_count, g.abstracts_display, lower_tail=False)[0]) for g in results]
 
     if not pvals: 
-        return searchresponse(validresult=False, download=params.download, errmsg="Your query didn't match any genes.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, species=params.species)
+        return searchresponse(validresult=False, download=params.download, errmsg="Your query didn't match any genes.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, species=params.species, usegenefile=params.usegenefile)
 
-    return searchresponse(validresult=True, download=params.download, results=results, genes=params.genes, geneop=params.geneop, pvals=pvals, offset=params.offset, orderby=params.orderby, query=params.keywords, limit=params.limit, usehomologs=params.usehomologs, species=params.species, query_abstract_count=query_abstract_count)
+    return searchresponse(validresult=True, download=params.download, results=results, genes=params.genes, geneop=params.geneop, pvals=pvals, offset=params.offset, orderby=params.orderby, query=params.keywords, limit=params.limit, usehomologs=params.usehomologs, species=params.species, query_abstract_count=query_abstract_count, usegenefile=params.usegenefile)
     
 
-def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], geneop=None, pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None, query_abstract_count=None):
+def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], geneop=None, pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None, query_abstract_count=None, usegenefile=None):
     """Return an HttpResponse object with gene search results, as either JSON, XML,
     or a CSV depending on the "download" argument.  "validresult" is True if "genes",
     "pvals", and "offset" represent a valid result, and False otherwise.  "errmsg" 
     is an error message to display to the user."""
 
     if download:
-        if not query and not genes: 
+        if not query and not genes and not usegenefile: 
             raise Http404 # 404 if we don't have a query
     
         if download.lower() == 'csv':

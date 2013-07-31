@@ -65,9 +65,9 @@ class GeneFileForm(forms.Form):
 def uploadpage(request):
     """Little web page with a form to upload a gene file"""
 
+    message = ''
     if request.method == 'POST':
         form = GeneFileForm(request.POST, request.FILES)
-        message = ""
         if form.is_valid():
             try:
                 fileID, filename = loadfile(request.FILES['genefile'])
@@ -86,7 +86,6 @@ def uploadpage(request):
 
 
     else:
-        message = "no file yet!"
         form = GeneFileForm()
 
     response = render_to_response('genefileupload.html', 

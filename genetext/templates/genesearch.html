@@ -16,6 +16,7 @@
     var usehomologs = "{{ usehomologs|urlencode }}";
     var orderby = "{{ orderby|urlencode }}";
     var usegenefile = "{{ usegenefile|urlencode }}";
+    var genefileID = "{{ genefileID|urlencode }}";
 </script>
 <script type="text/javascript" src="/static/genesearch.js"></script>
 {% endif %}
@@ -53,6 +54,7 @@ $(document).ready(function()
     <a target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
 </div>
 
+<br />
 <a id="uploadgenes" href="javascript:void(0);">Upload a file of gene ID's</a>
 <a id="cleargenefile" href="javascript:void(0);">Clear gene file</a>
 
@@ -66,13 +68,11 @@ $(document).ready(function()
 
 {% block content %}
 
-<div id="geneuploadbox" style="display:none"></div>
-
 <table id="download" style="display:none">
     <tr><td colspan="2">Download results:</td></tr>
     <tr>
-        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}&download=csv">CSV</a></td>
-        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}&download=xml" target="_blank">XML</a></td>
+        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}&download=csv">CSV</a></td>
+        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}&download=xml" target="_blank">XML</a></td>
     </tr>
 </table>
 
