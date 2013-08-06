@@ -27,7 +27,7 @@ function hidepanes(keyphrase)
 
 $(document).ready(function()
 {
-    var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit;
+    var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit + "&usegenefile=" + usegenefile + "&genefileID=" + genefileID;
     offset += initialLimit;
     
     // get initial results
@@ -62,7 +62,7 @@ $(document).ready(function()
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
     {
-        var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
+        var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset + "&usegenefile=" + usegenefile + "&genefileID=" + genefileID;
         offset += limit;
         
         // hide "more" button while we're fetching more genes
@@ -110,7 +110,7 @@ $(document).ready(function()
             var abstractcount = $("tr#keyphrase" + keywordnum).attr("hits");
             
             // assemble querystring
-            var querystring = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&genesyms=" + genesyms + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + keywordnum + "&keywordnum=" + keywordnum + "&orderby=relevance" + "&abstractcount=" + abstractcount;
+            var querystring = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&genesyms=" + genesyms + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + keywordnum + "&keywordnum=" + keywordnum + "&orderby=relevance" + "&abstractcount=" + abstractcount + "&usegenefile=" + usegenefile + "&genefileID=" + genefileID;
         
             // set up abstract pane
             $("table#keywords tr#keyphrase" + keywordnum).after('<tr class="abstracts" id="abstracts' + keywordnum + '"><td></td><td class="pane" colspan="12"><img src="/static/spinner2.gif"></td></tr>');

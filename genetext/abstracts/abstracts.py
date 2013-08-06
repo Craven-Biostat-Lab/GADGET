@@ -167,6 +167,9 @@ def abstractview(request):
     if onlyreviews:
         onlyreviews = parseboolean(onlyreviews)
         
+    if usegenefile:
+        usegenefile = parseboolean(usegenefile)
+
     # look up keyword string
     if keywordnum:
         keywordstring = KeyPhrase.objects.get(pk=keywordnum).string
