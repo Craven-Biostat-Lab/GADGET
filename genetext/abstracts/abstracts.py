@@ -108,6 +108,9 @@ def abstracts(request):
     else:
         keyword_abstracts = None
     
+    print "keywordIDL", keywordID
+    print keyword_abstracts
+
     # get abstract ID's from index
     abstracts = abstracts_page(keywords, genes, usehomologs, limit, offset, orderby, onlyreviews, keyword_abstracts)
     
