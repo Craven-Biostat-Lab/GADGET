@@ -106,4 +106,5 @@ function hideUploadForm()
 {
     $("div#pagecover").fadeOut();
     $("div#geneuploadbox").fadeOut();
+    return 0;
 }

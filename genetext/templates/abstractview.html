@@ -1,5 +1,5 @@
 <b>Abstracts</b><br />
-Showing abstracts{% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% endif %}{% if rowgene %} for <b>{{ rowgene|safe }}</b>{% endif %} for{% if genesyms %}{% if geneop %} <b>{{ geneop }}</b> of{% endif %} <b>{{ genesyms|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}<br /><br />
+Showing abstracts{% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% endif %}{% if rowgene %} for <b>{{ rowgene|safe }}</b>{% endif %}{% if genesyms %} for{% if geneop %} <b>{{ geneop }}</b> of{% endif %} <b>{{ genesyms|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}<br /><br />
 
 {% if gene_symbol_list %}
   Filter by gene: 

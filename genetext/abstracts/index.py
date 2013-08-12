@@ -157,8 +157,6 @@ def abstracts_page(keywords=None, genes=None, genehomologs=True, limit=None, off
     else:
         query = buildquery(keywords, genes, genehomologs, onlyreviews, False, abstractlist)
     
-    print 'index query:', query
-
     # we have to apply the limit before the offset, so add the offset to
     # the limit so we still get back the correct number of abstracts
     if limit and offset:

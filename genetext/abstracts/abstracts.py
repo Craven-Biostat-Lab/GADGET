@@ -46,7 +46,6 @@ def abstracts(request):
     try:
         if parseboolean(request.GET.get('usegenefile')):
             # look up genes from file if we're using one
-            print "debug 1"
             genefileID = request.GET.get('genefileID', -1)
             genes = genefile_lookup(genefileID, implicitOr, usehomologs)
         elif request.GET.get('genes'):
@@ -55,14 +54,12 @@ def abstracts(request):
         else:
             genes = NullQuery
 
-        print genes
         if request.GET.get('rowgene'):
             genes = addgene(genes, request.GET.get('rowgene'), species, usehomologs)
 
         # apply gene filter
         if request.GET.get('genefilter'):
             genes = addgene(genes, request.GET.get('genefilter'), species, usehomologs)
-        print genes
 
     except LookupError as e:
         # bad gene query
@@ -104,13 +101,9 @@ def abstracts(request):
     keywordID = request.GET.get('keywordnum')
     if keywordID:
         keyword_abstracts = [a.pubmed_id for a in Abstract.objects.filter(ka_abstract__keyphrase=keywordID).only('pubmed_id')]
-        #print keyword_abstracts
     else:
         keyword_abstracts = None
     
-    print "keywordIDL", keywordID
-    print keyword_abstracts
-
     # get abstract ID's from index
     abstracts = abstracts_page(keywords, genes, usehomologs, limit, offset, orderby, onlyreviews, keyword_abstracts)
     

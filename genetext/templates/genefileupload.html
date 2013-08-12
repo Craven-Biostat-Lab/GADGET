@@ -15,11 +15,20 @@
 
 </head>
     <body>
+    <b>Gene file upload</b><br /><br />
+
+    <p id="uploadinstructions">
+        Here you can upload a file with a list of genes to use in GADGET queries.  Uploading a file has the same effect of typing all of the genes into the file into the "genes" text box.  The file should be a list of Entrez Gene ID's, with one gene per line.
+    </p>
+
     <form enctype="multipart/form-data" action="/gadget/genefileupload" method="post">
-      {{ form.as_p }}
+      {{ form.genefile }}<br /><br />
       <input type="submit" value="Upload" />
     </form>
 
     {{ message }}
+    
+    <br /><br />
+    <a href="javascript:window.parent.hideUploadForm();" id="closeuploadbox">Close</a>
 </body>
 </html>

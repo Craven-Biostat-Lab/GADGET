@@ -61,9 +61,9 @@ $(document).ready(function()
 
 
 {% block tabs %}
-<span class="tab"><a href="genesearch?{% if q %}&q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|urlencode }}{% endif %}{% if geneop %}&geneop={{ geneop|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}">Gene search</a></span>
+<span class="tab"><a href="genesearch?{% if q %}&q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|urlencode }}{% endif %}{% if geneop %}&geneop={{ geneop|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}">Gene search</a></span>
+<span class="tab selected">Keyphrase search</span>
 <span class="tab"><a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|urlencode }}{% endif %}">Interaction search</a></span>
-<span class="tab selected">Keyword search</span>
 {% endblock %}
 
 
@@ -72,13 +72,13 @@ $(document).ready(function()
 <table id="download" style="display:none">
     <tr><td colspan="2">Download results:</td></tr>
     <tr>
-        <td><a href="keywordlist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}&download=csv">CSV</a></td>
+        <td><a href="keywordlist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}{% endif %}&download=csv">CSV</a></td>
         <!-- <td><a href="keywordlist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}&download=xml" target="_blank">XML</a></td> -->
     </tr>
 </table>
 
 <div id="description" style="display:none">
-    Showing and scoring keywords in <span id="abstractcount" style="display:none"></span> abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms or usegenefile %} and{% endif %}{% if genesyms or usegenefile %} containing <b>{{ geneop|safe }}</b> of genes {% if usegenefile %}in the file <b>{{ genefilename|safe }}</b>{% else %}<b>{{ genesyms|safe }}</b>{% endif %}{% endif %}<br />
+    Showing and scoring keywords in <span id="abstractcount" style="display:none"></span> abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q %}{% if genesyms or usegenefile %} and{% endif %}{% endif %}{% if genesyms or usegenefile %} containing <b>{{ geneop|safe }}</b> of genes {% if usegenefile %}in the file <b>{{ genefilename|safe }}</b>{% else %}<b>{{ genesyms|safe }}</b>{% endif %}{% endif %}<br />
     For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
 </div><br />
 

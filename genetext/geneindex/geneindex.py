@@ -198,8 +198,5 @@ def addgene(gene_query, gene, tax=None, usehomologs=False):
     """Given a Whoosh query object and a gene as a string, add the gene to the
     query with an AND"""
 
-    print 'addgene: gene_query', gene_query
-    print 'addgene: gene', gene
-
     new_gene_query = parse_gene_abstractquery(gene, tax=tax, usehomologs=usehomologs)
     return And([new_gene_query, gene_query])

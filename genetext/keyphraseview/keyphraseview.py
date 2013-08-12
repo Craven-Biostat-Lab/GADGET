@@ -103,8 +103,6 @@ def keyphrasesearch(request):
         genequery = None
         genelist = []
 
-    print "keyphrase gene query", genequery
-    
     # don't do anything if we don't have a query
     if not genequery and not params.keywords:
         return searchresponse(False, params, errmsg="Please enter gene symbols or a keyword query.")

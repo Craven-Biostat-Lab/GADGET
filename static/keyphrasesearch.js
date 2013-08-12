@@ -177,6 +177,7 @@ var initialgenes = null;
 var initialgeneop = null;
 var initialspecies = null;
 var initialhomologs = null;
+var initialusegenefile = null;
 
 $(window).bind('pageshow', function() {
     if (initialquery == null) {initialquery = $("input#id_q").val();}
@@ -198,4 +199,11 @@ $(window).bind('pageshow', function() {
     
     if (initialhomologs == null) {initialhomologs = $("input#id_usehomologs").attr("checked");}
     else {$("input#id_usehomologs").attr("checked", initialhomologs);}
+
+    if (initialusegenefile == null) {initialusegenefile = $("input#id_usegenefile").val();}
+    else 
+    {
+        $("input#id_usegenefile").val(initialusegenefile);
+        updategenebox();
+    }
 });
