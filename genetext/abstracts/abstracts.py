@@ -1,13 +1,14 @@
 #!/usr/bin/python
 import json
+from whoosh.query import NullQuery
 
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
 
-from genetext.geneview.geneview import  parseboolean
+from genetext.geneview.geneview import parseboolean
 from genetext.abstracts.index import abstracts_page
-from genetext.geneindex.geneindex import parse_abstractquery, gene_id_list
+from genetext.geneindex.geneindex import parse_gene_abstractquery, gene_id_list, genefile_lookup, BadGenefileError, addgene
 from genetext.abstracts.models import Abstract, KeyPhrase, KeyphraseAbstract, Gene
 
 def abstracts(request):
@@ -43,17 +44,31 @@ def abstracts(request):
 
     # get genes from query string
     try:
-        gene_query = request.GET.get('genes', '')
-        
+        if parseboolean(request.GET.get('usegenefile')):
+            # look up genes from file if we're using one
+            genefileID = request.GET.get('genefileID', -1)
+            genes = genefile_lookup(genefileID, implicitOr, usehomologs)
+        elif request.GET.get('genes'):
+            gene_query = request.GET.get('genes')
+            genes = parse_gene_abstractquery(gene_query, species, implicitOr, usehomologs)
+        else:
+            genes = NullQuery
+
+        if request.GET.get('rowgene'):
+            genes = addgene(genes, request.GET.get('rowgene'), species, usehomologs)
+
         # apply gene filter
         if request.GET.get('genefilter'):
-          gene_query = request.GET['genefilter'] + ' AND ( ' + gene_query + ' )'
-        
-        genes = parse_abstractquery(gene_query, species, implicitOr, usehomologs)
+            genes = addgene(genes, request.GET.get('genefilter'), species, usehomologs)
+
     except LookupError as e:
         # bad gene query
         response = HttpResponse()
         json.dump({'validresult': False, 'errmsg': 'Bad gene query.  Check your gene symbols: {0}.'.format(e.args[0])}, response)
+        return response
+    except BadGenefileError:
+        response = HttpResponse()
+        json.dump({'validresult': False, 'errmsg': "Can't find this gene file!  It probably expired.  Please upload it again."})
         return response
 
     # should we only include reviews?
@@ -86,7 +101,6 @@ def abstracts(request):
     keywordID = request.GET.get('keywordnum')
     if keywordID:
         keyword_abstracts = [a.pubmed_id for a in Abstract.objects.filter(ka_abstract__keyphrase=keywordID).only('pubmed_id')]
-        #print keyword_abstracts
     else:
         keyword_abstracts = None
     
@@ -134,6 +148,9 @@ def abstractview(request):
     rowgene = request.GET.get('rowgene')
     keywordnum = request.GET.get('keywordnum')
     genefilter = request.GET.get('genefilter')
+    usegenefile = request.GET.get('usegenefile')
+    genefileID = request.GET.get('genefileID')
+
 
     # clean up gene symbols
     if genesyms:
@@ -146,6 +163,9 @@ def abstractview(request):
     if onlyreviews:
         onlyreviews = parseboolean(onlyreviews)
         
+    if usegenefile:
+        usegenefile = parseboolean(usegenefile)
+
     # look up keyword string
     if keywordnum:
         keywordstring = KeyPhrase.objects.get(pk=keywordnum).string
@@ -169,5 +189,6 @@ def abstractview(request):
         'orderby':orderby, 'offset':offset,
         'unique':unique, 'abstractcount':abstractcount, 'rowgene':rowgene,
         'keywordnum': keywordnum, 'keywordstring': keywordstring,
-        'gene_symbol_list': gene_symbol_list})
+        'gene_symbol_list': gene_symbol_list, 
+        'usegenefile': usegenefile, 'genefileID': genefileID})
         

@@ -11,7 +11,7 @@ from genetext.keyphraseview.models import KeyPhrase
 from genetext.abstracts.index import get_abstracts
 from genetext.geneview.geneview import searchparams, speciesnames, \
     specieschoices, geneoperators, parseboolean, validatespecies
-from genetext.geneindex.geneindex import parse_abstractquery, flatten_query
+from genetext.geneindex.geneindex import parse_gene_abstractquery, genefile_lookup, BadGenefileError, flatten_query
 
 # set of valid orderby options when genes are not provided
 abstract_query_orderbys = set(['total_abstracts', 'query_abstracts',
@@ -30,6 +30,7 @@ def searchpage(request):
         q = forms.CharField(label='Keywords')
         genes = forms.CharField(label='Gene symbols')
         geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='any')
+        usegenefile = forms.BooleanField(initial=False, widget=forms.HiddenInput())
         species = forms.ChoiceField(label='Species', choices=specieschoices, initial='9606')
         usehomologs = forms.BooleanField(label='Use homologs', widget=forms.CheckboxInput(check_test=parseboolean))
     
@@ -39,10 +40,16 @@ def searchpage(request):
     q = request.GET.get('q', default='')
     genes = request.GET.get('genes', default='')
     geneop = request.GET.get('geneop', default=geneoperators[0][0])
+    usegenefile_input = request.GET.get('usegenefile', default=False)
+    genefilename = request.COOKIES.get('genefilename')
+    genefileID = request.COOKIES.get('genefileID')
     species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     
-    if genes:
+    usegenefile = parseboolean(usegenefile_input)
+    usehomologs = parseboolean(usehomologs_input)
+
+    if genes or usegenefile:
         orderby = request.GET.get('orderby', default='gene_f1_score')
     else:
         orderby = request.GET.get('orderby', default='abstract_f1_score')
@@ -52,36 +59,50 @@ def searchpage(request):
 
     # gene input to display to the user
     genesyms = genes
-    
-    usehomologs = parseboolean(usehomologs_input)
-    
+        
     return render_to_response('keyphrasesearch.html', {'form': form, 'q': q, 
         'genes': genes, 'geneop': geneop, 'genesyms': genesyms, 'species': species, 
-        'speciesname': speciesname, 'usehomologs': usehomologs, 'orderby': orderby})
+        'speciesname': speciesname, 'usehomologs': usehomologs, 'orderby': orderby,
+        'usegenefile': usegenefile, 'genefilename': genefilename,
+        'genefileID': genefileID})
 
 
 def keyphrasesearch(request):
     # parse search parameters out of the query string
     params = searchparams(request)
     
-    if params.genes:
+    if params.genes or params.usegenefile:
         try:
             # get a gene query to run against the abstract index
-            genequery = parse_abstractquery(params.genes, params.species, params.implicitOr, params.usehomologs)
             
-            # from the gene query, get a list of the gene ID's in the query (as strings)
-            if params.usehomologs:
-                genelist = map(str, flatten_query(parse_abstractquery(params.genes, params.species, params.implicitOr, False)))
+            if params.usegenefile:
+                # get genes from an uploaded file
+                genequery = genefile_lookup(params.genefileID, implicitOr=params.implicitOr, usehomologs=params.usehomologs)
+           
+                if params.usehomologs:
+                    genelist = map(str, flatten_query(genefile_lookup(params.genefileID, implicitOr=params.implicitOr, usehomologs=False)))
+                else:
+                     genelist = map(str, flatten_query(genequery))
+
             else:
-                 genelist = map(str, flatten_query(genequery))
-            
+                # get genes from the query string
+                genequery = parse_gene_abstractquery(params.genes, params.species, params.implicitOr, params.usehomologs)
+
+                # from the gene query, get a list of the gene ID's in the query (as strings)           
+                if params.usehomologs:
+                    genelist = map(str, flatten_query(parse_gene_abstractquery(params.genes, params.species, params.implicitOr, usehomologs=False)))
+                else:
+                     genelist = map(str, flatten_query(genequery))
+
         except LookupError as e:
             # a term in the gene query couldn't be matched to any genes.
             return searchresponse(False, params, errmsg='No genes match <b>{0}</b> for species {1}'.format(e.args[0], params.species))
+        except BadGenefileError:
+            return searchresponse(validresult=False, download=params.download, errmsg="Can't find this gene file!  It probably expired.  Please upload it again.""")
     else:
         genequery = None
         genelist = []
-    
+
     # don't do anything if we don't have a query
     if not genequery and not params.keywords:
         return searchresponse(False, params, errmsg="Please enter gene symbols or a keyword query.")

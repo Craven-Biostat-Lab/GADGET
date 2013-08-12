@@ -28,7 +28,9 @@
 
 
 {% block tabs %}
-<span class="tab"><a href="genesearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}&usehomologs=1">Gene search</a></span><span class="tab selected">Interaction search:</span>
+<span class="tab"><a href="genesearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}&usehomologs=1">Gene search</a></span>
+<span class="tab"><a href="keywordsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|join:', '|urlencode }}{% endif %}&usehomologs=1">Keyphrase search</a></span>
+<span class="tab selected">Interaction search:</span>
 {% endblock %}
 
 

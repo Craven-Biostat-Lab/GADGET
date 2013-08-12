@@ -90,6 +90,9 @@ def buildquery(keywords=None, genes=None, genehomologs=True, onlyreviews=False, 
     else:
         abstractbranch = NullQuery()
 
+    # FOR DEBUGGING - GET RID OF THIS LINE LATER
+    return genebranch & keywordbranch & reviewbranch
+
     # return query, don't score each abstract
     if scored:
         return genebranch & keywordbranch & reviewbranch & abstractbranch

@@ -6,7 +6,7 @@
 
 
 {% block head %}
-{% if q or genes %}
+{% if q or genes or usegenefile %}
 <script type="text/javascript">
     var q = "{{ q|urlencode }}";
     var genes = "{{ genes|urlencode }}";
@@ -15,6 +15,8 @@
     var species = "{{ species|urlencode }}";
     var usehomologs = "{{ usehomologs|urlencode }}";
     var orderby = "{{ orderby|urlencode }}";
+    var usegenefile = "{{ usegenefile|urlencode }}";
+    var genefileID = "{{ genefileID|urlencode }}";
 </script>
 <script type="text/javascript" src="/static/genesearch.js"></script>
 {% endif %}
@@ -30,6 +32,7 @@ $(document).ready(function()
 
 {% block header %}
 <form name="search" action="" method="get">
+{{ form.usegenefile }}
     <table>
         <tr>
             <td>{{ form.q.label }}: {{ form.q }}</td>
@@ -51,10 +54,16 @@ $(document).ready(function()
     <a target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
 </div>
 
+<br />
+<a id="uploadgenes" href="javascript:void(0);">Upload a file of gene ID's</a>
+<a id="cleargenefile" href="javascript:void(0);">Clear gene file</a>
+
 {% endblock %}
 
 {% block tabs %}
-<span class="tab selected">Gene search</span><span class="tab">
+<span class="tab selected">Gene search</span>
+<span class="tab"><a href="keywordsearch?{% if q %}&q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|urlencode }}{% endif %}{% if geneop %}&geneop={{ geneop|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}">Keyphrase search</a></span>
+<span class="tab">
     <a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|urlencode }}{% endif %}">Interaction search</a>
 </span>
 {% endblock %}
@@ -64,13 +73,19 @@ $(document).ready(function()
 <table id="download" style="display:none">
     <tr><td colspan="2">Download results:</td></tr>
     <tr>
-        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}&download=csv">CSV</a></td>
-        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}&download=xml" target="_blank">XML</a></td>
+        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}{% endif %}&download=csv">CSV</a></td>
+        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}{% endif %}&download=xml" target="_blank">XML</a></td>
     </tr>
 </table>
 
 <div id="description" style="display:none">
-    Showing and scoring <span id="genecount" style="display:none"></span> genes in <span id="abstractcount" style="display:none"></span> abstracts{% if q %} matching <b>{{ q|safe }}</b>{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} containing <b>{{ geneop|safe }}</b> of genes <b>{{ genesyms|safe }}</b>{% endif %}<br />
+    Showing and scoring <span id="genecount" style="display:none"></span> genes in <span id="abstractcount" style="display:none"></span> abstracts
+    {% if q %} matching <b>{{ q|safe }}</b>{% endif %}
+    {% if q %}{% if genesyms or usegenefile %} and{% endif %}{% endif %}
+    {% if genesyms or usegenefile %} containing <b>{{ geneop|safe }}</b> of genes 
+        {% if usegenefile %}in the file <b>{{ genefilename|safe }}</b>
+        {% else %}<b>{{ genesyms|safe }}</b>{% endif %}
+    {% endif %}<br />
     For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
 </div><br />
 

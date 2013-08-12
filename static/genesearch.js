@@ -1,8 +1,8 @@
 // script for gene search page
 // requires jquery
 
-// string variables "q", "genes", "geneop", "genesyms", "species", "usehomologs"
-// and "orderby" declared on html page (from query string arguments)
+// string variables "q", "genes", "geneop", "genesyms", "species", "usehomologs",
+// 'usegenefile', and "orderby" declared on html page (from query string arguments)
 
 // number of genes to fetch on page load
 var initialLimit = 100;
@@ -14,7 +14,7 @@ var offset = 0;
 // build the query string and redirect to a page with the new ordering
 function order(key)
 {
-    var querystring = "q=" + q + "&genes=" + genesyms + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key;
+    var querystring = "q=" + q + "&genes=" + genesyms + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key + "&usegenefile=" + usegenefile;
     window.location = "genesearch?" + querystring;
 }
 
@@ -29,7 +29,7 @@ function hidepanes(gene)
 
 $(document).ready(function()
 {
-    var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit;
+    var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + initialLimit + "&usegenefile=" + usegenefile + "&genefileID=" + genefileID;
     offset += initialLimit;
     
     // get initial results
@@ -64,7 +64,7 @@ $(document).ready(function()
     // get and display more genes when the "more" button gets clicked
     $("input#more").click(function()
     {
-        var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset;
+        var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset + "&usegenefile" + usegenefile + "&genefileID=" + genefileID;
         offset += limit;
         
         // hide "more" button while we're fetching more genes
@@ -118,7 +118,7 @@ $(document).ready(function()
             var genearg = genesyms ? "(" + genesyms + ") AND " + sym : sym;
 
             // assemble querystring
-            var querystring = "q=" + q + "&genes=" + genearg + "&geneop=" + geneop + "&genesyms=" + genesyms + "&rowgene=" + sym + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount; 
+            var querystring = "q=" + q + "&genes=" + genesyms + "&rowgene=" + sym + "&geneop=" + geneop + "&genesyms=" + genesyms + "&rowgene=" + sym + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount + "&usegenefile=" + usegenefile + "&genefileID=" + genefileID; 
             
             // set up abstract pane
             $("#generank tr#gene" + gene).after('<tr class="abstracts" id="abstracts' + gene + '"><td></td><td class="pane" colspan="5"><img src="/static/spinner2.gif"></td></tr>');
@@ -303,6 +303,7 @@ var initialgenes = null;
 var initialgeneop = null;
 var initialspecies = null;
 var initialhomologs = null;
+var initialusegenefile = null;
 
 $(window).bind('pageshow', function() {
     if (initialquery == null) {initialquery = $("input#id_q").val();}
@@ -324,4 +325,11 @@ $(window).bind('pageshow', function() {
     
     if (initialhomologs == null) {initialhomologs = $("input#id_usehomologs").attr("checked");}
     else {$("input#id_usehomologs").attr("checked", initialhomologs);}
+
+    if (initialusegenefile == null) {initialusegenefile = $("input#id_usegenefile").val();}
+    else 
+    {
+        $("input#id_usegenefile").val(initialusegenefile);
+        updategenebox();
+    }
 });
