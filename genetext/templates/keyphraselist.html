@@ -1,19 +1,35 @@
 {% autoescape on %}
 {% for k in result %}
 <tr id="keyphrase{{ k.id }}" hits="{{ k.query_abstracts }}">  
-  <td>{{ forloop.counter|add:params.offset }}</td>
-  <td>{{ k.string }}</td>
-  <td>{{ k.total_genes }}</td>
-  <td>{% if k.query_genes %}{{ k.query_genes }}{% else %}&ndash;{% endif %}</td>
-  <td>{% if k.gene_recall %}{{ k.gene_recall|floatformat:-3 }}{% else %}&ndash;{% endif %}</td>
-  <td>{% if k.gene_precision %}{{ k.gene_precision|floatformat:-3 }}{% else %}&ndash;{% endif %}</td>
-  <td>{% if k.gene_f1_score %}{{ k.gene_f1_score|floatformat:-3 }}{% else %}&ndash;{% endif %}</td>
-  <td>{{ k.total_abstracts }}</td>
-  <td>{{ k.query_abstracts }}</td>
-  <td>{{ k.abstract_precision|floatformat:-3 }}</td>
-  <td>{{ k.abstract_recall|floatformat:-3 }}</td>
-  <td>{{ k.abstract_f1_score|floatformat:-3 }}</td>
-  <td><a id="showabs{{ k.id }}" keywordnum="{{ k.id }}" class="showabstracts" href="javascript: void(0);" offset="0">Show abstracts</a></td>
+  <td class="rankcol">{{ forloop.counter|add:params.offset }}</td>
+  <td class="stringcol">{{ k.string }}</td>
+  
+  <td class="abstractscorecol">
+    <span class="score{% if params.orderby == 'abstract_f1_score' %} selected{% endif %}">Abstract F<span style="font-size:x-small;vertical-align:sub">1</span>: {{ k.abstract_f1_score|floatformat:-3 }}</span><br />
+    <span class="score{% if params.orderby == 'abstract_precision' %} selected{% endif %}">Abstract precision: {{ k.abstract_precision|floatformat:-3 }}</span><br />
+    <span class="score{% if params.orderby == 'abstract_recall' %} selected{% endif %}">Abstract recall: {{ k.abstract_recall|floatformat:-3 }}</span>
+  </td>
+
+  <td class="abstractcountscol">
+    <span class="score{% if params.orderby == 'total_abstracts' %} selected{% endif %}">Total abstracts: {{ k.total_abstracts }}</span><br />
+    <span class="score{% if params.orderby == 'query_abstracts' %} selected{% endif %}">Matching abstracts: {{ k.query_abstracts }}</span><br />
+    <a id="showabs{{ k.id }}" keywordnum="{{ k.id }}" class="showabstracts" href="javascript: void(0);" offset="0">Show abstracts</a>
+  </td>
+
+  {% if k.total_genes %}
+    <td class="spacercol">&nbsp;</td>
+
+    <td class="genescorecol">
+      <span class="score{% if params.orderby == 'gene_f1_score' %} selected{% endif %}">Gene F<span style="font-size:x-small;vertical-align:sub">1</span>: {{ k.gene_f1_score|floatformat:-3 }}</span><br />
+      <span class="score{% if params.orderby == 'gene_precision' %} selected{% endif %}">Gene precision: {{ k.gene_precision }}</span><br />
+      <span class="score{% if params.orderby == 'gene_recall' %} selected{% endif %}">Gene recall: {{ k.gene_recall }}</span>
+    </td>
+
+    <td class="genecountscol">
+      <span class="score{% if params.orderby == 'total_genes' %} selected{% endif %}">Total genes: {{ k.total_genes }}</span><br />
+      <span class="score{% if params.orderby == 'query_genes' %} selected{% endif %}">Matching genes: {{ k.query_abstracts }}</span><br />&nbsp;
+    </td>
+  {% endif %}
 </tr>
 {% endfor %}
 {% endautoescape %}

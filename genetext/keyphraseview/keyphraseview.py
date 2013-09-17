@@ -32,7 +32,7 @@ def searchpage(request):
         geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='any')
         usegenefile = forms.BooleanField(initial=False, widget=forms.HiddenInput())
         species = forms.ChoiceField(label='Species', choices=specieschoices, initial='9606')
-        usehomologs = forms.BooleanField(label='Use homologs', widget=forms.CheckboxInput(check_test=parseboolean))
+        usehomologs = forms.BooleanField(label='Use homologs to find matching abstracts', widget=forms.CheckboxInput(check_test=parseboolean))
     
     form = SearchForm(request.GET)
     
@@ -49,10 +49,7 @@ def searchpage(request):
     usegenefile = parseboolean(usegenefile_input)
     usehomologs = parseboolean(usehomologs_input)
 
-    if genes or usegenefile:
-        orderby = request.GET.get('orderby', default='gene_f1_score')
-    else:
-        orderby = request.GET.get('orderby', default='abstract_f1_score')
+    orderby = request.GET.get('orderby', default='abstract_f1_score')
     
     # validate species
     species, speciesname = validatespecies(request.GET.get('species'))
