@@ -7,58 +7,60 @@
     <title>GADGET</title>
     
     <link rel="stylesheet" type="text/css" href="static/base.css" />
+    <script src="/static/jquery-1.6.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="static/base.js"></script>
 </head>
 <body>
+<div id="geneuploadbox" style="display:none"></div>
+<div id="pagecover" style="display: none"></div>
 <div id="front">
-    <img src="/static/logo-big.png" alt="GADGET: Genes Associated by Documents, Genes, Events, and Text" id="biglogo"/>
-    <table id="links"><tr style="width:100%">
-        <td><a href="/manual.html">User&nbsp;Manual</a></td>
-        <td><a href="/contact.html">Contact</a></td>
-        <td id="last">&nbsp;</td>
-    </tr></table>
-    <p><b>GADGET</b> is a tool that lets you search through literature related to genes.  You can search for genes related to a topic, or find gene interactions extracted from text.</p>
+    <img src="/static/logo-big.gif" alt="GADGET: Genes Associated by Documents, Genes, Events, and Text" id="biglogo"/>
+    <div id="links">
+        <a href="/manual.html" target="_blank">User&nbsp;Manual</a>
+        <a href="/contact.html">Contact</a>        
+    </div>
     <br />
 
     <b>Search the literature for genes by keyword and gene symbol</b>
-    <div id="frontsearch">
+    <div id="search">
         <form action="/gadget/genesearch" method="get"><table>
-            <tr>
-                <th><label for="id_q">Keywords:</label></th>
-                <td style="vertical-align:top"><input type="text" name="q" id="id_q" style="width:85%"/></td>
-                
-                <td rowspan="3" style="vertical-align:center"><input type="submit" value="Search genes" /></td>
-            </tr>
-            <tr>
-                <th><label for="id_genes">Gene symbols:</label></th>
-                <td>
-                
-<label for="id_geneop_0"><input type="radio" name="geneop" value="any" id="id_geneop_0" checked="checked" style="margin:0px; margin-top:3px"> any</label>
-<label for="id_geneop_1"><input type="radio" name="geneop" value="all" id="id_geneop_1" style="margin:0px; margin-top:3px"> all</label>
-
-
-                <input type="text" name="genes" id="id_genes"/> <!--style="width:85%" -->
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="padding: 5px 0">
-                    <label for="id_species">Species:</label> <select name="species" id="id_species">
-                        <option value="9606">Homo sapiens</option>
-                        <option value="10090">Mus musculus</option>
-                        <option value="559292">Saccharomyces cerevisiae</option>
-                    </select>&nbsp;
-                    <label for="id_usehomologs">Use homologs:</label> <input type="checkbox" checked="checked" name="usehomologs" id="id_usehomologs" />
-                </td>
-            </tr>
-            <!--<tr><td style="vertical-align:top"><input type="submit" value="Search genes" /></td></tr>-->
-        </table></form>
-        <div class="searchtips"> 
+            
+            <input type="hidden" name="usegenefile" id="id_usegenefile" />
+            <table>
+                <tr>
+                    <td>Keywords <input type="text" name="q" value="&quot;limb bud&quot;" id="id_q" /></td>
+                    <td>
+                        Gene symbols <ul>
+        <li><label for="id_geneop_0"><input type="radio" id="id_geneop_0" value="any" name="geneop" /> any</label></li>
+        <li><label for="id_geneop_1"><input type="radio" id="id_geneop_1" value="all" name="geneop" /> all</label></li>
+        </ul><input type="text" name="genes" id="id_genes" /><br />
+                        <a id="uploadgenes" href="javascript:void(0);">Upload a file of gene ID's</a>
+                        <a id="cleargenefile" href="javascript:void(0);">Clear gene file</a>
+                    </td>
+                    
+                    <td rowspan="2"><input type="submit" value="Search Genes" /></td>
+                </tr>
+                <tr>
+                    <td>Species <select name="species" id="id_species">
+        <option value="9606">Homo sapiens</option>
+        <option value="10090">Mus musculus</option>
+        <option value="559292">Saccharomyces cerevisiae</option>
+        </select></td>
+                    <td style="text-align:left">Use homologs to find matching abstracts <input type="checkbox" name="usehomologs" id="id_usehomologs" /></td>
+                </tr>
+            </table>
+        </form>
+           
+        <div class="searchtips" style="padding-left:100px"> 
             Search tips:
             <a target="_blank" href="/manual.html#queryterms">Keywords</a>
             <a target="_blank" href="/manual.html#geneentry">Gene symbols</a>
             <a target="_blank" href="/manual.html#species">Species</a>
             <a target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
         </div>
+        <br />
     </div>
+
     <div class="example">
         <b>Examples:</b>
         <ul style="margin:0">
@@ -71,8 +73,51 @@
     </div>
     <br /><br />
     
+
+
+    <b>Search the literature for associated keyphrases by gene and keyword</b>
+    <div id="search">
+        <form action="/gadget/keywordsearch" method="get">
+        <input type="hidden" name="usegenefile" id="id_usegenefile" />
+            <table>
+                <tr>
+                    <td>Keywords <input type="text" name="q" value="&quot;limb bud&quot;" id="id_q" /></td>
+                    <td>
+                        Gene symbols <ul>
+        <li><label for="id_geneop_0"><input checked="checked" type="radio" id="id_geneop_0" value="any" name="geneop" /> any</label></li>
+        <li><label for="id_geneop_1"><input type="radio" id="id_geneop_1" value="all" name="geneop" /> all</label></li>
+        </ul><input type="text" name="genes" id="id_genes" /><br />
+                        <a id="uploadgenes" href="javascript:void(0);">Upload a file of gene ID's</a>
+                        <a id="cleargenefile" href="javascript:void(0);">Clear gene file</a>
+                    </td>
+                    
+                    <td rowspan="2"><input type="submit" value="Search Keywords" /></td>
+                </tr>
+                <tr>
+                    <td>Species <select name="species" id="id_species">
+        <option value="9606" selected="selected">Homo sapiens</option>
+        <option value="10090">Mus musculus</option>
+        <option value="559292">Saccharomyces cerevisiae</option>
+        </select></td>
+                    <td style="text-align:left">Use homologs to find matching abstracts <input type="checkbox" name="usehomologs" id="id_usehomologs" /></td>
+                </tr>
+            </table>
+        </form><br />
+        <div class="searchtips" style="padding-left:100px">
+            Search tips:
+            <a target="_blank" href="/manual.html#queryterms">Keywords</a>
+            <a target="_blank" href="/manual.html#geneentry">Gene symbols</a>
+            <a target="_blank" href="/manual.html#species">Species</a>
+            <a target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
+        </div>
+        <br />
+    </div>
+    <br /><br /><br />
+
+
+
     <b>Search the literature for gene interactions by gene and keyword</b>
-    <div id="frontsearch">    
+    <div id="search">    
         <form action="/gadget/eventsearch" method="get"><table>
             <tr>
                 <th><label for="id_q">Keywords:</label></th>
@@ -85,11 +130,12 @@
                 <td><input type="text" name="genes" id="id_genes" style="width:100%" /></td>
             </tr>
         </table></form>
-        <div class="searchtips">
+        <div class="searchtips" style="padding-left:100px">
             Search tips:
             <a target="_blank" href="/manual.html#queryterms">Keywords</a>
             <a target="_blank" href="/manual.html#geneentry">Gene symbols</a>
         </div>
+        <br />
     </div>
     <div class="example">
         <b>Examples:</b>

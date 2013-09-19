@@ -481,9 +481,8 @@ table#eventsummary th a {
 *******************************************************************************/
 
 div#front {
-    margin: 20px auto 30px auto;
-    width: 60%;
-    max-width: 600px;
+    margin: 20px 15% 30px 15%;
+    max-width: 1000px;
 }
 
 div#front p {
@@ -498,7 +497,7 @@ img#biglogo {
 }
 
 div.example {
-    border-left: solid 2px #426BA2 /*#74C7DC*/;
+    border-left: solid 2px #808C3C; /*#74C7DC*/;
     margin-left: 5%;
     padding-left: 5px;
     margin-bottom: 5px;
@@ -508,9 +507,9 @@ div.example {
 div.example span, span.example, 
 table.instructions tr td:first-child, table.instructions span {
     font-family: Consolas, mono;
-    color: #426BA2;
+    color: #808C3C;
     font-weight: bold;
-    background-color: #DCE8FA;
+    background-color: #E1EDB9;
     padding: 1px 5px;
 }
 
@@ -540,40 +539,21 @@ div#frontsearch table{
     width:100%;
 }
 
-table#links {
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
+div#links {
+    text-align: center;
+    padding: 10px;
 }
 
-table#links td a {
-    text-decoration: none;
+div#links a {
     font-weight: bold;
-    color: #426BA2;
+    padding: 0px 10px;
+    text-decoration: none;
+    font-size: 125%;
+    color: #734217;
 }
 
-table#links td:hover a {
-    color: #65a5f7;
-}
-
-table#links td {
-    border-top: solid 2px #426BA2;
-    border-bottom: solid 2px #426BA2;
-    padding: 2px 8px;
-}
-
-table#links td:hover {
-    border-top: solid 2px #65a5f7;
-    border-bottom: solid 2px #65a5f7;
-}
-
-table#links td#last {
-    width: 100%;
-}
-
-table#links td#last:hover {
-    border-top: solid 2px #426BA2;
-    border-bottom: solid 2px #426BA2;
+div#links a:hover {
+    color: #998E46;
 }
 
 /*******************************************************************************
