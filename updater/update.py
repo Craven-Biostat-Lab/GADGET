@@ -29,6 +29,7 @@ import load_gene_abstract_links
 import abstractqueries
 import fetchabstracts
 import buildindex
+import clear_uploaded_files
 
 from config import dbparams, logfilename, loglevel
 
@@ -102,5 +103,8 @@ if __name__ == '__main__':
 
     # 11: update 'gene' table, count abstracts for each gene
     abstractqueries.count_genes(db)
+
+    #12: clear old uploaded files from the database
+    clear_uploaded_files.clearfiles(db)
 
     logger.info('Completed GADGET data update.')
