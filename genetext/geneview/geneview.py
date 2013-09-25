@@ -43,7 +43,7 @@ def searchpage(request):
         geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='any')
         usegenefile = forms.BooleanField(initial=False, widget=forms.HiddenInput())
         species = forms.ChoiceField(label='Species', choices=specieschoices, initial='9606')
-        usehomologs = forms.BooleanField(label='Use homologs', widget=forms.CheckboxInput(check_test=parseboolean), initial=True)
+        usehomologs = forms.BooleanField(label='Use homologs to find matching abstracts', widget=forms.CheckboxInput(check_test=parseboolean), initial=True)
     
     form = SearchForm(request.GET)
     

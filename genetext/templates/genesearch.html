@@ -35,14 +35,18 @@ $(document).ready(function()
 {{ form.usegenefile }}
     <table>
         <tr>
-            <td>{{ form.q.label }}: {{ form.q }}</td>
-            <td>{{ form.genes.label }}: {{ form.geneop }}{{ form.genes }}</td>
+            <td>{{ form.q.label }} {{ form.q }}</td>
+            <td>
+                {{ form.genes.label }} {{ form.geneop }}{{ form.genes }}<br />
+                <a id="uploadgenes" href="javascript:void(0);">Upload a file of gene ID's</a>
+                <a id="cleargenefile" href="javascript:void(0);">Clear gene file</a>
+            </td>
             
             <td rowspan="2"><input type="submit" value="Search Genes" /></td>
         </tr>
         <tr>
-            <td>{{ form.species.label }}: {{ form.species }}</td>
-            <td style="text-align:left">{{ form.usehomologs.label }}: {{ form.usehomologs }}</td>
+            <td>{{ form.species.label }} {{ form.species }}</td>
+            <td style="text-align:left">{{ form.usehomologs.label }} {{ form.usehomologs }}</td>
         </tr>
     </table>
 </form><br />
@@ -55,8 +59,7 @@ $(document).ready(function()
 </div>
 
 <br />
-<a id="uploadgenes" href="javascript:void(0);">Upload a file of gene ID's</a>
-<a id="cleargenefile" href="javascript:void(0);">Clear gene file</a>
+
 
 {% endblock %}
 

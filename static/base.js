@@ -36,13 +36,13 @@ function flasherror()
 $(document).ready( function ()
 {
     // show upload form on "upload gene file" click
-    $("div#header a#uploadgenes").click( function() 
+    $("div#search a#uploadgenes").click( function() 
     {
         showUploadForm();
     });
 
     // clear hidden form field when "clear" link is clicked
-    $("div#header a#cleargenefile").click( function()
+    $("div#search a#cleargenefile").click( function()
     {
         $("input#id_usegenefile").val("").trigger("change");
     });
