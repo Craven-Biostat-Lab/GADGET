@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<keyphraselist>
+<description>{% if params.q %}
+  <query>{{ params.q|safe }}</query>{% endif %}{% if params.genes %}
+  <input_genes>{{ params.genes }}</input_genes>{% endif %}{% if params.geneop %}
+  <gene_operator>{{ params.geneop }}</gene_operator>{% endif %}
+  <species>{{ params.species }}</species>
+  <using_homologs>{{ params.usehomologs }}</using_homologs>{% if params.orderby %}
+  <orderby>{{ params.orderby }}</orderby>{% endif %}{% if params.limit %}
+  <limit>{{ params.limit }}</limit>{% endif %}{% if params.offset %}
+  <offset>{{ params.offset }}</offset>{% endif %}{% if errmsg %}
+  <errormessage>{{ errmsg }}</errormessage>{% endif %}
+  </description>{% for k in results %}
+  <keyphrase>
+    <rank>{{ forloop.counter|add:params.offset }}</rank>
+    <string>{{ k.string }}</string>
+    <abstract_f1_score>{{ k.abstract_f1_score }}</abstract_f1_score>
+    <total_abstracts>{{ k.total_abstracts }}</total_abstracts>
+    <matching_abstracts>{{ k.query_abstracts }}</matching_abstracts>
+    <abstract_precision>{{ k.abstract_precision }}</abstract_precision>
+    <abstract_recall>{{ k.abstract_recall }}</abstract_recall>{% if k.total_genes %}
+    <gene_f1_score>{{ k.gene_f1_score }}</gene_f1_score>
+    <total_genes>{{ k.total_genes }}</total_genes>
+    <matching_genes>{{ k.query_genes }}</matching_genes>
+    <gene_precision>{{ k.gene_precision }}</gene_precision>
+    <gene_recall>{{ k.gene_recall }}</gene_recall>{% endif %}
+  </keyphrase>{% endfor %}
+</keyphraselist>

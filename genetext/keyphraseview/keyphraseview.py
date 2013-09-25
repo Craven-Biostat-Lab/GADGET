@@ -103,6 +103,11 @@ def keyphrasesearch(request):
         genequery = None
         genelist = []
 
+    # set limit to 5000 if we're not given a limit
+    if not params.limit:
+        params.limit = 5000
+        params.query_limit = 5000
+
     # don't do anything if we don't have a query
     if not genequery and not params.keywords:
         return searchresponse(False, params, errmsg="Please enter gene symbols or a keyword query.")
@@ -272,6 +277,14 @@ def searchresponse(validresult, params, result=[], errmsg=None, abstractcount=No
                 response.write('Error: ' + str(errmsg))
             return response
 
+        elif params.download.lower() == 'xml':
+            # render the XML template
+            response = render_to_response('keyphraselist.xml', 
+                {'params':params, 'results':result, 'errmsg':errmsg})
+            response['Content-Type'] = 'text/xml'
+            return response
+
+
     else:
         # no download option, display results in web browser
         if validresult:
@@ -290,7 +303,7 @@ def searchresponse(validresult, params, result=[], errmsg=None, abstractcount=No
         
 def makecsv(params, result):
     """Create a CSV file from keyphrase results"""
-    header = 'rank,text,total_genes,query_genes,gene_precision,gene_recall,gene_f1,total_abstracts,query_abstracts,abstract_precision,abstract_recall,abstract_f1\n'
+    header = 'rank,text,total_genes,matching_genes,gene_precision,gene_recall,gene_f1,total_abstracts,matching_abstracts,abstract_precision,abstract_recall,abstract_f1\n'
     try:
         body = '\n'.join([','.join(
             (
