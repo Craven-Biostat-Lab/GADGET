@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'production',                      # Or path to database file if using sqlite3.
+        'NAME': 'gadget',                      # Or path to database file if using sqlite3.
         'USER': 'root',                      # Not used with sqlite3.
         'PASSWORD': 'password',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -22,7 +22,7 @@ DATABASES = {
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         'LOCATION': '127.0.0.1:11211',
     }
 }
@@ -85,7 +85,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'genetext.urls'
 
 TEMPLATE_DIRS = (
-    '/home/genetext/gadget/genetext/templates',
+    '/Users/mziegler/gadget/genetext/templates',
 )
 
 INSTALLED_APPS = (
@@ -96,7 +96,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'genetext.eventview',
     'genetext.geneview',
-    'genetext.keyphraseview',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -104,7 +103,5 @@ INSTALLED_APPS = (
 )
 
 # directory where the index of abstracts lives
-ABSTRACT_INDEX_PATH = '/home/genetext/gadget/index/abstracts'
-
-# directory with the index of genes
-GENE_INDEX_PATH = '/home/genetext/gadget/index/genes'
+ABSTRACT_INDEX_PATH = '/Users/mziegler/gadget/index/abstracts'
+GENE_INDEX_PATH = '/Users/mziegler/gadget/index/genes'
