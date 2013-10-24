@@ -87,6 +87,7 @@
                 <li><a href="#build_index">Building the text index</a></li>
             </ol>
         </li>
+        <li><a href="#updater">The automatic data updater</a></li>
     </ol>
     
     <a class="topic" name="gadget_overview">GADGET overview</a>
@@ -134,7 +135,7 @@
     <p>There are a couple things you need to do in the settings to run GADGET locally.  (Do not use these settings to deploy GADGET, see <a href="#deploy_configuration">deployment configuration</a>).</p>
     <p><b>First</b>, in <span class="example">settings.py</span>, make sure that <span class="example">DEBUG</span> and <span class="example">TEMPLATE_DEBUG</span> are set to <span class="example">True</span>.  This will tell Django to show you helpful error pages when something goes wrong, instead of a generic 500 page.</p>
     <p><b>Second</b>, there are a couple paths to directories that you need to set.  These are required to be absolute paths, so they must be set every time a GADGET instance is created.</p>
-    <p>In <span class="example">settings.py</span>, set the path in <span class="example">TEMPLATE_DIRS</span> to the folder containing the HTML templates.  It should be <span class="example">genetext/templates</span> in the GADGET directory.  Also in settings.py, set <span class="example">ABSTRACT_INDEX_PATH</span> to the directory containing the Whoosh index.  It should be <span class="example">index</span> in the GADGET directory.</p>
+    <p>In <span class="example">settings.py</span>, set the path in <span class="example">TEMPLATE_DIRS</span> to the folder containing the HTML templates.  It should be <span class="example">genetext/templates</span> in the GADGET directory.  Also in settings.py, set <span class="example">ABSTRACT_INDEX_PATH</span> to the directory containing the Whoosh index of abstracts.  It should be <span class="example">index/abstracts</span> in the GADGET directory.  Set <span class="example">GENE_INDEX_PATH</span> to the absolute path to the Whoosh index of genes (index/genes).</p>
     <p><b>Third</b>, you need to tell <span class="example">urls.py</span> where to find static files.  Urls.py should include the lines:
     <div class="example"><span>
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
@@ -166,7 +167,7 @@
     <p>To deploy GADGET, copy the GADGET directory (containing genetext, index, static, and www) directories to the web server.  Set up Apache to serve static files in the "static" folder with the "/static/" stem, and to serve static files from "www" folder as the root.  (E.g. "gadget.biostat.wisc.edu/static/base.css" should point to "static/base.css", and "gadget.biostat.wisc.edu/index.html" should point to "www/static.html".)</p>
     <p>Set up Apachi and mod-wsgi to serve the Django application in the "genetext" folder using the "/gadget/" stem.  More information about the WSGI configuration can be found in the/web/gadget folder of the file server.  Send an email to the system administration folks for help.</p>
     <p>The Apache http server should run as its own separate user, so make sure that the user has access to all of the GADGET files.</p>
-    <p>To set up the database, dump the tables <b>abstract_info</b>, <b>event</b>, <b>event_abstract</b>, <b>event_event</b>, <b>event_gene</b>, <b>event_root</b>, <b>gene</b>, and <b>gene_abstract</b>, and re-create them on the server.  Set up a separate user for GADGET with select-only privileges on these tables (GADGET doesn't ever need to write to the database.)  See <a href="#build_database">here</a> for building the database tables.</p>
+    <p>To set up the database, dump the tables <b>abstract_info</b>, <b>event</b>, <b>event_abstract</b>, <b>event_event</b>, <b>event_gene</b>, <b>event_root</b>, <b>gene</b>, and <b>gene_abstract</b>, <b>keyphrase</b>, <b>keyphrase_abstract</b>, and <b>keyphrase_genecounts</b> and re-create them on the server.  Set up a separate user for GADGET with select-only privileges on these tables.  The database user needs insert privilages on the <b>uploaded_gene</b> and <b>uploaded_genefile</b> tables.  See <a href="#build_database">here</a> for building the database tables.</p>
     <p>If you are using a different version of Whoosh on the server than on your local copy, you will probably need to <a href="#build_index">re-build the index</a> on the server.</p>
     <a href="#top" class="top">Back to top</a>
     
@@ -183,7 +184,7 @@
     <p>To deploy GADGET, some settings in the configuration files (<span class="example">genetext/settings.py</span> and <span class="example">genetext/urls.py</span>) need to be different than for a <a href="local_configuration">local deployment</a>.  There should be separate deployment copies of the config files in the GADGET directory, that you can rename to settings.py and urls.py.</p>
     <p><b>First</b>, in <span class="example">settings.py</span>, make sure that <span class="example">DEBUG</span> and <span class="example">TEMPLATE_DEBUG</span> are set to <span class="example">False</span>.  This will cause Django to issue a normal 500 page on an error, instead of showing a stack trace (which could be a security risk.)</p>
     <p><b>Second</b>, there are a couple paths to directories that you need to set.  These are required to be absolute paths, so they must be set every time a GADGET instance is created.</p>
-    <p>In <span class="example">settings.py</span>, set the path in <span class="example">TEMPLATE_DIRS</span> to the folder containing the HTML templates.  It should be <span class="example">genetext/templates</span> in the GADGET directory.  Also in settings.py, set <span class="example">ABSTRACT_INDEX_PATH</span> to the directory containing the Whoosh index.  It should be <span class="example">index</span> in the GADGET directory.</p>
+    <p>In <span class="example">settings.py</span>, set the path in <span class="example">TEMPLATE_DIRS</span> to the folder containing the HTML templates.  It should be <span class="example">genetext/templates</span> in the GADGET directory.  Also in settings.py, set <span class="example">ABSTRACT_INDEX_PATH</span> to the directory containing the Whoosh index.  It should be <span class="example">index/abstracts</span> in the GADGET directory.  Set <span class="example">GENE_INDEX_PATH</span> to the absolute path to the Whoosh index of genes (index/genes).</p>
     <p><b>Third</b>, Django should <b>not</b> be set up to serve static files.  (It's much more efficient and secure to serve static files with the Apache http server.)  In the <span class="example">urlpatterns</span> tuple of <span class="example">urls.py</span>, comment out every line that contains <span class="example">django.views.static.serve</span>.</p>
     <p><b>Fourth</b>, make sure that the URL patterns in the <span class="example">urlpatterns</span> tuple of <span class="example">urls.py</span> do <b>not</b> have "gadget/" stems.  Eg. the pattern for the geneview.search view should be <span class="example">r'^genesearch'</span> instead of <span class="example">r'^gadget/genesearch'</span>.</p>
     <p><b>Fifth</b>, set <span class="example">DATABASES</span> in <span class="example">settings.py</span> with information about how to connect to the database.  You need to provide the <span class="example">NAME</span> of the database, <span class="example">USER</span>, <span class="example">PASSWORD</span>, <span class="example">HOST</span>, and <span class="example">PORT</span>.</p>
@@ -228,44 +229,99 @@
                 <li>geneview
                     <ul>
                         <li>geneview.py &mdash; "views", functions that interact with the web.  This file does most of the heavy lifting for the gene search.</li>
-                        <li>index.py &mdash; functions for querying the text index of abstracts.</li>
                         <li>__init__.py</li>
                         <li>models.py &mdash; information about the database schema (some overlap with genetext/eventview/models.py</li>
+                        <li>genecrossrefs.py &mdash; the "external links" pane in gene search results</li>
+                    </ul>
+                </li>
+                <li>keyphraseview
+                    <ul>
+                        <li>keyphraseview.py &mdash; the keyphrase search (imports a lot of stuff from the gene search modules)</li>
+                        <li>models.py &mdash; database schema used by keyphraseview.py</li>
+                    </ul>
+                </li>
+                <li>abstracts
+                    <ul>
+                        <li>abstracts.py &mdash the "abstract viewer" pane in the gene search, keyphrase search, and event/interaction search</li>
+                        <li>index.py &mdash; functions for querying the text index of abstracts.</li>
+                        <li>models.py &mdash; the database schema used by the files in this "abstracts" folder</li>
+                        <li>__init__.py</li>
+                    </ul>
+                </li>
+                <li>geneindex
+                    <ul>
+                        <li>geneindex.py &mdash; code that uses the Whoosh gene index to match up gene ID's with a user's gene query in the keyphrase search and gene search</li>
+                        <li>fileupload.py &mdash; deals with user-uploaded lists of genes</li>
+                        <li>models.py &mdash; database schema used by the files in this folder</li>
+                        <li>operatorwidget.py &mdash; not used for anything</li>
+                        <li>__init__.py</li>
                     </ul>
                 </li>
                 <li>templates &mdash; used for rendering web pages
                     <ul>
                         <li>abstracts.html &mdash; for listing abstract citations, used by both gene search and event search</li>
+                        <li>abstractview.html &mdash; a "container" for abstracts.html, having the controls to filter the abstracts</li>
                         <li>base.html &mdash; genesearch.html and eventsearch.html extend this template.</li>
                         <li>eventgenes.html &mdash; table for "genes referenced in these events", used by event search</li>
                         <li>eventlist.html &mdash; table rows for event search results</li>
-                        <li>eventpreview.html &mdash; event "previews" shown in gene search results in abstract pane</li>
+                        <li>eventpreview.html &mdash; event "previews" shown in gene search results in abstract pane - currently broken and turned off, because the event search doesn't support all of the types of queries that the gene search does</li>
                         <li>eventsearch.html &mdash; bare event search page, doesn't include results</li>
+                        <li>eventsummary.html &mdash; a table loaded by the event search that shows combinations of genes occurring in the results</li>
+                        <li>genecrossrefs.html &mdash; the list of "external links" for each gene in the gene search results</li>
+                        <li>genefileupload.html &mdash; the form that pops up when you click the "upload a list of genes" link in the gene search and keyphrase search</li>
                         <li>genelist.html &mdash; table rows for gene search results</li>
                         <li>genelist.xml &mdash; XML representation of gene search results (event search XML does not use a template).
                         <li>genesearch.html &mdash; bare gene search page, doesn't include results</li>
+                        <li>keyphraselist.html &mdash; table rows for keyphrase search results</li>
+                        <li>keyphraselist.xml &mdash; for generaring XML downloads of keyphrase search results</li>
+                        <li>keyphrasesearch.html &mdash; bare keyphrase search page without results</li>
                     </ul>
                 </li>
                 <li>__init__.py</li>
                 <li>manage.py &mdash; Django-provided utility script</li>
-                <li>settings.py &mdash; configuration for django project.  See <a href="#local_configuration">local configuration</a> or <a href="#deploy_configuration">deployment configuration</a>.</li>
-                <li>urls.py &mdash; routs incoming urls to python functions / Django views.  See <a href="#local_configuration">local configuration</a> or <a href="#deploy_configuration">deployment configuration</a>.</li>
+                <li>settings.py &mdash; configuration for django project.  See <a href="#local_configuration">local configuration</a> or <a href="#deploy_configuration">deployment configuration</a>.  Ignored by git.</li>
+                <li>settings.py.example.development &mdash; example settings file for running gadget on your development machine</li>
+                <li>settings.py.example.webserver &ndash; example settings for deploying GADGET to a web server</li>
+                <li>urls.py &mdash; routs incoming urls to python functions / Django views.  See <a href="#local_configuration">local configuration</a> or <a href="#deploy_configuration">deployment configuration</a>.  Ignored by git.</li>
+                <li>urls.py.example.development &mdash; example urls.py file for running GADGET on your development machine.</li>
+                <li>urls.py.example.webserver &mdash; example urls.py for deploying GADGET to a web server.</li>
             </ul>
         </li>
-        <li>index &mdash; contains the index of abstracts</li>
+        <li>index 
+            <ul>
+                <li>absracts &mdash; contains the Whoosh index of abstracts</li>
+                <li>genes &mdash; contains the Whoosh index of genes</li>
+            </ul>
+        </li>
         <li>static
             <ul>
                 <li>events &mdash; example event images</li>
+                <li>abstracts.py &mdash; script used by abstract viewer pane in results</li>
                 <li>base.css &mdash; loaded by all pages</li>
                 <li>base.js &mdash; loaded by base.html template</li>
+                <li>document.png &mdash; old, not currently used for anything</li>
                 <li>eventlist.dtd &mdash; DTD describing event search XML results</li>
                 <li>eventsearch.js &mdash; script used by event search</li>
                 <li>genelist.dtd &mdash; DTD describing gene search XML results</li>
                 <li>genesearch.js &mdash; script used by gene search</li>
+                <li>interaction.png &mdash; old, not currently used for anything</li>
                 <li>jquery-1.6.1.min.js &mdash; loaded by base.html template</li>
-                <li>logo-big.png</li>
-                <li>spinner.gif</li>
-                <li>spinner2.gif</li>
+                <li>keyphrasesearch.js &mdash; script used by keyphrase search</li>
+                <li>links.png &mdash; old, not currently used for anything</li>
+                <li>logo-big.png &mdash; used on the front page</li>
+                <li>logo-small.png &mdash; used at the top of gene search, event search, and keyphrase search pages</li>
+                <li>spinner.gif &mdash; used in search pages</li>
+                <li>spinner2.gif &mdash; old, not currently used for anything</li>
+            </ul>
+        </li>
+        <li>updater &mdash; scripts that automatically update some of the data in the database
+            <ul>
+                <li>config.py &mdash; settings for the update script</li>
+                <li>update.py &mdash; called every night by the "cron" user on the server, downloads and updates data in the database</li>
+                <li>abstractqueries.py, buildindex.py, fetchabstracts.py, load_gene_abstract_links.py &mdash; modules used by update.py</li>
+                <li>clear_uploaded_files.py &mdash; called by update.py, deletes old uploaded files from the database</li>
+                <li>mergeindex.py &mdash; merges together segments of the Whoosh abstract index.  takes a long time, but results in faster queries.  called once a week by the cron user on the server.</li>
+                <li>dirty-abstract-trigger.sql &mdash; trigger applied to the database to mark abstracts as needing to be re-indexed when new associated genes are added</li>
             </ul>
         </li>
         <li>util &mdash; not part of the application, useful scripts for setting up the data
@@ -287,9 +343,10 @@
     <a href="#top" class="top">Back to top</a>
     
     <a name="data_overview" class="topic">Data overview</a>
-    <p>GADGET uses data about genes, abstracts, and events.  The data lives in 2 places: a MySQL database, and a searchable text index.</p>
+    <p>GADGET uses data about genes, abstracts, and events.  The data lives in 2 places: a MySQL database, and a two searchable text indices.</p>
+    <p>The database and whoosh indices are dumped in <span class="example">/u/ml-group/information_extraction/gadget/db</span><p>.
     <p>The MySQL database contains a table of genes with descriptive information, a table of abstract information, and tables containing events.  The actual text of the abstracts is not stored in the database.  The events have tree structures, and the relationships between events are represented by self-joins through an intermediate table.</p>
-    <p>The text index uses the Whoosh library.  The index keeps track of the title, abstract text, year, and PubMed ID of each abstract.  The index returns a list of abstracts which match a given text query.  It is also capable of spell checking, and keyword-finding for a set of abstracts.</p>
+    <p>There are two text indices that use the Whoosh library: one for abstracts and one for genes.  The abstract index keeps track of the title, abstract text, year, and PubMed ID of each abstract.  The abstract index returns a list of abstracts which match a given text query.  It is also capable of spell checking, and keyword-finding for a set of abstracts.  The gene index stores gene symbols and their Entrez ID's.</p>
     <a href="#top" class="top">Back to top</a>
     
     <a name="data_sources" class="topic">Data sources</a>
@@ -402,7 +459,9 @@
     <a href="#top" class="top">Back to top</a>
     
     <a name="build_database" class="topic">Building the database</a>
+    <p>The database and whoosh indices are dumped in <span class="example">/u/ml-group/information_extraction/gadget/db</span>.  You can use the dumped files to set up the database, or there are some instructions that you should be ebla to use to build it from scratch.</p>
     <p>SQL queries for building the GADGET database are located in <span class="example">docs/database setup instructions.txt</span>.</p>
+    <p>The database user account that GADGET uses needs to have <i>select</i> privilages on all tables in the database, and <i>insert</i> privilages on the <b>uploade_gene</b> and <b>uploaded_genefile</b> tables.</p>
     <p>Build the <b>gene_abstract</b> table first, so we can later use it to restrict the entries in the <b>gene</b> and <b>abstract_info</b> tables.  The <b>gene_abstract</b> table contains data from the <i>gene2pubmed</i> file (see <a href="#data_sources">above</a>).  Use the <i>gene_history</i> file to link old deprecated gene ID's to current ID's.  Use <i>homologene.data</i> to link non-human homologous genes to human genes.  Remove records for abstracts that refer to more than 1000 genes (to knock out some GWA papers).  Then restrict the records in the table to human genes (tax = 9606).</p>
     <p>Build the <b>gene</b> table next.  Load the <i>gene_info</i> into a database table, and then restrict the genes to those included in the <b>gene_abstract</b> table.</p>
     <p>The <i>gene_info</i> file contains a `dbxrefs` field with other database ID's concatenated into a string (the name of this field should be `dbxrefs` in the table.)  To separate them, create integer `hgnc_id`, `mim_id`, `ensembl_id`, and `hprd_id` fields, and a boolean `dbxrefs_split` field which defaults to false.  Open <span class="example">util/splitlinks.py</span> and edit the connection parameters near the top to correctly connect to the database.  Run <span class="example">util/splitlinks.py</span> to split the links into the 4 new fields.</p>
@@ -442,5 +501,45 @@
     <p>Run the script.  If there is a large number of un-indexed abstracts, the script will probably take a couple hours to run.  You can kill the script and re-start it, and it will pick up where it left off.  It commits the index after every 10,000 new articles, and prints a line after each commit.  After adding all of the abstracts, the index merges and optimizes the index, which may take a long time.</p>
     <a href="#top" class="top">Back to top</a>
     
+    
+    <a name="updater" class="topic">The automatic data updater</a>
+    <p>GADGET has a script that automatically updates data for the gene search.  You can find it in the folder called <span class="example">updater</a> in the gadget source, or in <span class="example">/web/gadget/updater</span> on the web server.</p>
+    <p>The file <span class="example">update.py</span> gets called by a cron job every night (by the cron user account on the web server.)  Update.py does the following things:</p>
+    <ol>
+        <li>Downloads new gene-abstract links from gene2pubmed, MGI, and SGD</li>
+        <li>The mysql trigger in <span class="example">dirty-abstract-trigger.sql</span> markes abstracts with new gene abstract links</li>
+        <li>Removes abstracts with more than 1000 genes</li>
+        <li>Fetches the text of new abstracts from pubmed</li>
+        <li>Removes abstracts that couldn't be fetched</li>
+        <li>Populates the "homologene_gene_abstract" table</li>
+        <li>Updates the Whoosh index with the new abstracts</li>
+        <li>Checks some counts to make sure that everything worked</li>
+        <li>Counts abstracts for each gene and updates the "gene" table</li>
+        <li>Clears old uploaded files from the database</li>
+    </ol>
+    <p>The file "config.py" has some settings about where to store downloaded files, where to put the logs, where the Whoosh index is, and how to connect to the database.  The updater script keeps logs every time it runs to track its progress (you can find them by looking in the config file for their location.)</p>
+    <p>The "updater" user account that the script uses needs the following database privaleges:</p>
+    <pre>
++------------------------------------------------------------------------------+
+| Grants for updater@%                                                         |
++------------------------------------------------------------------------------+
+| GRANT FILE ON *.* TO 'updater'@'%'                                           | 
+| GRANT SELECT, DELETE ON `gadget`.`uploaded_genefile` TO 'updater'@'%'        | 
+| GRANT SELECT, INSERT, UPDATE, DELETE ON `gadget`.`abstract` TO 'updater'@'%' | 
+| GRANT SELECT ON `gadget`.`homologene_gene` TO 'updater'@'%'                  | 
+| GRANT SELECT ON `gadget`.`mgi_entrez_gene` TO 'updater'@'%'                  | 
+| GRANT SELECT, INSERT ON `gadget`.`removed_abstracts` TO 'updater'@'%'        | 
+| GRANT SELECT, DELETE ON `gadget`.`uploaded_gene` TO 'updater'@'%'            | 
+| GRANT SELECT ON `gadget`.`sgd_xrefs` TO 'updater'@'%'                        | 
+| GRANT SELECT, INSERT, DELETE ON `gadget`.`gene_abstract` TO 'updater'@'%'    | 
+| GRANT SELECT, INSERT ON `gadget`.`homologene_gene_abstract` TO 'updater'@'%' | 
+| GRANT SELECT, INSERT ON `gadget`.`mgi_reference` TO 'updater'@'%'            | 
+| GRANT SELECT, UPDATE ON `gadget`.`gene` TO 'updater'@'%'                     | 
++------------------------------------------------------------------------------+
+    </pre>    
+    <p>The "mergeindex.py" file has a script to merge together the segments of the Whoosh index, which makes the queries run a little faster, but takes a long time.  "mergeindex.py" is called by a cron job once a week.</p>
+    <a href="#top" class="top">Back to top</a>
+
+
 </div></body>
 </html>

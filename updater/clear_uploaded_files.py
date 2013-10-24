@@ -12,7 +12,7 @@ def clearfiles(db):
 
     logger.debug('Deleting uploaded files more than 1 day old from database')
 
-    c.getcursor(db)
+    c = getcursor(db)
 
     # delete uploaded genes and uploaded files more than a day old
     c.execute("""
