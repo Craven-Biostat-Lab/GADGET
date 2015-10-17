@@ -1,13 +1,7 @@
 body {
     font-family: sans, sans-serif;
-    background: #F2E9E1; /*#E1EDB9;*/
-    color: #1C140D;
-}
-
-input {
-    font-size: 14px;
-    font-weight: bold;
-    padding: 4px;
+    background: #FFF:
+    color: #000;
 }
 
 form {
@@ -29,17 +23,6 @@ a.hint {
     font-weight: normal;
 }
 
-div.searchtips {
-    font-size: 80%;
-    font-weight: bold;
-    padding-top: 10px;
-}
-
-div.searchtips a {
-    text-align: left;
-    padding: 0px 5px;
-    font-weight: normal;
-}
 
 div#pagecover {
     position: fixed;
@@ -81,47 +64,35 @@ div#header {
 }
 
 div#search {
-    background-color: #D4EE5E; /*#DCF268; /*#D9F268; /*#f4ffd9; #E8FAC5;*/
-    border-top: none;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    background-color: #AA0039;
     border-radius: 10px;
-    padding: 6px;
-    padding-right: 0px;
-    margin: 0px /*3px*/;
-    border-bottom: 5px solid #808C3C;
-    border-right: 4px solid #808C3C;
+    padding: 20px;
+    color: white;
 }
 
-div#search td a {
-    font-size: 80%;
+
+
+div#search-buttons {
+    max-width: 600px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
 }
 
-div#search form table {
-    display: inline; 
-    text-align: right;
+div.search-button {
+    border: 2px solid #AA0039;
+    border-radius: 15px;
+    text-align: center;
+    color: #AA0039;
+    font-weight: bold;
+    padding: 10px;
 }
 
-div#search form table td {
-    padding: 10px 20px;
-}
 
-div#search form ul {
-    display: inline;
-    padding: 0;
-    margin: 0;
-}
 
-div#search form ul li {
-    display: inline;
-    list-style-type: none;
-    font-size: 90%;
-}
 
-div#search form ul li input {
-    margin: 0;
-    margin-top: 3px;
-}
+
 
 #header img#smalllogo {
     border:0;
