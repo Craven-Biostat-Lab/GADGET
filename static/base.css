@@ -67,7 +67,19 @@ div#search {
     background-color: /*#70384A;*/ /*#70344E;*/ #702B34; /*#702B41;*/ /*AA0039;*/
     border-radius: 10px;
     padding: 20px;
+    margin-top: 5px;
     color: white;
+}
+
+
+a#uploadgenes {
+    background-color: #B04466;
+    color: white;
+    transition: 0.3s;
+}
+
+a#uploadgenes:hover {
+    background-color: #702B34;
 }
 
 
@@ -104,25 +116,27 @@ div#search-buttons div div {
 
 #header img#smalllogo {
     border:0;
-    margin: 3px 20px;
+    margin: 3px 10px;
     float: left;
     vertical-align: middle;
 }
 
+
 div#toplinks {
-    height: 30px;
+    text-align: right;
+    padding-top: 5px;
 }
 
 div#toplinks a {
-    padding: 1px 5px;
-    font-size: 90%;
+    margin-left: 15px;
     font-weight: bold;
     text-decoration: none;
-    color: #734217;
+    color: #702B34;
+    transition: 0.2s;
 }
 
 div#toplinks a:hover {
-    color: #998E46;
+    color: #B04466;
 }
 
 div#tabs span.tab {
@@ -523,13 +537,6 @@ div#links {
     padding: 10px;
 }
 
-div#links a {
-    font-weight: bold;
-    padding: 0px 10px;
-    text-decoration: none;
-    font-size: 125%;
-    color: #734217;
-}
 
 div#links a:hover {
     color: #998E46;
