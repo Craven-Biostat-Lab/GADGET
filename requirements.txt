@@ -1,0 +1,5 @@
+django==1.2.5
+whoosh==2.4.1
+rpy2==2.1.9
+MySQL-python==1.2.2
+#python-memcached==1.45
