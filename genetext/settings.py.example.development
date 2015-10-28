@@ -3,6 +3,15 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+
+
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
@@ -94,7 +103,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'genetext.eventview',
+    #'genetext.eventview',
     'genetext.geneview',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
@@ -103,5 +112,5 @@ INSTALLED_APPS = (
 )
 
 # directory where the index of abstracts lives
-ABSTRACT_INDEX_PATH = '/Users/mziegler/gadget/index/abstracts'
-GENE_INDEX_PATH = '/Users/mziegler/gadget/index/genes'
+ABSTRACT_INDEX_PATH = os.path.join(BASE_DIR, '../data/abstracts')
+GENE_INDEX_PATH = os.path.join(BASE_DIR, '../data/genes')

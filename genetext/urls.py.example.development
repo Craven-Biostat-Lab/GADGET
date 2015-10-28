@@ -1,10 +1,13 @@
 from django.conf.urls.defaults import *
-import eventview.eventview as ev
+#import eventview.eventview as ev
 import geneview.geneview as gv
 import geneview.genecrossrefs as gxr
 import abstracts.abstracts as ab
-import keyphraseview.keyphraseview as kv
+#import keyphraseview.keyphraseview as kv
 import geneindex.fileupload as gfu
+
+from django.conf import settings
+import os
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -16,22 +19,22 @@ urlpatterns = patterns('',
     (r'^gadget/genecrossrefs', gxr.genecrossrefs),
     (r'^gadget/abstractview', ab.abstractview),
     (r'^gadget/abstract', ab.abstracts),
-    (r'^gadget/eventsearch', ev.search),
-    (r'^gadget/eventlist', ev.eventlist),
-    (r'^gadget/eventgenes', ev.eventgenes),
-    (r'^gadget/eventsummary', ev.eventsummary),
-    (r'^gadget/eventplot', ev.plot),
-    (r'^gadget/eventthumb', ev.thumb),
-    (r'^gadget/xml', ev.xml),
-    (r'^gadget/keywordlist', kv.keyphrasesearch),
-    (r'^gadget/keywordsearch', kv.searchpage),
+    #(r'^gadget/eventsearch', ev.search),
+    #(r'^gadget/eventlist', ev.eventlist),
+    #(r'^gadget/eventgenes', ev.eventgenes),
+    #(r'^gadget/eventsummary', ev.eventsummary),
+    #(r'^gadget/eventplot', ev.plot),
+    #(r'^gadget/eventthumb', ev.thumb),
+    #(r'^gadget/xml', ev.xml),
+    #(r'^gadget/keywordlist', kv.keyphrasesearch),
+    #(r'^gadget/keywordsearch', kv.searchpage),
     (r'^gadget/genefileupload', gfu.uploadpage),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', 
-        {'document_root': '/Users/mziegler/gadget/static'}),
+        {'document_root': os.path.join(settings.BASE_DIR, 'static')}),
     (r'^$', 'django.views.static.serve', 
-        {'document_root': '/Users/mziegler/gadget/www', 'path':'index.html'}),    
+        {'document_root': os.path.join(settings.BASE_DIR, 'www'), 'path':'index.html'}),    
     (r'^(?P<path>.*)$', 'django.views.static.serve', 
-        {'document_root': '/Users/mziegler/gadget/www'}),
+        {'document_root':os.path.join(settings.BASE_DIR, 'www')}),
     
     # Example:
     # (r'^genetext/', include('genetext.foo.urls')),
