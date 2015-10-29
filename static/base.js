@@ -50,6 +50,18 @@ $(document).ready( function ()
     $("input#id_usegenefile").change(updategenebox);
 
     $("body").delegate("div#pagecover", "click", hideUploadForm);
+    
+    
+    
+    
+    
+    // submit search form on button click
+    $('#search-button-genes').click(function() {
+        $('#searchform').attr('action', '/gadget/genesearch').submit(); 
+    });
+ 
+    
+    
 });
 
 
@@ -108,3 +120,8 @@ function hideUploadForm()
     $("div#geneuploadbox").fadeOut();
     return 0;
 }
+
+
+
+
+

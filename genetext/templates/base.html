@@ -6,6 +6,8 @@
 <head>
     <title>{% block title %}{% endblock %}</title>
     
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-theme.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/base.css" />
     <script type="text/javascript" src="/static/jquery-1.6.1.min.js"></script>
     <script type="text/javascript" src="/static/base.js"></script>
@@ -14,22 +16,121 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <div id="header">
-        <a href="/"><img src="/static/logo-small.png" id="smalllogo" border="0" /></a>
-        <div id="topnav">
-            <div id="toplinks">
-                <a href="/">Home</a>
-                <a href="/manual.html">User Manual</a>
-                <a href="/contact.html">Contact</a>
-            </div>
-            <div id="tabs">
-                {% block tabs %}{% endblock %}
-            </div>
+
+
+
+
+    
+    
+
+
+
+
+<div id="controls-container">
+
+    
+    <div class="container-fluid">
+        <div class="col-sm-4">
+            <a href="/"><img src="/static/logo.png" style="width:180px;height:auto;"/></a>
         </div>
-        <div id="search">
-            {% block header %}{% endblock %}
+        <div class="col-sm-4 col-sm-offset-4" id="toplinks" style="text-align:right;">
+            <a href="/manual.html" target="_blank">User&nbsp;Manual</a>
+            <a href="/contact.html">Contact</a>   
         </div>
     </div>
+    
+    
+    <div id="search">
+        <div style="text-align:center;font-weight:bold;padding-bottom:15px;">Search over 1 million PubMed abstracts</div>
+        <form id="searchform" class="form-horizontal">
+            {{ form.usegenefile }}
+            
+            <input type="hidden" name="usegenefile" id="id_usegenefile" />
+            
+            <div class="form-group">
+                <label for="id_q" class="col-sm-2 control-label">Search</label>
+                <div class="col-sm-10">
+                    {{ form.q }}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="genes" class="col-sm-2 control-label">Genes</label>
+                  <div class="col-sm-10"><div class="input-group">
+                    {{ form.genes }}
+                    <div class="input-group-addon" style="background:white;border-left-color:white;">
+                        <a class="badge" id="uploadgenes" href="javascript:void(0);">Upload</a>
+                    </div>
+                    <div class="input-group-addon" style="background:#FFEDE3;">
+                        {{ form.geneop }}
+                    </div>
+                  </div></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_species" class="col-sm-2 control-label">Species</label>
+                  <div class="col-sm-10">
+                    <!--<select name="species" id="id_species" class="form-control">
+                        <option value="9606">Homo sapiens</option>
+                        <option value="10090">Mus musculus</option>
+                        <option value="559292">Saccharomyces cerevisiae</option>
+                    </select>-->
+                    {{ form.species }}
+                  </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom:0">
+                <div class="col-sm-10 col-sm-offset-2">
+                <label>
+                    {{ form.usehomologs }}
+                    Include gene homologs from other species
+                </label>
+                </div>
+            </div>
+
+        </form>
+           
+    </div>
+    
+    
+    <div id="search-buttons" class="container-fluid">
+        <div class="col-sm-5 col-sm-offset-1">
+            <div class="search-button" id="search-button-genes" 
+                style="background-image:url('/static/icon-gene.png')">
+                Find genes
+            </div>
+        </div>
+        <!--<div class="col-sm-4">
+            <div class="search-button" id="search-button-keyphrases">
+                <img src="/static/icon-text.png" style="width:100%;height:auto;">
+                Find<br />keyphrases
+            </div>
+        </div>-->
+        <div class="col-sm-5">
+            <div class="search-button" id="search-button-metabolites"
+                style="background-image:url('/static/icon-metabolite.png')">
+                Find metabolites
+            </div>
+        </div>
+    </div>
+
+
+    
+
+
+</div>
+
+
+
+
+
+
+
+
+        
+        
+        
+
     <div id="geneuploadbox" style="display:none"></div>
     <div id="content">
         {% block content %}{% endblock %}

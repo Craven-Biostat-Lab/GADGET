@@ -38,11 +38,11 @@ def searchpage(request):
     """The search page for the word view (makes the forms)"""
     
     class SearchForm(forms.Form):
-        q = forms.CharField(label='Keywords')
-        genes = forms.CharField(label='Gene symbols')
+        q = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Keywords and phrases'}))
+        genes = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Gene symbols'}))
         geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='any')
         usegenefile = forms.BooleanField(initial=False, widget=forms.HiddenInput())
-        species = forms.ChoiceField(label='Species', choices=specieschoices, initial='9606')
+        species = forms.ChoiceField(choices=specieschoices, initial='9606', widget=forms.Select(attrs={'class':'form-control'}))
         usehomologs = forms.BooleanField(label='Use homologs to find matching abstracts', widget=forms.CheckboxInput(check_test=parseboolean), initial=True)
     
     form = SearchForm(request.GET)

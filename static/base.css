@@ -63,6 +63,11 @@ div#header {
     margin: 0 5%;
 }
 
+div#controls-container {
+    margin: 20px 15% 30px 15%;
+    max-width: 1000px;
+}
+
 div#search {
     background-color: /*#70384A;*/ /*#70344E;*/ #702B34; /*#702B41;*/ /*AA0039;*/
     border-radius: 10px;
@@ -70,6 +75,30 @@ div#search {
     margin-top: 5px;
     color: white;
 }
+
+
+div#search input#id_genes {
+    border-right-color: white;
+}
+
+
+
+/* any/all radio buttons */
+div#search ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+div#search li {
+    display: inline;
+}
+
+#id_geneop_0, #id_geneop_1 { 
+    margin-bottom: 0px;
+}
+
+
 
 
 a#uploadgenes {
@@ -85,7 +114,7 @@ a#uploadgenes:hover {
 
 
 div#search-buttons {
-    max-width: 700px;
+    /*max-width: 700px;*/
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -93,22 +122,24 @@ div#search-buttons {
 }
 
 div.search-button {
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: auto 85%;
     border: 2px solid #702B34;
     border-radius: 15px;
     text-align: center;
     color: #702B34;
     font-weight: bold;
-    padding: 10px;
-}
-
-div.search-button img {
-    padding-bottom:12px;
-}
-
-
-div#search-buttons div div {
     padding: 25px;
+    padding-left: 75px;
+    font-size: 120%;
 }
+
+div.search-button:hover {
+    background-color: #E6DADC;
+    transition: 0.2s;
+}
+
 
 
 
@@ -473,21 +504,8 @@ table#eventsummary th a {
 * User manual, front page, contact
 *******************************************************************************/
 
-div#front {
-    margin: 20px 15% 30px 15%;
-    max-width: 1000px;
-}
 
-div#front p {
-    text-align:center;
-}
 
-img#biglogo {
-    display: block;
-    margin: 20px auto 5px auto;
-    width: 100%;
-    max-width: 500px;
-}
 
 div.example {
     border-left: solid 2px #808C3C; /*#74C7DC*/;

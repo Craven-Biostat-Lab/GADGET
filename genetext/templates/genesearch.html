@@ -30,46 +30,8 @@ $(document).ready(function()
 {% endif %}
 {% endblock %}
 
-{% block header %}
-<form name="search" action="" method="get">
-{{ form.usegenefile }}
-    <table>
-        <tr>
-            <td>{{ form.q.label }} {{ form.q }}</td>
-            <td>
-                {{ form.genes.label }} {{ form.geneop }}{{ form.genes }}<br />
-                <a id="uploadgenes" href="javascript:void(0);">Upload a file of gene ID's</a>
-                <a id="cleargenefile" href="javascript:void(0);">Clear gene file</a>
-            </td>
-            
-            <td rowspan="2"><input type="submit" value="Search Genes" /></td>
-        </tr>
-        <tr>
-            <td>{{ form.species.label }} {{ form.species }}</td>
-            <td style="text-align:left">{{ form.usehomologs.label }} {{ form.usehomologs }}</td>
-        </tr>
-    </table>
-</form><br />
-<div class="searchtips" style="padding-left:100px">
-    Search tips:
-    <a target="_blank" href="/manual.html#queryterms">Keywords</a>
-    <a target="_blank" href="/manual.html#geneentry">Gene symbols</a>
-    <a target="_blank" href="/manual.html#species">Species</a>
-    <a target="_blank" href="/manual.html#usehomologs">Inclusion of homologs</a>
-</div>
-
-<br />
 
 
-{% endblock %}
-
-{% block tabs %}
-<span class="tab selected">Gene search</span>
-<span class="tab"><a href="keywordsearch?{% if q %}&q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|urlencode }}{% endif %}{% if geneop %}&geneop={{ geneop|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}">Keyphrase search</a></span>
-<span class="tab">
-    <a href="eventsearch?{% if q %}q={{ q|urlencode }}{% endif %}{% if genesyms %}&genes={{ genesyms|urlencode }}{% endif %}">Interaction search</a>
-</span>
-{% endblock %}
 
 {% block content %}
 
