@@ -63,34 +63,48 @@ $(document).ready(function()
 
 {% block content %}
 
-<table id="download" style="display:none">
-    <tr><td colspan="2">Download results:</td></tr>
-    <tr>
-        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}{% endif %}&download=csv">CSV</a></td>
-        <td><a href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}{% endif %}&download=xml" target="_blank">XML</a></td>
-    </tr>
-</table>
+<div class="row" id="description-row">
+    
+    <div id="description" class="col-sm-8">
+        Ranking <span id="genecount" style="display:none"></span> genes in <span id="abstractcount" style="display:none"></span> abstracts
+        {% if q %} matching <b>{{ q|safe }}</b>{% endif %}
+        {% if q %}{% if genesyms or usegenefile %} and{% endif %}{% endif %}
+        {% if genesyms or usegenefile %} containing <b>{{ geneop|safe }}</b> of genes 
+            {% if usegenefile %}in the file <b>{{ genefilename|safe }}</b>
+            {% else %}<b>{{ genesyms|safe }}</b>{% endif %}
+        {% endif %}<br />
+        For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
+    </div>
 
-<div id="description" style="display:none">
-    Showing and scoring <span id="genecount" style="display:none"></span> genes in <span id="abstractcount" style="display:none"></span> abstracts
-    {% if q %} matching <b>{{ q|safe }}</b>{% endif %}
-    {% if q %}{% if genesyms or usegenefile %} and{% endif %}{% endif %}
-    {% if genesyms or usegenefile %} containing <b>{{ geneop|safe }}</b> of genes 
-        {% if usegenefile %}in the file <b>{{ genefilename|safe }}</b>
-        {% else %}<b>{{ genesyms|safe }}</b>{% endif %}
-    {% endif %}<br />
-    For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
-</div><br />
+    <div class="col-sm-4" style="text-align:right"><a id="download-results" href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}{% endif %}&download=csv">Download CSV</a></div>
+
+</div>
+
+
+
+
+<div class="row"><div class="col-sm-12">
+
+    <b>Sort:</b> 
+
+    <div class="btn-group" id="sort-btn-group" role="group" aria-label="Sort">
+        <a class="btn sort-btn {% if orderby == 'f1_score' %}sort-btn-active{% endif %}" href="javascript:order('f1_score');">F1 Score</a>
+        <a class="btn sort-btn {% if orderby == 'adjusted_precision' %}sort-btn-active{% endif %}" href="javascript:order('adjusted_precision');">Adjusted Precision</a>
+        <a class="btn sort-btn {% if orderby == 'total_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('total_abstracts');">Total Abstracts</a>
+        <a class="btn sort-btn {% if orderby == 'matching_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('matching_abstracts');">Matching Abstracts</a>
+        
+    </div>
+
+</div></div>
+
+
+
 
 <div id="results" style="display:none">
-    <b>Sort by:</b> {% if orderby == 'f1_score' %}<b>F1 Score</b>{% else %}<a href="javascript:order('f1_score');">F1 Score</a>{% endif %},
-    {% if orderby == 'adjusted_precision' %}<b>Adjusted Precision</b>{% else %}<a href="javascript:order('adjusted_precision');">Adjusted Precision</a>{% endif %},
-    {% if orderby == 'total_abstracts' %}<b>Total Abstracts</b>{% else %}<a href="javascript:order('total_abstracts');">Total Abstracts</a>{% endif %},
-    {% if orderby == 'matching_abstracts' %}<b>Matching Abstracts</b>{% else %}<a href="javascript:order('matching_abstracts');">Matching Abstracts</a>{% endif %}<br /><br />
-
+    <br /><br /><!--
     <a class="hint" target="_blank" href="/manual.html#genesearch">About gene search results</a>
-    <a class="hint" target="_blank" href="/manual.html#scores">About gene search scores</a>
-    <table class="stripe" id="generank"></table>
+    <a class="hint" target="_blank" href="/manual.html#scores">About gene search scores</a> -->
+    <div class="container-fluid result-list" id="generank"></div>
 </div>
 <input type="button" id="more" value="More genes..." style="display:none" />
 {% endblock %}

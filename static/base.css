@@ -55,8 +55,16 @@ div#geneuploadbox iframe {
     height: 300px;
 }
 
+
+
+
+
+
+
+
+
 /*******************************************************************************
-* Gene search and interaction search
+* Search box
 *******************************************************************************/
 
 div#header {
@@ -64,8 +72,8 @@ div#header {
 }
 
 div#controls-container {
-    margin: 20px 15% 30px 15%;
-    max-width: 1000px;
+    margin: 20px auto 30px auto;
+    max-width: 900px;
 }
 
 div#search {
@@ -113,6 +121,7 @@ a#uploadgenes:hover {
 
 
 
+
 div#search-buttons {
     /*max-width: 700px;*/
     display: block;
@@ -137,6 +146,11 @@ div.search-button {
     cursor: pointer;
 }
 
+div.search-button:hover {
+    background-color: #E6DADC;
+    transition: 0.2s;
+}
+
 div.search-button-active {
     background-color: #702B34;
     color: white;
@@ -146,22 +160,7 @@ div.search-button.search-button-active:hover {
     background-color: #542027;
 }
 
-div.search-button:hover {
-    background-color: #E6DADC;
-    transition: 0.2s;
-}
 
-
-
-
-
-
-#header img#smalllogo {
-    border:0;
-    margin: 3px 10px;
-    float: left;
-    vertical-align: middle;
-}
 
 
 div#toplinks {
@@ -181,37 +180,66 @@ div#toplinks a:hover {
     color: #B04466;
 }
 
-div#tabs span.tab {
-    background-color: #F5F7F0; 
-    padding: 8px 20px;
-    padding-bottom: 0;
-    margin: 0px 1px;
-    border-top-left-radius: 6px; 
-    border-top-right-radius: 6px;
-    vertical-align: bottom;
-    border: none;
-    border-right: 1px solid #808C3C;
-}
 
-div#tabs span.tab.selected {
-    background-color: #D4EE5E;
-    font-weight: bold;
-    /*border-top: 3px solid #FF4739;*/
-    border-right: 3px solid #808C3C;
-}
 
-div#tabs span.tab a {
-    color: #000;
-    text-decoration: none;
-}
+
+
+
 
 #content {
-    padding: 10px;
-    padding-top:20px;
-    margin: 0 5%;
-    background: #F5F7F0; /*#F6FAE1; /* #FFFAF5; /*#FCF7F2;*/
-    border-radius: 3px;
+    max-width: 900px;
+    margin-left:  auto;
+    margin-right: auto;
+    margin-top: 100px;
 }
+
+
+
+
+a#download-results {
+    display:inline-block;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: solid 2px #702B34;
+    color: #702B34;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a#download-results:hover {
+    background: #E6DADC;
+    transition: 0.1s;
+}
+
+
+
+
+div#sort-btn-group {
+    margin-left: 14px;
+    /*border: solid 1px #702B34;
+    border-radius: 4px;*/
+}
+
+a.sort-btn {
+    border: solid 1px #702B34;
+    color: #702B34;
+}
+
+a.sort-btn:hover {
+    color: #702B34;
+    background: #E6DADC;
+    transition: 0.1s;
+}
+
+a.sort-btn-active {
+    background: #702B34;
+    font-weight: bold;
+    color: white;
+    pointer-events: none;
+}
+
+
+
 
 div#errorbox {
     position: fixed;
@@ -256,143 +284,68 @@ input#more {
     margin-top: 10px;
 }
 
-div#description {
-    padding-bottom: 5px;
-    width: 80%;
-}
 
-div#description ul {
-    margin: 0;
-    padding-left: 20px;
-    border-left: solid 2px #426BA2;
-}
 
-div#description ul li {
-    color: #426BA2;
-}
-
-table#download {
-    position: absolute;
-    right: 7%;
-    /*top: 4px;*/
-    z-index:0;
-
-    display:inline;
-    background-color: #E1EDB9;
-    padding: 2px 8px;
-    
-    font-size: small;
-    text-align: center;
-    color: #40392B;
-    
-    border-radius: 5px;
-    border-collapse: collapse;
-    border: solid 1px #808C3C;
-}
-
-table#download tr:last-child td:first-child {
-    border-right: 1px solid #808C3C;
-}
-
-table#download a {
-    font-weight: bold;
-    color: #40392B;
-    /*text-decoration: none;*/
-}
 
 
 /*******************************************************************************
-* Gene search
+* Results table
 *******************************************************************************/
 
-table#generank, table#keywords {
-    table-layout: fixed;
+div.result-list {
     font-size: 90%;
-    border-spacing: 0px 10px;
 }
 
-table#generank tr.abstracts td {
-    border-spacing: 0px;
+div.result-row {
+    margin-bottom: 15px;
 }
 
-table#generank td, table#keywords td {
-    padding: 10px 10px;
-    /*border-bottom: 10px solid #FFF;*/
-    /*border-spacing: 0px 10px;*/
-    margin: 0px;
-    margin-bottom: 10px;
-} 
-
-table#generank td.rankcol {
-    width: 3%;
-    text-align: center;
+div.rankcol {
+    padding-left: 0;
 }
 
-table#generank td.namecol {
-    width: 22%;
+div.namecol {
+    padding-left: 0;
 }
 
-table#generank td.namecol span.genesymbol {
+div.namecol span.genesymbol {
     font-weight: bold;
-    font-size: 130%;
+    font-size: 150%;
+    color: #702B34;
 }
 
-table#generank td.namecol span.genename {
+div.namecol span.genename {
     color: #444;
 }
 
-table#generank td.infocol {
-    width: 22%;
-}
 
-table#generank td.infocol span.genesynonyms {
+div.infocol span.genesynonyms {
     font-size: 80%;
     color: #444;
 }
 
-table#generank td.scorecol, table#keywords td.abstractscorecol, table#keywords td.genescorecol {
-    background-color: #E1EDB9;
-    border: none;
-    border-bottom: solid 2px #808C3C;
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-}
 
-table#generank td.scorecol {
-    width: 18%;
-}
 
-table#generank td.scorecol span.pvalue {
+div.scorecol span.pvalue {
     padding-left: 15px;
 }
 
-table#generank span.score.selected, table#keywords span.score.selected {
+.result-list span.score.selected, .result-list span.score.selected {
     font-weight: bold;
 }
 
-table#generank td.countcol, table#keywords td.abstractcountscol, table#keywords td.genecountscol {
-    background-color: #E1EDB9;
-    border: solid 2px #808C3C;
-    border-left: none;
-    border-top: none;
-    border-bottom-right-radius: 3px;
-    border-top-right-radius: 3px;
+
+
+div.scorebox {
+    border: solid 1px #702B34;
+    border-radius: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
-table#generank td.countcol {
-    width: 20%;
-}
 
-table#generank td.linkcol {
-    width: 15%;
-    /*line-height: 200%;*/
-    font-size: 90%;
-}
 
-table#generank td.linkcol a {
-    display: block;
-    padding-bottom: 0.5em;
-}
+
 
 table#generank tr td.pane {
     padding: 10px 5% 5px 2%;
@@ -421,10 +374,6 @@ table#generank a.moreabstracts {
     font-weight: bold;
 }
 
-table#keywords td.stringcol {
-    font-weight: bold;
-    font-size: 150%;
-}
 
 a.hidepanes {
     display: block;
@@ -432,84 +381,9 @@ a.hidepanes {
     padding-top: 10px;
 }
 
-/*******************************************************************************
-* Interaction search
-*******************************************************************************/
 
-table#events tr td {
-    border-bottom: solid 1px #DCE3E8;
-    border-collapse: collapse;
-}
 
-table#events tr td ul.abstracts {
-    font-size: 80%;
-}
 
-div#eventgenes {
-    padding: 10px;
-}
-
-table#eventgenes {
-    border: solid #FFB057;
-    border-width: 1px 0 0 1px;
-    border-collapse: collapse;
-}
-
-table#eventgenes td {
-    background-color: #FFF4B8;
-    padding: 5px 5px;
-    border: solid #FFB057;
-    border-width: 0 1px 1px 0;
-    margin: 0;
-    text-align: center;
-}
-
-table#eventgenes td a {
-    color: #000;
-}
-
-div#eventsummarycontainer {
-    padding: 20px 10px;
-}
-
-table#eventsummary {
-    border-spacing: 1px 8px;
-}
-
-table#eventsummary tr td {
-    background: #f4ffd9;
-    border: solid  #a1a88f /*#9ea88a #93a86c #83996d #A7D678*/;
-    border-width: 1px 0px;
-    padding: 0px 5px;
-    text-align: center;
-    margin: 1px 5px;
-}
-
-table#eventsummary td.innergenescontainer {
-    background: none;
-    border: none;
-    padding: none;
-}
-
-table#eventsummary td a {
-    color: #000;
-}
-
-table#eventsummary table.innergenes {
-    border: solid #a1a88f;
-    border-width: 1px 0 0 1px;
-    border-collapse: collapse;
-}
-
-table#eventsummary table.innergenes tr td {
-    border: solid #a1a88f;
-    border-width: 0 1px 1px 0;
-    padding: 2px 5px;
-}
-
-table#eventsummary th a {
-    text-decoration: none;
-}
 
 /*******************************************************************************
 * User manual, front page, contact
