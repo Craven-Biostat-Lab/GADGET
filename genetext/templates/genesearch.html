@@ -33,6 +33,34 @@ $(document).ready(function()
 
 
 
+
+{% block searchbuttons %}
+    <div id="search-buttons" class="container-fluid">
+        <div class="col-sm-5 col-sm-offset-1">
+            <div class="search-button search-button-active" id="search-button-genes" 
+                style="background-image:url('/static/icon-gene-inverted.png')">
+                Find genes
+            </div>
+        </div>
+        <!--<div class="col-sm-4">
+            <div class="search-button" id="search-button-keyphrases">
+                <img src="/static/icon-text.png" style="width:100%;height:auto;">
+                Find<br />keyphrases
+            </div>
+        </div>-->
+        <div class="col-sm-5">
+            <div class="search-button" id="search-button-metabolites"
+                style="background-image:url('/static/icon-metabolite.png');padding-top:14px;cursor:default;">
+                <span style="font-weight:normal">Coming soon</span><br />
+                Find metabolites
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
 {% block content %}
 
 <table id="download" style="display:none">

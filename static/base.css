@@ -124,7 +124,7 @@ div#search-buttons {
 div.search-button {
     background-repeat: no-repeat;
     background-position: left center;
-    background-size: auto 85%;
+    background-size: auto 90%;
     border: 2px solid #702B34;
     border-radius: 15px;
     text-align: center;
@@ -133,6 +133,17 @@ div.search-button {
     padding: 25px;
     padding-left: 75px;
     font-size: 120%;
+    height: 80px;
+    cursor: pointer;
+}
+
+div.search-button-active {
+    background-color: #702B34;
+    color: white;
+}
+
+div.search-button.search-button-active:hover {
+    background-color: #542027;
 }
 
 div.search-button:hover {
