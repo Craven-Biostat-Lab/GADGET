@@ -87,8 +87,8 @@ $(document).ready(function()
 
     <b>Sort:</b> 
 
-    <div class="btn-group" id="sort-btn-group" role="group" aria-label="Sort">
-        <a class="btn sort-btn {% if orderby == 'f1_score' %}sort-btn-active{% endif %}" href="javascript:order('f1_score');">F1 Score</a>
+    <div class="btn-group sort-btn-group" role="group" aria-label="Sort">
+        <a class="btn sort-btn {% if orderby == 'f1_score' %}sort-btn-active{% endif %}" href="javascript:order('f1_score');">F<span style="font-size:x-small;vertical-align:baseline;position:relative;top:0.4em">1</span> Score</a>
         <a class="btn sort-btn {% if orderby == 'adjusted_precision' %}sort-btn-active{% endif %}" href="javascript:order('adjusted_precision');">Adjusted Precision</a>
         <a class="btn sort-btn {% if orderby == 'total_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('total_abstracts');">Total Abstracts</a>
         <a class="btn sort-btn {% if orderby == 'matching_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('matching_abstracts');">Matching Abstracts</a>

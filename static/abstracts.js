@@ -97,8 +97,8 @@ $(document).delegate("a.sortabstracts", "click", function() {
     var unique = $(this).attr("abs_unique");
     
     // change link styles
-    $("a.sortabstracts[abs_unique='" + unique + "']").removeClass("selected");
-    $(this).addClass("selected");
+    $("a.sortabstracts[abs_unique='" + unique + "']").removeClass("sort-btn-active");
+    $(this).addClass("sort-btn-active");
     
     // set "orderby" attribute of abstractcontainer div
     $("div.abstractcontainer[abs_unique='" + unique + "']").attr("orderby", $(this).attr("orderby"));

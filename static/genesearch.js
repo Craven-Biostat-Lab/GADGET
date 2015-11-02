@@ -21,9 +21,8 @@ function order(key)
 // collapse the slider panes in the gene results table for a specific gene
 function hidepanes(gene)
 {
-    $("#generank tr#abstracts" + gene + " td.pane div").slideUp('fast', function() { $("#generank tr#abstracts" + gene).hide(); });
-    $("#generank tr#eventpreview" + gene + " td.pane div").slideUp('fast', function() { $("#generank tr#eventpreview" + gene).hide(); });
-    $("#generank tr#crossrefs" + gene + " td.pane div").slideUp('fast', function() { $("#generank tr#crossrefs" + gene).hide(); });
+    $("#generank div#abstracts" + gene).slideUp('fast');
+    $("#generank tr#crossrefs" + gene).slideUp('fast');
     $("#generank a#showabs" + gene).text("Show abstracts");
 }
 
@@ -106,13 +105,13 @@ $(document).ready(function()
         var gene = $(this).attr("gene");
         var sym = $(this).attr("genesymbol");
         
-        if ($("#generank tr#abstracts" + gene).length == 0) // see if the tr for absracts exists
+        if ($("#generank div#abstracts" + gene).length == 0) // see if the tr for absracts exists
         {
             // the abstracts pane doesn't exist.
             hidepanes(gene); // hide other panes
             
             // how many abstracts for this gene?
-            var abstractcount = $("tr#gene" + gene).attr("hits");
+            var abstractcount = $("div#gene" + gene).attr("hits");
 
             // genes query string argument
             var genearg = genesyms ? "(" + genesyms + ") AND " + sym : sym;
@@ -121,7 +120,7 @@ $(document).ready(function()
             var querystring = "q=" + q + "&genes=" + genesyms + "&rowgene=" + sym + "&geneop=" + geneop + "&genesyms=" + genesyms + "&rowgene=" + sym + "&species=" + species + "&usehomologs=" + usehomologs + "&unique=" + gene + "&orderby=relevance" + "&abstractcount=" + abstractcount + "&usegenefile=" + usegenefile + "&genefileID=" + genefileID; 
             
             // set up abstract pane
-            $("#generank tr#gene" + gene).after('<tr class="abstracts" id="abstracts' + gene + '"><td></td><td class="pane" colspan="5"><img src="/static/spinner2.gif"></td></tr>');
+            $("#generank div#gene" + gene).after('<div class="abstracts pane" id="abstracts' + gene + '"><img src="/static/spinner2.gif"></div>');
             
             // change link text
             $(this).text("Hide abstracts");
@@ -131,11 +130,12 @@ $(document).ready(function()
             .success(function(result)
             {
                     // append abstracts to td
-                    $("#generank tr#abstracts" + gene + " td.pane img").remove(); // hide spinner
-                    $("#generank tr#abstracts" + gene + " td.pane").html(result); 
-                    $("#generank tr#abstracts" + gene + " td.pane").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide abstracts</a>');
+                    $("#generank div#abstracts" + gene + " img").remove(); // hide spinner
+                    $("#generank div#abstracts" + gene).html(result); 
+                    $("#generank div#abstracts" + gene).append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">&times; Hide abstracts</a>');
+                    $("#generank div#abstracts" + gene).append('<a href="javascript:void(0);" class="hidepanes close-pane-x" gene="' + gene + '">&times;</a>');
                     
-                    $("#generank tr#abstracts" + gene + " td.pane div").slideDown();
+                    $("#generank div#abstracts" + gene).slideDown();
                     fetchabstracts(gene);
                 
             })
@@ -147,13 +147,12 @@ $(document).ready(function()
         else // the abstract pane exists
         {
             // is the abstracts pane hidden?
-            if (!$("#generank tr#abstracts" + gene).is(":visible"))
+            if (!$("#generank div#abstracts" + gene).is(":visible"))
             {
                 // the abstract pane exists but is hidden
                 // show the abstract pane
                 hidepanes(gene);
-                $("#generank tr#abstracts" + gene).show();
-                $("#generank tr#abstracts" + gene + " td.pane div").slideDown();
+                $("#generank div#abstracts" + gene).slideDown();
 
                 $(this).text("Hide abstracts");
             }
@@ -167,58 +166,9 @@ $(document).ready(function()
     });
     
         
-    // show or hide events when the events button gets clicked
-    $("#generank").delegate("a.showeventpreview", "click", function()
-    {
-        var gene = $(this).attr("gene");
-        var sym = $(this).attr("genesymbol");
-        
-        if ($("#generank tr#eventpreview" + gene).length == 0) // see if the tr for events exists
-        {
-            // hide other panes
-            hidepanes(gene);
-        
-            // the tr for events doesn't exist, so make one
-            $("#generank tr#gene" + gene).after('<tr class="eventpreview" id="eventpreview' + gene + '"><td></td><td class="pane" colspan="5"><div><img src="/static/spinner2.gif"></div></td></tr>');
-        
-            // assemble querystring
-            var querystring = "q=" + q + "&gene_symbols=" + genesyms + ',' + sym + "&detail=" + sym + "&limit=3&preview=1";
-            
-            // fetch and display event preview
-            $.get("eventlist.html", querystring)
-            .success(function(result)
-            {
-                $("#generank tr#eventpreview" + gene + " td.pane div").remove(); // hide spinner
-                $("#generank tr#eventpreview" + gene + " td.pane").html('<div style="display:none; padding-top:5px;">' + result + '</div>');
-                $("#generank tr#eventpreview" + gene + " td.pane").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide interactions</a>');
-                $("#generank tr#eventpreview" + gene + " td.pane div").slideDown();
-            })
-            .error(function()
-            {
-                $("#generank tr#eventpreview" + gene + " td.pane div").remove(); // hide spinner
-                $("#generank tr#eventpreview" + gene + " td.pane").html('<div></div>');
-                hidepanes(gene);
-                flasherror();
-            });
-        }
-        else // the tr for events exists
-        {
-            // is the events pane hidden?
-            if (!$("#generank tr#eventpreview" + gene).is(":visible"))
-            {
-                // the events pane exists but is hidden
-                // show the events pane
-                hidepanes(gene);
-                $("#generank tr#eventpreview" + gene).show();
-                $("#generank tr#eventpreview" + gene + " td.pane div").slideDown();
-            }
-            else
-            {
-                // the events pane is visible, so hide it
-                hidepanes(gene);
-            }
-        }
-    });
+    
+    
+    
     
     
     // show or hide external links (cross references) when the button gets clicked

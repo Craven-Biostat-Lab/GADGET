@@ -1,5 +1,6 @@
-<b>Abstracts</b><br />
-Showing abstracts{% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% endif %}{% if rowgene %} for <b>{{ rowgene|safe }}</b>{% endif %}{% if genesyms %} for{% if geneop %} <b>{{ geneop }}</b> of{% endif %} <b>{{ genesyms|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}<br /><br />
+<span class="pane-title">{{ abstractcount }} abstracts</span><br />
+
+{% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% endif %}{% if rowgene %} for <b>{{ rowgene|safe }}</b>{% endif %}{% if genesyms %} for{% if geneop %} <b>{{ geneop }}</b> of{% endif %} <b>{{ genesyms|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}<br /><br />
 
 {% if gene_symbol_list %}
   Filter by gene: 
@@ -10,11 +11,19 @@ Showing abstracts{% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% en
   <br /><br />
 {% endif %}
 
-Sort by: 
-<a href="javascript:void(0);" class="sortabstracts{% if orderby == 'relevance'%} selected{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="relevance">relevance</a>,
-<a href="javascript:void(0);" class="sortabstracts{% if orderby == 'newest'%} selected{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="newest">newest</a>,
-<a href="javascript:void(0);" class="sortabstracts{% if orderby == 'oldest'%} selected{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="oldest">oldest</a><br />
-<label>Only show reviews: <input type="checkbox" class="onlyreviews" abs_unique="{{ unique|escapejs }}" {% if onlyreviews %}checked="checked"{% endif %} /></label><br />
+
+<b>Sort:</b>
+<div class="btn-group sort-btn-group" role="group" aria-label="Sort"> 
+    <a href="javascript:void(0);" class="sort-btn btn btn-sm sortabstracts{% if orderby == 'relevance'%} sort-btn-active{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="relevance">relevance</a>
+    <a href="javascript:void(0);" class="sort-btn btn btn-sm sortabstracts{% if orderby == 'newest'%} sort-btn-active{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="newest">newest</a>
+    <a href="javascript:void(0);" class="sort-btn btn btn-sm sortabstracts{% if orderby == 'oldest'%} sort-btn-active{% endif %}" abs_unique="{{ unique|escapejs }}" orderby="oldest">oldest</a>
+</div>
+
+
+<label><input type="checkbox" class="onlyreviews" abs_unique="{{ unique|escapejs }}" {% if onlyreviews %}checked="checked"{% endif %} /> reviews only</label><br />
+
+
+<br /><br />
 <div class="abstractcontainer" abs_unique="{{ unique|escapejs }}" onlyreviews="{{ onlyreviews|urlencode }}" orderby="{{ orderby|urlencode }}" genefilter="{% if genefilter %}{{ genefilter|escapejs }}{% endif %}" offset="0" abstractcount="{{ abstractcount|escapejs }}"
     query="abstracts?{% if q %}&q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if geneop %}&geneop={{ geneop }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if keywordnum %}&keywordnum={{ keywordnum|urlencode }}{% endif %}{% if rowgene %}&rowgene={{ rowgene|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}"><ul></ul></div>
 <img class="spinner" src="/static/spinner2.gif" abs_unique="{{ unique|escapejs }}" style="display:none">

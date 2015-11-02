@@ -214,7 +214,7 @@ a#download-results:hover {
 
 
 
-div#sort-btn-group {
+div.sort-btn-group {
     margin-left: 14px;
     /*border: solid 1px #702B34;
     border-radius: 4px;*/
@@ -222,19 +222,19 @@ div#sort-btn-group {
 
 a.sort-btn {
     border: solid 1px #702B34;
-    color: #702B34;
+    color: #702B34 !important;
 }
 
 a.sort-btn:hover {
-    color: #702B34;
+    color: #702B34 !important;
     background: #E6DADC;
     transition: 0.1s;
 }
 
-a.sort-btn-active {
+a.sort-btn-active, a.sort-btn-active:hover {
     background: #702B34;
     font-weight: bold;
-    color: white;
+    color: white !important;
     pointer-events: none;
 }
 
@@ -357,7 +357,13 @@ div.scorebox {
     vertical-align: center;
 }
 
-a.showabstracts img {
+
+a.showabstracts:before {
+    content: "";
+    display: inline-block;
+    background: url("/static/icon-text.png") no-repeat;
+    width: 20px;
+    height: 20px;
     vertical-align: -4px;
     margin-right: 5px;
     margin-left: 3px;
@@ -365,20 +371,40 @@ a.showabstracts img {
 
 
 
-table#generank tr td.pane {
-    padding: 10px 5% 5px 2%;
-    width: 100%;
-    background-color:#E1EDB9; 
-    border: solid 1px #808C3C;
+
+
+
+
+/*****************************************************************************
+* abstracts pane */
+
+
+
+#generank div.pane {
+    padding-left: 50px;
+    padding-top: 30px;
+    padding-bottom: 80px;
+    position: relative;
 }
 
+
+span.pane-title {
+    font-size: 180%;
+    color: #702B34;
+}
+
+input.onlyreviews {
+    margin-left: 40px;
+}
+
+
 table#generank tr td.pane ul {
-    margin-top: 10px;
+    margin-top: 18px;
     margin-bottom: 0px;
 }
 
-table#generank tr td.pane ul li {
-    padding-bottom: 10px;
+#generank div.pane ul li {
+    padding-bottom: 18px;
 }
 
 a.sortabstracts.selected, a.genefilter.selected {
@@ -388,19 +414,32 @@ a.sortabstracts.selected, a.genefilter.selected {
     cursor: text;
 }
 
-table#generank a.moreabstracts {
-    font-weight: bold;
+a.moreabstracts {
+    font-size: 150%;
+    padding-left: 40px;
 }
 
 
-a.hidepanes {
+#generank a.hidepanes {
     display: block;
     text-size: 70%;
     padding-top: 10px;
+    color: #702B34;
+    padding-left: 40px;
 }
 
+a.hidepanes.close-pane-x {
+    position: absolute;
+    right: 0;
+    top: 20px;
+    font-size: 300%;
+}
 
-
+#generank a.hidepanes.close-pane-x:hover {
+    color: #B04466;
+    text-decoration: none;
+    transition: 0.1s;
+}
 
 
 /*******************************************************************************
