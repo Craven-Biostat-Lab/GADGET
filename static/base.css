@@ -296,28 +296,41 @@ div.result-list {
     font-size: 90%;
 }
 
+div.result-list a {
+    color: #f26400;
+}
+
 div.result-row {
     margin-bottom: 15px;
 }
 
+
 div.rankcol {
     padding-left: 0;
+    padding-right: 0;
+    padding-top: 24px;
+    vertical-align: center;
 }
 
 div.namecol {
+    padding-top: 12px;
     padding-left: 0;
+    vertical-align: center;
 }
 
 div.namecol span.genesymbol {
     font-weight: bold;
-    font-size: 150%;
-    color: #702B34;
+    font-size: 160%;
 }
 
 div.namecol span.genename {
     color: #444;
 }
 
+
+div.infocol {
+    padding-top: 12px;
+}
 
 div.infocol span.genesynonyms {
     font-size: 80%;
@@ -337,13 +350,18 @@ div.scorecol span.pvalue {
 
 
 div.scorebox {
-    border: solid 1px #702B34;
+    border: solid 2px #702B34;
     border-radius: 5px;
     padding-top: 10px;
     padding-bottom: 10px;
+    vertical-align: center;
 }
 
-
+a.showabstracts img {
+    vertical-align: -4px;
+    margin-right: 5px;
+    margin-left: 3px;
+}
 
 
 
