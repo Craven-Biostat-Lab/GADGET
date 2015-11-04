@@ -268,8 +268,11 @@ div#errorbox a#hideerror {
     right: 10px;
 }
 
-div#spinner {
-    padding-left: 25px;
+img#spinner {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-top: 50px;
 }
 
 #title {

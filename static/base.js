@@ -16,12 +16,12 @@ function hideflash()
 // ajax spinner
 function spin()
 {
-    $("div#spinner").fadeIn("fast");
+    $("#spinner").fadeIn("fast");
 }
 
 function hidespinner()
 {
-    $("div#spinner").fadeOut("fast");
+    $("#spinner").fadeOut("fast");
 }
 
 

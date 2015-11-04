@@ -57,8 +57,8 @@
             <div class="form-group">
                 <label for="genes" class="col-sm-2 control-label">Genes</label>
                   <div class="col-sm-10"><div class="input-group">
-                    <div class="input-group-addon" id="cleargenefile-addon" style="display:none"><a href="javascript:void(0);" id="cleargenefile">&times;</a></div>
                     {{ form.genes }}
+                    <div class="input-group-addon" id="cleargenefile-addon" style="display:none"><a href="javascript:void(0);" id="cleargenefile">&times;</a></div>
                     <div class="input-group-addon" style="background:white;border-left-color:white;border-right-color:white">
                         <a class="badge" id="uploadgenes" href="javascript:void(0);">Upload</a>
                     </div>
@@ -109,9 +109,9 @@
         
 
     <div id="geneuploadbox" style="display:none"></div>
+     <img id="spinner" style="display:none" src="/static/spinner.gif" />
     <div id="content" class="container-fluid">
         {% block content %}{% endblock %}
-        <div id="spinner" style="display:none"><img src="/static/spinner.gif" /></div>
     </div>
 
     <div id="errorbox" style="display:none">
