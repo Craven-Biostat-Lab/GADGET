@@ -72,7 +72,7 @@ div#header {
 }
 
 div#controls-container {
-    margin: 20px auto 30px auto;
+    margin: 60px auto 30px auto;
     max-width: 900px;
 }
 
@@ -280,8 +280,12 @@ div#spinner {
 }
 
 
-input#more {
+a#more {
+    display: block;
     margin-top: 10px;
+    margin-bottom: 50px;
+    font-size: 160%;
+    color: #702B34;
 }
 
 

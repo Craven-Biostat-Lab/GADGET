@@ -50,7 +50,9 @@ $(document).ready(function()
             $("table#download").fadeIn('slow');
             
             $("#more").show();
-            hidespinner();        
+            hidespinner();     
+            
+            $('body').animate({scrollTop: $('div#description').offset().top - 10}, 600);   
         }
         else
         {
@@ -61,13 +63,13 @@ $(document).ready(function()
     .error(function() {hidespinner(); flasherror();} );
     
     // get and display more genes when the "more" button gets clicked
-    $("input#more").click(function()
+    $("#more").click(function()
     {
         var queryString = "q=" + q + "&genes=" + genes + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + orderby + "&limit=" + limit + "&offset=" + offset + "&usegenefile" + usegenefile + "&genefileID=" + genefileID;
         offset += limit;
         
         // hide "more" button while we're fetching more genes
-        $("input#more").hide();
+        $("#more").hide();
 
         // get more genes
         spin();
@@ -79,13 +81,13 @@ $(document).ready(function()
                 // append new genes to table
                 $("#generank").append(data.result);
                 hidespinner();
-                $("input#more").show();
+                $("#more").show();
             }
             else
             {
                 // If "validresult" is false, we ran out of genes.  
                 hidespinner();
-                $("input#more").hide(); 
+                $("#more").hide(); 
                 $("div#content").append("No more genes match your query!");
             }
         })
@@ -93,7 +95,7 @@ $(document).ready(function()
         {
             hidespinner();
             flasherror();
-            $("input#more").hide();    
+            $("#more").hide();    
         });
         
     });
