@@ -45,7 +45,7 @@ $(document).ready(function()
             if (data.abstractcount)
                 $("span#abstractcount").html(data.abstractcount).show();
             
-            $("div#description").show();
+            $(".show-with-results").fadeIn('slow');
             $("#results").fadeTo(200, 1);
             $("table#download").fadeIn('slow');
             

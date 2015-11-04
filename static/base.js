@@ -83,6 +83,7 @@ function updategenebox()
         // disable gene box if we're using a gene file
         $("input#id_genes").attr('disabled', 'disabled');
         $("input#id_genes").val("using file: " + getCookie("genefilename"));
+        $("#cleargenefile-addon").show();
     }
     else
     {
@@ -90,7 +91,8 @@ function updategenebox()
         {
             // if we're not using a gene file and the gene box is disabled, 
             // enable the gene box
-            $("input#id_genes").val("").removeAttr("disabled")
+            $("input#id_genes").val("").removeAttr("disabled");
+            $("#cleargenefile-addon").hide();
         }
     }
 }
