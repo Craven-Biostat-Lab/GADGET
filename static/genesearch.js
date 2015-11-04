@@ -41,16 +41,18 @@ $(document).ready(function()
             // append new genes to table, show "more" button
             $("#generank").append(data.result);
             
+            hidespinner();     
+            
             // show abstract count
-            if (data.abstractcount)
+            if (data.abstractcount) {
                 $("span#abstractcount").html(data.abstractcount).show();
+            }
             
             $(".show-with-results").fadeIn('slow');
             $("#results").fadeTo(200, 1);
             $("table#download").fadeIn('slow');
             
             $("#more").show();
-            hidespinner();     
             
             $('body').animate({scrollTop: $('div#description').offset().top - 10}, 600);   
         }

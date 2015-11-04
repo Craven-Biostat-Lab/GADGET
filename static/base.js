@@ -21,7 +21,7 @@ function spin()
 
 function hidespinner()
 {
-    $("#spinner").fadeOut("fast");
+    $("#spinner").hide();
 }
 
 
