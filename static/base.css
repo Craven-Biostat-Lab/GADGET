@@ -9,11 +9,11 @@ form {
 }
 
 a:link {
-    color: #734217; /*#733A17;/*#80270B; /*#A33310;*/
+    color: #702B34; 
 }
 
 a:visited {
-    color:	#998E46; /*#A89C4D;*/
+    color:	#702B34; /*#A89C4D;*/
 }
 
 a.hint {
@@ -37,7 +37,7 @@ div#pagecover {
 div#geneuploadbox {
     position: fixed;
     z-index: 9999;
-    background: #F2E9E1;
+    background: #fff;
     width: 500px;
     left: 50%;
     margin-left: -250px;
