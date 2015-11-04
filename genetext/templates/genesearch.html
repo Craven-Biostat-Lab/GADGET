@@ -15,7 +15,7 @@
     var species = "{{ species|urlencode }}";
     var usehomologs = "{{ usehomologs|urlencode }}";
     var orderby = "{{ orderby|urlencode }}";
-    var usegenefile = "{{ usegenefile|urlencode }}";
+    var usegenefile = "{{ usegenefile|default:''|urlencode }}";
     var genefileID = "{{ genefileID|urlencode }}";
 </script>
 <script type="text/javascript" src="/static/genesearch.js"></script>
