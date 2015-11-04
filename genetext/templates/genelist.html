@@ -5,7 +5,11 @@
         
             <div class="col-sm-6"><div class="row info-col-group">
                 <div class="col-sm-1 rankcol">{{ forloop.counter|add:offset }}</div>
-                <div class="col-sm-6 namecol"><span class="genesymbol">{{ g.symbol }}</span><br /><span class="genename">{{ g.name }}</span></div>
+                <div class="col-sm-6 namecol">
+                    <span class="genesymbol">{{ g.symbol }}</span>
+                    <a id="showcrossrefs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showcrossrefs" href="javascript: void(0);" genesymbol="{{ g.symbol|urlencode }}"><span class="sr-only">External links for {{ g.symbol }}</span></a>
+                    <br />
+                    <span class="genename">{{ g.name }}</span></div>
                 <div class="col-sm-5 infocol">
                     Entrez ID: <a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}" target="_blank">{{ g.entrez_id }}</a><br />
                     loc: {{ g.maplocation }}<br />

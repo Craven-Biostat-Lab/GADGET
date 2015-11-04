@@ -22,7 +22,7 @@ function order(key)
 function hidepanes(gene)
 {
     $("#generank div#abstracts" + gene).slideUp('fast');
-    $("#generank tr#crossrefs" + gene).slideUp('fast');
+    $("#generank div#crossrefs" + gene).slideUp('fast');
     $("#generank a#showabs" + gene).text("Show abstracts");
 }
 
@@ -177,12 +177,12 @@ $(document).ready(function()
         var gene = $(this).attr("gene");
         var sym = $(this).attr("genesymbol");
         
-        if ($("#generank tr#crossrefs" + gene).length == 0) // see if the tr for crossrefs exists
+        if ($("#generank div#crossrefs" + gene).length == 0) // see if the tr for crossrefs exists
         {
             hidepanes(gene); // hide other panes
             
             // the tr for crossrefs doesn't exist, so make one
-            $("#generank tr#gene" + gene).after('<tr class="crossrefs" id="crossrefs' + gene + '"><td></td><td class="pane" colspan="5"><div><img src="/static/spinner2.gif"></div></td></tr>');
+            $("#generank div#gene" + gene).after('<div class="crossrefs pane" style="display:none" id="crossrefs' + gene + '"><img src="/static/spinner2.gif"></div>');
         
             // assemble querystring
             var querystring = "gene=" + gene + "&genesymbol=" + sym;
@@ -191,26 +191,26 @@ $(document).ready(function()
             $.getJSON("genecrossrefs", querystring)
             .success(function(data)
             {
-                $("#generank tr#crossrefs" + gene + " td.pane div").remove(); // hide spinner
+                $("#generank div#crossrefs" + gene + " img").remove(); // hide spinner
                 if (data.validresult)
                 {
                     // display the cross references 
-                    $("#generank tr#crossrefs" + gene + " td.pane").html('<div style="display:none; padding-top:5px;">' + data.result + '</div>');
-                    $("#generank tr#crossrefs" + gene + " td.pane").append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">Hide external links</a>');
-                    $("#generank tr#crossrefs" + gene + " td.pane div").slideDown();
+                    $("#generank div#crossrefs" + gene).html(data.result);
+                    $("#generank div#crossrefs" + gene).append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">&times Hide external links</a>');
+                    $("#generank div#crossrefs" + gene).append('<a href="javascript:void(0);" class="hidepanes close-pane-x" gene="' + gene + '">&times;</a>');
+                    $("#generank div#crossrefs" + gene).slideDown();
                 }
                 else
                 {
                     // collapse the pane, show an error message
-                    $("#generank tr#crossrefs" + gene + " td.pane").html('<div></div>');
+                    $("#generank tr#crossrefs" + gene).remove();
                     hidepanes(gene);
                     flasherror();
                 }
             })
             .error(function()
             {
-                $("#generank tr#crossrefs" + gene + " td.pane div").remove(); // hide spinner
-                $("#generank tr#crossrefs" + gene + " td.pane").html('<div></div>');
+                $("#generank div#crossrefs" + gene).remove();
                 hidepanes(gene);
                 flasherror();
             });
@@ -219,13 +219,12 @@ $(document).ready(function()
         else // the tr for crossrefs exists
         {
             // is the crossrefs pane hidden?
-            if (!$("#generank tr#crossrefs" + gene).is(":visible"))
+            if (!$("#generank div#crossrefs" + gene).is(":visible"))
             {
                 // the crossrefs pane exists but is hidden
                 // show the crossrefs pane
                 hidepanes(gene);
-                $("#generank tr#crossrefs" + gene).show();
-                $("#generank tr#crossrefs" + gene + " td div").slideDown();
+                $("#generank div#crossrefs" + gene).slideDown();
             }
             else
             {

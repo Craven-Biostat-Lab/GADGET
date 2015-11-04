@@ -1,10 +1,13 @@
-<b>External links{% if genesymbol %} for {{ genesymbol|safe }}{% endif %}</b><br />
+<span class="pane-title">External links</span>
+{% if genesymbol %}<br /> for <b>{{ genesymbol }}</b>{% endif %}
+
+<br />
 {% for cat in xrefcats %}
 <br /><b>{% if cat.name %}{{ cat.name }}{% else %}Uncategorized{% endif %}</b>
     <ul>
     {% for xrefdb in cat.dblist %}
         <li>
-            <b>{% if xrefdb.xreftype.description %}{{ xrefdb.xreftype.description }}{% else %}{{ xrefdb.idtype }}{% endif %}:</b>
+            {% if xrefdb.xreftype.description %}{{ xrefdb.xreftype.description }}{% else %}{{ xrefdb.idtype }}{% endif %}:
             {% for xref in xrefdb.xreflist %}
                 {% if xref.url %}<a href="{{ xref.url }}" target="_blank">{{ xref.crossref_id }}</a>{% else %}{{ xref.crossref_id }}{% endif %}{% if not forloop.last %}, {% endif %}
             {% endfor %}

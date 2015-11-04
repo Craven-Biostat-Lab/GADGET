@@ -369,14 +369,25 @@ a.showabstracts:before {
     margin-left: 3px;
 }
 
+a.showcrossrefs {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background: url('/static/icon-external-link.png') no-repeat;
+    margin-left: 10px;
+}
 
+a.showcrossrefs:hover {
+    opacity: 0.7;
+    transition: 0.1s;
+}
 
 
 
 
 
 /*****************************************************************************
-* abstracts pane */
+* abstracts + external links panes */
 
 
 
@@ -398,13 +409,12 @@ input.onlyreviews {
 }
 
 
-table#generank tr td.pane ul {
-    margin-top: 18px;
-    margin-bottom: 0px;
+#generank div.abstracts.pane ul li {
+    padding-bottom: 18px;
 }
 
-#generank div.pane ul li {
-    padding-bottom: 18px;
+#generank div.crossrefs.pane ul li {
+    padding-bottom: 10px;
 }
 
 a.sortabstracts.selected, a.genefilter.selected {
@@ -422,9 +432,11 @@ a.moreabstracts {
 
 #generank a.hidepanes {
     display: block;
-    text-size: 70%;
     padding-top: 10px;
     color: #702B34;
+}
+
+#generank div.abstracts.pane a.hidepanes {
     padding-left: 40px;
 }
 
