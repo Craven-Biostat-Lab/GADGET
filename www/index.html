@@ -18,7 +18,7 @@
 <div id="controls-container">
 
     
-    <div class="container-fluid">
+<div class="container-fluid">
         <div class="col-sm-4">
             <a href="/"><img src="/static/logo.png" style="width:180px;height:auto;"/></a>
         </div>
@@ -29,7 +29,6 @@
     </div>
     
     
-
     <div id="search">
         <div style="text-align:center;font-weight:bold;padding-bottom:15px;">Search over 1 million PubMed abstracts</div>
         <form id="searchform" class="form-horizontal">
@@ -40,7 +39,7 @@
             <div class="form-group">
                 <label for="id_q" class="col-sm-2 control-label">Search</label>
                 <div class="col-sm-10">
-                    <input name="q" placeholder="Keywords and phrases" value="alcoholism" class="form-control" type="text" id="id_q" />
+                    <input name="q" placeholder="Keywords and phrases" class="form-control" type="text" id="id_q" />
                 </div>
             </div>
             
@@ -48,10 +47,11 @@
                 <label for="genes" class="col-sm-2 control-label">Genes</label>
                   <div class="col-sm-10"><div class="input-group">
                     <input id="id_genes" type="text" placeholder="Gene symbols" class="form-control" name="genes" />
-                    <div class="input-group-addon" style="background:white;border-left-color:white;">
+                    <div class="input-group-addon" id="cleargenefile-addon" style="display:none"><a href="javascript:void(0);" id="cleargenefile">&times;</a></div>
+                    <div class="input-group-addon" style="background:white;border-left-color:white;border-right-color:white">
                         <a class="badge" id="uploadgenes" href="javascript:void(0);">Upload</a>
                     </div>
-                    <div class="input-group-addon" style="background:#FFEDE3;">
+                    <div class="input-group-addon" style="background:white;border-left-color:whtie;">
                         <ul>
 <li><label for="id_geneop_0"><input type="radio" id="id_geneop_0" value="any" name="geneop" /> any</label></li>
 <li><label for="id_geneop_1"><input checked="checked" type="radio" id="id_geneop_1" value="all" name="geneop" /> all</label></li>
@@ -79,8 +79,8 @@
             <div class="form-group" style="margin-bottom:0">
                 <div class="col-sm-10 col-sm-offset-2">
                 <label>
-                    <input checked="checked" type="checkbox" name="usehomologs" value="on" id="id_usehomologs" />
-                    Include gene homologs from other species
+                    <input checked="checked" type="checkbox" name="usehomologs" id="id_usehomologs" />
+                    <span style="font-weight:normal;margin-left:10px">Include gene <b>homologs</b> from other species</span>
                 </label>
                 </div>
             </div>
@@ -93,8 +93,8 @@
     
     <div id="search-buttons" class="container-fluid">
         <div class="col-sm-5 col-sm-offset-1">
-            <div class="search-button" id="search-button-genes" 
-                style="background-image:url('/static/icon-gene.png')">
+            <div class="search-button search-button-active" id="search-button-genes" 
+                style="background-image:url('/static/icon-gene-inverted.png')">
                 Find genes
             </div>
         </div>
