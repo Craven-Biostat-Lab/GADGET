@@ -80,7 +80,8 @@ div#search {
     background-color: /*#70384A;*/ /*#70344E;*/ #702B34; /*#702B41;*/ /*AA0039;*/
     border-radius: 10px;
     padding: 20px;
-    margin-top: 15px;
+    padding-top: 15px;
+    margin-top: 5px;
     color: white;
 }
 
@@ -173,11 +174,13 @@ div#toplinks a {
     font-weight: bold;
     text-decoration: none;
     color: #702B34;
-    transition: 0.2s;
+    position: relative;
+    bottom: -10px;
 }
 
 div#toplinks a:hover {
-    color: #B04466;
+    text-decoration: underline;
+    transition: 0.2s;
 }
 
 

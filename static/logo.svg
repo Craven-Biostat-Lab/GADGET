@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="633.91022"
-   height="93.593567"
+   width="413.81259"
+   height="98.319839"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="logo.svg"
    inkscape:export-filename="/home/matt/gadget/app/static/logo.png"
-   inkscape:export-xdpi="57.696274"
-   inkscape:export-ydpi="57.696274">
+   inkscape:export-xdpi="54.922791"
+   inkscape:export-ydpi="54.922791">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -28,8 +28,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.49497475"
-     inkscape:cx="91.308591"
-     inkscape:cy="-111.26086"
+     inkscape:cx="94.154698"
+     inkscape:cy="-109.24057"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -58,10 +58,10 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-47.232074,-155.65201)">
+     transform="translate(-44.385967,-152.94603)">
     <text
        xml:space="preserve"
-       style="font-size:72.46935272000000339px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:8.26000117999999794px;word-spacing:-2.55px;fill:#f26400;fill-opacity:1;stroke:none;font-family:Meera;-inkscape-font-specification:Meera"
+       style="font-size:72.46935272px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:8.26000118px;word-spacing:-2.54999995px;fill:#f26400;fill-opacity:1;stroke:none;font-family:Meera;-inkscape-font-specification:Meera"
        x="178.64125"
        y="227.16885"
        id="text2985"
@@ -72,7 +72,7 @@
          id="tspan2987"
          x="178.64125"
          y="227.16885"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:8.26000117999999794px;fill:#f26400;fill-opacity:1;font-family:Meera;-inkscape-font-specification:Meera;word-spacing:-2.55px">GADGET search</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;letter-spacing:8.26000118px;word-spacing:-2.54999995px;fill:#f26400;fill-opacity:1;font-family:Meera;-inkscape-font-specification:Meera">GADGET</tspan></text>
     <flowRoot
        xml:space="preserve"
        id="flowRoot2989"
