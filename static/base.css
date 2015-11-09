@@ -184,6 +184,16 @@ div#toplinks a:hover {
 }
 
 
+img.help-icon {
+    display: inline;
+    vertical-align: -3px;
+    margin-left: 5px;
+}
+
+img.help-icon:hover {
+    opacity: 0.7;
+    transition: 0.2s;
+}
 
 
 
@@ -221,6 +231,7 @@ div.sort-btn-group {
     margin-left: 14px;
     /*border: solid 1px #702B34;
     border-radius: 4px;*/
+    display: inline-block !important;
 }
 
 a.sort-btn {

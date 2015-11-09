@@ -72,7 +72,9 @@ $(document).ready(function()
         {% if genesyms or usegenefile %} containing <b>{{ geneop|safe }}</b> of genes 
             {% if usegenefile %}in the file <b>{{ genefilename|safe }}</b>
             {% else %}<b>{{ genesyms|safe }}</b>{% endif %}
-        {% endif %}<br />
+        {% endif %}
+        <img src="/static/icon-help-gray.png" class="help-icon" />
+        <br />
         For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
     </div>
 
@@ -94,6 +96,8 @@ $(document).ready(function()
         <a class="btn sort-btn {% if orderby == 'matching_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('matching_abstracts');">Matching Abstracts</a>
         
     </div>
+    
+    <img src="/static/icon-help-gray.png" class="help-icon" />
 
 </div></div>
 

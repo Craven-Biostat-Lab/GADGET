@@ -50,43 +50,52 @@
             <input type="hidden" name="usegenefile" id="id_usegenefile" />
             
             <div class="form-group">
-                <label for="id_q" class="col-sm-2 control-label">Search</label>
+                <label for="id_q" class="col-sm-2 control-label">
+                    Search
+                    <img class="help-icon" src="/static/icon-help-white.png" />
+                </label>
                 <div class="col-sm-10">
                     {{ form.q }}
                 </div>
             </div>
             
             <div class="form-group">
-                <label for="genes" class="col-sm-2 control-label">Genes</label>
-                  <div class="col-sm-10"><div class="input-group">
-                    {{ form.genes }}
-                    <div class="input-group-addon" id="cleargenefile-addon" style="display:none"><a href="javascript:void(0);" id="cleargenefile">&times;</a></div>
-                    <div class="input-group-addon" style="background:white;border-left-color:white;border-right-color:white">
-                        <a class="badge" id="uploadgenes" href="javascript:void(0);">Upload</a>
-                    </div>
-                    <div class="input-group-addon" style="background:white;border-left-color:whtie;">
-                        {{ form.geneop }}
-                    </div>
-                  </div></div>
+              <label for="genes" class="col-sm-2 control-label">
+                Genes 
+                <img class="help-icon" src="/static/icon-help-white.png" />
+              </label>
+              <div class="col-sm-10"><div class="input-group">
+                {{ form.genes }}
+                <div class="input-group-addon" id="cleargenefile-addon" style="display:none"><a href="javascript:void(0);" id="cleargenefile">&times;</a></div>
+                <div class="input-group-addon" style="background:white;border-left-color:white;border-right-color:white">
+                    <a class="badge" id="uploadgenes" href="javascript:void(0);">Upload</a>
+                </div>
+                <div class="input-group-addon" style="background:white;border-left-color:whtie;">
+                    {{ form.geneop }}
+                </div>
+              </div></div>
             </div>
             
             <div class="form-group">
-                <label for="id_species" class="col-sm-2 control-label">Species</label>
-                  <div class="col-sm-10">
-                    <!--<select name="species" id="id_species" class="form-control">
-                        <option value="9606">Homo sapiens</option>
-                        <option value="10090">Mus musculus</option>
-                        <option value="559292">Saccharomyces cerevisiae</option>
-                    </select>-->
-                    {{ form.species }}
-                  </div>
+              <label for="id_species" class="col-sm-2 control-label">
+                Species
+                <img class="help-icon" src="/static/icon-help-white.png" />
+              </label>
+              <div class="col-sm-10">
+                <!--<select name="species" id="id_species" class="form-control">
+                    <option value="9606">Homo sapiens</option>
+                    <option value="10090">Mus musculus</option>
+                    <option value="559292">Saccharomyces cerevisiae</option>
+                </select>-->
+                {{ form.species }}
+              </div>
             </div>
             
             <div class="form-group" style="margin-bottom:0">
                 <div class="col-sm-10 col-sm-offset-2">
                 <label>
                     {{ form.usehomologs }}
-                    <span style="font-weight:normal;margin-left:10px">Include gene <b>homologs</b> from other species</span>
+                    <span style="font-weight:normal;margin-left:10px">Count gene <b>homologs</b> from other species <img class="help-icon" src="/static/icon-help-white.png" /></span>
                 </label>
                 </div>
             </div>
