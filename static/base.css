@@ -307,6 +307,17 @@ a#more {
 
 
 
+.popover ul {
+    padding-left: 16px;
+}
+
+.popover .help-more {
+    text-align: right;
+}
+
+
+
+
 
 
 /*******************************************************************************

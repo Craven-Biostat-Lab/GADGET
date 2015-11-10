@@ -62,6 +62,25 @@ $(document).ready( function ()
  
     
     
+    // initialize help popovers
+    $('.help-icon').popover();
+    
+    // close popover on page click
+    $('.help-icon').click(function(e) {
+        
+
+ 
+        var icon = $(this);
+        icon.popover('show');
+        e.stopPropagation();
+        e.preventDefault();
+  
+         $('body').one('click', function() {
+            icon.popover('hide');
+        });
+  
+    });
+    
 });
 
 

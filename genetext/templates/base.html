@@ -11,9 +11,10 @@
     <link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/bootstrap-theme.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/base.css" />
-    <script type="text/javascript" src="/static/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="/static/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="/static/base.js"></script>
     <script type="text/javascript" src="/static/abstracts.js"></script>
+    <script type="text/javascript" src="/static/bootstrap.min.js"></script>
     
     {% block head %}{% endblock %}
 </head>
@@ -51,8 +52,8 @@
             
             <div class="form-group">
                 <label for="id_q" class="col-sm-2 control-label">
-                    Search
-                    <img class="help-icon" src="/static/icon-help-white.png" />
+                    Keywords
+                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Filter with keywords and phrases" data-content="<ul><li>Use quotation marks to filter with <b>&quot;multi-word phrases&quot;</b>.</li><li>You can use boolean operators like <b>AND, OR</b> and <b>NOT</b>.</li></ul><div class='help-more'><a href='/manual.html#queryterms' target='_blank'>More...</a></div>" data-html="true" data-container="body">
                 </label>
                 <div class="col-sm-10">
                     {{ form.q }}
