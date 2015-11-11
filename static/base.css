@@ -103,8 +103,8 @@ div#search li {
     display: inline;
 }
 
-#id_geneop_0, #id_geneop_1 { 
-    margin-bottom: 0px;
+.input-group-addon label {
+    margin-bottom: 0 !important; /* override bootstrap for any/all on firefox */
 }
 
 
