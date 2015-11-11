@@ -68,14 +68,16 @@ $(document).ready( function ()
     // close popover on page click
     $('.help-icon').click(function(e) {
         
-
+        // if there's a popover already open, hide it
+        $('.help-icon').not(this).popover('hide');
  
         var icon = $(this);
-        icon.popover('show');
+        icon.popover('toggle');
         e.stopPropagation();
         e.preventDefault();
   
-         $('body').one('click', function() {
+        // hide the popover on the next click
+        $(document).one('click', function() {
             icon.popover('hide');
         });
   

@@ -73,7 +73,7 @@ $(document).ready(function()
             {% if usegenefile %}in the file <b>{{ genefilename|safe }}</b>
             {% else %}<b>{{ genesyms|safe }}</b>{% endif %}
         {% endif %}
-        <img src="/static/icon-help-gray.png" class="help-icon" />
+        <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Gene search" data-content="GADGET ranks genes by finding abstracts related to your search, and then computing scores for each gene based on the number of matching abstracts.<div class='help-more'><a href='/manual.html#genesearch' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
         <br />
         For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
     </div>
@@ -97,7 +97,7 @@ $(document).ready(function()
         
     </div>
     
-    <img src="/static/icon-help-gray.png" class="help-icon" />
+    <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Scores" data-content="<ul><li><b>F1 Score</b>: a balanced measure of the absolute number and proportion of matching abstracts for each gene</li><li><b>Adjusted Precision</b>: based on the proportion of the gene's abstracts which match your query</li><li><b>Matching Abstracts</b>: the number of abstracts that match your query and mention this gene</li><li><b>Total Abstracts</b>: the number of abstracts that mention this gene</li></ul><div class='help-more'><a href='/manual.html#scores' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
 
 </div></div>
 

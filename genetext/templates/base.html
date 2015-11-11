@@ -44,7 +44,7 @@
     
     
     <div id="search">
-        <div style="text-align:center;font-weight:bold;padding-bottom:16px;"><img src="/static/icon-search.png" style="margin-right:5px; vertical-align:0;"/> Search over 1 million PubMed abstracts</div>
+        <div style="text-align:center;font-weight:bold;padding-bottom:16px;"><img src="/static/icon-search.png" style="margin-right:5px; vertical-align:0;"/> Search genes and metabolites in PubMed abstracts</div>
         <form id="searchform" class="form-horizontal">
             {{ form.usegenefile }}
             
@@ -63,7 +63,7 @@
             <div class="form-group">
               <label for="genes" class="col-sm-2 control-label">
                 Genes 
-                <img class="help-icon" src="/static/icon-help-white.png" />
+                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Gene symbols" data-content="<ul><li>Enter a list of gene symbols to search articles mentioning any/all of those genes (including synonyms.)</li><li>If you have a long list of genes, you can upload a file.</li></ul><div class='help-more'><a href='/manual.html#geneentry' target='_blank'>More...</a></div>" data-html="true" data-container="body">
               </label>
               <div class="col-sm-10"><div class="input-group">
                 {{ form.genes }}
@@ -80,7 +80,7 @@
             <div class="form-group">
               <label for="id_species" class="col-sm-2 control-label">
                 Species
-                <img class="help-icon" src="/static/icon-help-white.png" />
+                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Species" data-content="<ul><li>When searching for <b>genes,</b> filter your results by species.</li><li>When searching for <b>metabolites</b>, use this species for your entered gene symbols.</li></ul><div class='help-more'><a href='/manual.html#species' target='_blank'>More...</a></div>" data-html="true" data-container="body">
               </label>
               <div class="col-sm-10">
                 <!--<select name="species" id="id_species" class="form-control">
@@ -96,7 +96,8 @@
                 <div class="col-sm-10 col-sm-offset-2">
                 <label>
                     {{ form.usehomologs }}
-                    <span style="font-weight:normal;margin-left:10px">Count gene <b>homologs</b> from other species <img class="help-icon" src="/static/icon-help-white.png" /></span>
+                    <span style="font-weight:normal;margin-left:10px">Count <b>homologs</b> from other species 
+                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Homologs" data-content="When ranking genes, also include abstracts with homologs in other species.  (Good for searches with few abstracts.) <div class='help-more'><a href='/manual.html#usehomologs' target='_blank'>More...</a></div>" data-html="true" data-container="body"></span>
                 </label>
                 </div>
             </div>

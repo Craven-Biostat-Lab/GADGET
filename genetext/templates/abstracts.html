@@ -3,7 +3,7 @@
         <li>{% if a.title %}<b>{{ a.title }}</b>{% endif %}
             <br />
             {% if a.year %} ({{ a.year }}) {% endif %} {% if a.authors %} {{ a.authors }}<br />{% endif %}
-            {% if a.journal %} {{ a.journal }}, {% endif %}
+            {% if a.journal %} <span style="font-style:italic;text-transform:capitalize">{{ a.journal }}</span>, {% endif %}
             {% if a.volume %} {{ a.volume }}, {% endif %}
             {{ a.pages }}.
             <a href="http://www.ncbi.nlm.nih.gov/pubmed?term={{ a.pmid }}" target="_blank">Pubmed ID: {{ a.pmid }} &rarr;</a>
