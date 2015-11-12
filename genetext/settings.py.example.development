@@ -87,6 +87,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'genetext.profilemiddleware.ProfileMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
@@ -94,7 +95,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'genetext.urls'
 
 TEMPLATE_DIRS = (
-    '/Users/mziegler/gadget/genetext/templates',
+    os.path.join(BASE_DIR, 'genetext/templates'),
 )
 
 INSTALLED_APPS = (
