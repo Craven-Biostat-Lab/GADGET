@@ -90,14 +90,15 @@ $(document).ready(function()
     <b>Sort:</b> 
 
     <div class="btn-group sort-btn-group" role="group" aria-label="Sort">
-        <a class="btn sort-btn {% if orderby == 'f1_score' %}sort-btn-active{% endif %}" href="javascript:order('f1_score');">F<span style="font-size:x-small;vertical-align:baseline;position:relative;top:0.4em">1</span> Score</a>
-        <a class="btn sort-btn {% if orderby == 'adjusted_precision' %}sort-btn-active{% endif %}" href="javascript:order('adjusted_precision');">Adjusted Precision</a>
+        <a class="btn sort-btn {% if orderby == 'f1_score' %}sort-btn-active{% endif %}" href="javascript:order('f1_score');">F<span style="font-size:x-small;vertical-align:baseline;position:relative;top:0.4em">1</span> Balance</a>
+        <a class="btn sort-btn {% if orderby == 'adjusted_precision' %}sort-btn-active{% endif %}" href="javascript:order('adjusted_precision');">Specificity</a>
+        <a class="btn sort-btn {% if orderby == 'matching_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('matching_abstracts');">Query-Matching Abstracts</a>
         <a class="btn sort-btn {% if orderby == 'total_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('total_abstracts');">Total Abstracts</a>
-        <a class="btn sort-btn {% if orderby == 'matching_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('matching_abstracts');">Matching Abstracts</a>
+
         
     </div>
     
-    <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Scores" data-content="<ul><li><b>F1 Score</b>: a balanced measure of the absolute number and proportion of matching abstracts for each gene</li><li><b>Adjusted Precision</b>: based on the proportion of the gene's abstracts which match your query</li><li><b>Matching Abstracts</b>: the number of abstracts that match your query and mention this gene</li><li><b>Total Abstracts</b>: the number of abstracts that mention this gene</li></ul><div class='help-more'><a href='/manual.html#scores' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
+    <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Scores" data-content="<ul><li><b>F<span style='font-size:x-small;vertical-align:baseline;position:relative;top:0.4em'>1</span> Balance</b>: a balanced measure specificity and query-matching abstracts</li><li><b>Specificity</b>: shows genes that occur in abstracts relevant to your query, but that occur less frequently in other abstracts</li><li><b>Query-Matching Abstracts</b>: the absolute number of abstracts that match your query and also mention this gene</li><li><b>Total Abstracts</b>: the total number of abstracts that mention this gene</li></ul><div class='help-more'><a href='/manual.html#scores' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
 
 </div></div>
 
