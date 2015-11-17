@@ -196,12 +196,12 @@ def genesearch(request):
         return searchresponse(validresult=False, download=params.download, errmsg="Please enter gene symbols or a keyword query.")
     
     # get abstracts matching keywords and genes
-    abstracts = get_abstracts(params.keywords, genequery, params.usehomologs)
-    query_abstract_count = len(abstracts)
+    # abstracts = [0] #FIXME get_abstracts(params.keywords, genequery, params.usehomologs)
+    query_abstract_count = 5 #len(abstracts)
 
     # error if no abstracts matched the query
-    if abstracts == []:
-        return searchresponse(validresult=False, download=params.download, errmsg="Your query did not match any abstracts.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, usegenefile=params.usegenefile)
+    #if abstracts == []:
+    #    return searchresponse(validresult=False, download=params.download, errmsg="Your query did not match any abstracts.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, usegenefile=params.usegenefile)
 
     # get corpus size
     total_abstract_count = corpus_size()
@@ -211,12 +211,12 @@ def genesearch(request):
     else:
         query_orderby = params.orderby = 'f1_score'
 
-    def paramstring(l):
-        """Return a string of comma-separated %s's of length l
-        (faster and more memory-efficient than using a list comprehension)"""
-        def slist():
-            for i in xrange(l): yield "%s"
-        return ','.join(slist())
+    #def paramstring(l):
+    #    """Return a string of comma-separated %s's of length l
+    #    (faster and more memory-efficient than using a list comprehension)"""
+    #    def slist():
+    #        for i in xrange(l): yield "%s"
+    #    return ','.join(slist())
     
     # build SQL query for fetching genes
     sqlquery = """
@@ -229,21 +229,28 @@ def genesearch(request):
     FROM `{geneabstract_tablename}` a
     INNER JOIN `gene` g
     ON g.entrez_id = a.gene
-    WHERE a.`abstract` in ({paramstring})
+    
+    INNER JOIN `abstract` ab
+    ON ab.`pubmed_id` = a.`abstract`
+    WHERE MATCH (ab.`abstract`) AGAINST ("%s" IN BOOLEAN MODE)
+    
     AND g.`tax_id` = %s
     GROUP BY g.entrez_id
     ORDER BY `{orderby}` DESC
     LIMIT %s, %s;
     """.format(
-        paramstring=paramstring(len(abstracts)), 
+        #paramstring=paramstring(len(abstracts)), 
         orderby=query_orderby, 
         query_abstract_count=query_abstract_count,
         species=params.species,
         geneabstract_tablename=geneabstract_tablename,
         abstract_col=abstract_col)
     
+    
+    import pdb; pdb.set_trace()
+    
     # execute sql query, get genes
-    results = Gene.objects.raw(sqlquery, abstracts + [params.species, params.offset, params.query_limit])
+    results = Gene.objects.raw(sqlquery, [params.keywords, params.species, params.offset, params.query_limit])
     
     # calculate p values
     phyper = robjects.r['phyper']
@@ -252,7 +259,7 @@ def genesearch(request):
     if not pvals: 
         return searchresponse(validresult=False, download=params.download, errmsg="Your query didn't match any genes.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, species=params.species, usegenefile=params.usegenefile)
 
-    return searchresponse(validresult=True, download=params.download, results=results, genes=params.genes, geneop=params.geneop, pvals=pvals, offset=params.offset, orderby=params.orderby, query=params.keywords, limit=params.limit, usehomologs=params.usehomologs, species=params.species, query_abstract_count=query_abstract_count, abstracts=abstracts, usegenefile=params.usegenefile)
+    return searchresponse(validresult=True, download=params.download, results=results, genes=params.genes, geneop=params.geneop, pvals=pvals, offset=params.offset, orderby=params.orderby, query=params.keywords, limit=params.limit, usehomologs=params.usehomologs, species=params.species, query_abstract_count=query_abstract_count, usegenefile=params.usegenefile, abstracts=None)
     
 
 def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[], geneop=None, pvals=[], offset=0, orderby=None, query=None, limit=None, usehomologs=None, species=None, query_abstract_count=None, abstracts=None, usegenefile=None):
