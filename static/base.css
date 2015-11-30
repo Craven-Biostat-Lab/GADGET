@@ -552,15 +552,21 @@ div#links a:hover {
 
 div#manual {
     margin: auto;
-    width: 900px;
+    width: 800px;
     max-width: 100%;
+    padding: 14px;
 }
 
-a.topic {
+div#manual h1 {
+    color: #702B34;
+}
+
+div#manual a.topic {
     display: block;
     font-size: x-large;
-    font-weight: bold;
-    margin-top: 40px;
+    margin-top: 60px;
+    color: #702B34;
+    text-decoration: none;
 }
 
 table.instructions {
@@ -571,7 +577,4 @@ table.instructions td {
     padding: 5px 10px;
 }
 
-a.top {
-    display: block;
-    font-size: 80%;
-}
+
