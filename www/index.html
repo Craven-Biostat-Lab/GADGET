@@ -31,28 +31,29 @@
     </div>
     
     <div id="search">
-        <div style="text-align:center;font-weight:bold;padding-bottom:16px;"><img src="/static/icon-search.png" style="margin-right:5px; vertical-align:0;"/> Search genes and metabolites in PubMed abstracts</div>
+        <div style="text-align:center;padding-bottom:24px;font-size:125%;"><img src="/static/icon-search.png" style="margin-right:5px; vertical-align:0;"/>Search <b>genes</b> and <b>metabolites</b> related to your query</div>
         <form id="searchform" class="form-horizontal">
             <input type="hidden" name="usegenefile" id="id_usegenefile" />
             
             <input type="hidden" name="usegenefile" id="id_usegenefile" />
             
             <div class="form-group">
-                <label for="id_q" class="col-sm-2 control-label">
-                    Keywords
+                <label for="id_q" class="col-sm-3 control-label">
+                    Query Keywords
                     <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Filter with keywords and phrases" data-content="<ul><li>Use quotation marks to filter with <b>&quot;multi-word phrases&quot;</b>.</li><li>You can use boolean operators like <b>AND, OR</b> and <b>NOT</b>.</li></ul><div class='help-more'><a href='/manual.html#queryterms' target='_blank'>More...</a></div>" data-html="true" data-container="body">
                 </label>
-                <div class="col-sm-10">
+                <div class="col-sm-9">
                     <input name="q" placeholder="Keywords and phrases" class="form-control" type="text" id="id_q" />
                 </div>
             </div>
             
             <div class="form-group">
-              <label for="genes" class="col-sm-2 control-label">
-                Genes 
-                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Gene symbols" data-content="<ul><li>Enter a list of gene symbols to search articles mentioning any/all of those genes (including synonyms.)</li><li>If you have a long list of genes, you can upload a file.</li></ul><div class='help-more'><a href='/manual.html#geneentry' target='_blank'>More...</a></div>" data-html="true" data-container="body">
+              <label for="genes" class="col-sm-3 control-label">
+                <span style="font-weight:normal;padding:4px 6px; border-radius:20px;font-size:100%;background:rgba(255,255,255,0.15);margin-right:4px;">or</span>
+                Query Genes 
+                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Related genes" data-content="<ul><li>Enter a list of gene symbols to search articles mentioning any/all of those genes (including synonyms.)</li><li>If you have a long list of genes, you can upload a file.</li></ul><div class='help-more'><a href='/manual.html#geneentry' target='_blank'>More...</a></div>" data-html="true" data-container="body">
               </label>
-              <div class="col-sm-10"><div class="input-group">
+              <div class="col-sm-9"><div class="input-group">
                 <input id="id_genes" type="text" placeholder="Gene symbols" class="form-control" name="genes" />
                 <div class="input-group-addon" id="cleargenefile-addon" style="display:none"><a href="javascript:void(0);" id="cleargenefile">&times;</a></div>
                 <div class="input-group-addon" style="background:white;border-left-color:white;border-right-color:white">
@@ -67,12 +68,14 @@
               </div></div>
             </div>
             
+            <br />
+            
             <div class="form-group">
-              <label for="id_species" class="col-sm-2 control-label">
+              <label for="id_species" class="col-sm-3 control-label">
                 Species
                 <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Species" data-content="<ul><li>When searching for <b>genes,</b> filter your results by species.</li><li>When searching for <b>metabolites</b>, use this species for your entered gene symbols.</li></ul><div class='help-more'><a href='/manual.html#species' target='_blank'>More...</a></div>" data-html="true" data-container="body">
               </label>
-              <div class="col-sm-10">
+              <div class="col-sm-9">
                 <!--<select name="species" id="id_species" class="form-control">
                     <option value="9606">Homo sapiens</option>
                     <option value="10090">Mus musculus</option>
@@ -87,7 +90,7 @@
             </div>
             
             <div class="form-group" style="margin-bottom:0">
-                <div class="col-sm-10 col-sm-offset-2">
+                <div class="col-sm-9 col-sm-offset-3">
                 <label>
                     <input type="checkbox" name="usehomologs" id="id_usehomologs" />
                     <span style="font-weight:normal;margin-left:10px">Count <b>homologs</b> from other species 
@@ -103,8 +106,8 @@
     
     <div id="search-buttons" class="container-fluid">
         <div class="col-sm-5 col-sm-offset-1">
-            <div class="search-button search-button-active" id="search-button-genes" 
-                style="background-image:url('/static/icon-gene-inverted.png')">
+            <div class="search-button" id="search-button-genes" 
+                style="background-image:url('/static/icon-gene.png')">
                 Find genes
             </div>
         </div>
