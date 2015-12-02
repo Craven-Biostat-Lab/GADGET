@@ -1,23 +1,19 @@
 #!/usr/bin/python
 
+from django.conf import settings
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, ID
 from whoosh.query import And, Or, CompoundQuery, Term, NullQuery
 from whoosh.qparser import QueryParser, OrGroup, AndGroup
 
-from genetext.geneindex.models import Gene, UploadedGeneFile
+from models import Gene, UploadedGeneFile
 
-# Get index location out of the config file
-# If we can't, use a hard-coded path
-try:
-    from genetext.settings import GENE_INDEX_PATH
-except ImportError:
-    GENE_INDEX_PATH = '/home/genetext/gadget/gene-index'
+
 
 
 # open gene index
-if index.exists_in(GENE_INDEX_PATH):
-    ix = index.open_dir(GENE_INDEX_PATH)
+if index.exists_in(settings.GENE_INDEX_PATH):
+    ix = index.open_dir(settings.GENE_INDEX_PATH)
 else:
     # define gene index fields
     class Schema(SchemaClass):
@@ -26,7 +22,7 @@ else:
         symbol = TEXT
         name = TEXT
         synonyms = TEXT
-    ix = index.create_in(GENE_INDEX_PATH, Schema)
+    ix = index.create_in(settings.GENE_INDEX_PATH, Schema)
 
 
 # search 'symbol' and 'entrezID' fields by default

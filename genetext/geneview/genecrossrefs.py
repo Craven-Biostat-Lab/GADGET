@@ -1,7 +1,7 @@
 import json
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from genetext.geneview.models import GeneCrossref
+from models import GeneCrossref
 
 from django.shortcuts import render_to_response
 

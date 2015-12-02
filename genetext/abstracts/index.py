@@ -10,14 +10,11 @@ from whoosh.support.numeric import int_to_text
 
 from django.core.cache import cache
 
-try:
-    from genetext.settings import ABSTRACT_INDEX_PATH
-except ImportError:
-    ABSTRACT_INDEX_PATH = '/home/genetext/gadget/index/abstracts'
+from django.conf import settings 
 
 # open or create the index
-if index.exists_in(ABSTRACT_INDEX_PATH):
-    ix = index.open_dir(ABSTRACT_INDEX_PATH)
+if index.exists_in(settings.ABSTRACT_INDEX_PATH):
+    ix = index.open_dir(settings.ABSTRACT_INDEX_PATH)
 else:
     # define the index fields
     class Schema(SchemaClass):
@@ -35,7 +32,7 @@ else:
         volume = STORED
         pages = STORED
         
-    ix = index.create_in(ABSTRACT_INDEX_PATH, Schema)
+    ix = index.create_in(settings.ABSTRACT_INDEX_PATH, Schema)
 
 # query parser and searcher
 parser = MultifieldParser(fieldnames=('title', 'abstract'), schema=ix.schema)
