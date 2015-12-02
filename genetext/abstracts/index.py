@@ -6,7 +6,7 @@ from whoosh.qparser import MultifieldParser
 from whoosh.query import And, Or, Term, ConstantScoreQuery, NullQuery, Query
 from whoosh.scoring import BM25F
 from whoosh.sorting import MultiFacet
-from whoosh.support.numeric import int_to_text
+from whoosh.codec.whoosh2 import int_to_text
 
 from django.core.cache import cache
 
