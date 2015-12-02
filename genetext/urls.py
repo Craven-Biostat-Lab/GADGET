@@ -20,7 +20,7 @@ GADGET_URLs = patterns('',
     (r'^genelist', gv.genesearch),
     (r'^genecrossrefs', gxr.genecrossrefs),
     (r'^abstractview', ab.abstractview),
-    (r'^gadget/abstract', ab.abstracts),
+    (r'^abstract', ab.abstracts),
     #(r'^eventsearch', ev.search),
     #(r'^eventlist', ev.eventlist),
     #(r'^eventgenes', ev.eventgenes),
@@ -41,7 +41,7 @@ GADGET_URLs = patterns('',
 
 urlpatterns = None
 
-if settings.DEBUG: 
+if settings.URLS_DEBUG: 
     # if in debug mode, prepend 'gadget/' stem to URL patterns.
     # (Apache does this when deployed.)
     urlpatterns = patterns('',

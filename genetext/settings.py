@@ -1,7 +1,15 @@
 # Django settings for gadget project.
 
-DEBUG = True
+
+# This is a hack, but now we don't have to have separate config files
+# for development and deployment
+import sys
+RUNNING_DEVSERVER = (len(sys.argv) > 1 and sys.argv[1] == 'runserver')
+
+
+DEBUG = RUNNING_DEVSERVER
 TEMPLATE_DEBUG = DEBUG
+URLS_DEBUG = RUNNING_DEVSERVER
 
 
 
@@ -113,5 +121,5 @@ INSTALLED_APPS = (
 )
 
 # directory where the index of abstracts lives
-ABSTRACT_INDEX_PATH = os.path.join(BASE_DIR, '../data/abstracts')
-GENE_INDEX_PATH = os.path.join(BASE_DIR, '../data/genes')
+ABSTRACT_INDEX_PATH = os.path.join(BASE_DIR, '../gadget-data/abstracts')
+GENE_INDEX_PATH = os.path.join(BASE_DIR, '../gadget-data/genes')
