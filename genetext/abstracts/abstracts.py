@@ -6,10 +6,10 @@ from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
 
-from genetext.geneview.geneview import parseboolean
-from genetext.abstracts.index import abstracts_page
-from genetext.geneindex.geneindex import parse_gene_abstractquery, gene_id_list, genefile_lookup, BadGenefileError, addgene
-from genetext.abstracts.models import Abstract, KeyPhrase, KeyphraseAbstract, Gene
+from geneview.geneview import parseboolean
+from index import abstracts_page
+from geneindex.geneindex import parse_gene_abstractquery, gene_id_list, genefile_lookup, BadGenefileError, addgene
+from models import Abstract, KeyPhrase, KeyphraseAbstract, Gene
 
 def abstracts(request):
     """Return a list of abstracts (as HTML wrapped in JSON) for a keyword

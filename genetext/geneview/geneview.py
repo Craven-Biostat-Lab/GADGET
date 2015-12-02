@@ -10,9 +10,9 @@ from django import forms
 
 import rpy2.robjects as robjects
 
-from genetext.geneview.models import Gene, GeneAbstract, Abstract
-from genetext.abstracts.index import get_abstracts, corpus_size
-from genetext.geneindex.geneindex import parse_gene_abstractquery, genefile_lookup, BadGenefileError
+from models import Gene, GeneAbstract, Abstract
+from abstracts.index import get_abstracts, corpus_size
+from geneindex.geneindex import parse_gene_abstractquery, genefile_lookup, BadGenefileError
 
 # allowable species (specieschoices should be in order, with the default first)
 speciesnames = {'9606': 'Homo sapiens', '10090': 'Mus musculus', '559292': 'Saccharomyces cerevisiae'}

@@ -14,7 +14,7 @@ from django import forms
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
-from genetext.geneindex.models import Gene, UploadedGeneFile, UploadedGene
+from models import Gene, UploadedGeneFile, UploadedGene
 
 class BadGeneError(Exception):
     """Exception to raise if an ID in a file can't be matched to a gene"""
