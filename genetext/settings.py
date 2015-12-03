@@ -7,7 +7,7 @@ import sys
 RUNNING_DEVSERVER = (len(sys.argv) > 1 and sys.argv[1] == 'runserver')
 
 
-DEBUG = RUNNING_DEVSERVER
+DEBUG = True #RUNNING_DEVSERVER
 TEMPLATE_DEBUG = DEBUG
 URLS_DEBUG = RUNNING_DEVSERVER
 
@@ -30,7 +30,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'gadget',                      # Or path to database file if using sqlite3.
-        'USER': 'root',                      # Not used with sqlite3.
+        'USER': 'gadget',                      # Not used with sqlite3.
         #'PASSWORD': 'password',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
