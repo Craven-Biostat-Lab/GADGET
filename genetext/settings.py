@@ -114,6 +114,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     #'eventview',
     'geneview',
+    'metaboliteview',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

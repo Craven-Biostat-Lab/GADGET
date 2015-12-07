@@ -59,7 +59,12 @@ $(document).ready( function ()
     $('#search-button-genes').click(function() {
         $('#searchform').attr('action', '/gadget/genesearch').submit(); 
     });
- 
+    
+    /*
+    $('#search-button-metabolites').click(function() {
+        $('#searchform').attr('action', '/gadget/metabolitesearch').submit();
+    });
+    */
     
     
     // initialize help popovers

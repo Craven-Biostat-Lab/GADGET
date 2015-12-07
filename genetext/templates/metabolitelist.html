@@ -1,0 +1,39 @@
+{% autoescape on %}
+{% if results %}
+    {% for g, p in results %}
+        <div class="row result-row" id="gene{{ g.entrez_id }}" offset="0" hits="{{ g.hits }}">
+        
+            <div class="col-sm-6"><div class="row info-col-group">
+                <div class="col-sm-1 rankcol">{{ forloop.counter|add:offset }}</div>
+                <div class="col-sm-6 namecol">
+                    <span class="genesymbol">{{ g.common_name }}</span>
+                    <a id="showcrossrefs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showcrossrefs" href="javascript: void(0);" genesymbol="{{ g.symbol|urlencode }}"><img src="/static/icon-external-link.png"> links</a>
+                    <br />
+                    <span class="genename">{{ g.name }}</span></div>
+                <div class="col-sm-5 infocol">
+                    HMDB_ID ID: <a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}" target="_blank">{{ g.hmdb_id}}</a><br />
+                    <span class="genesynonyms">Synonyms: {{ g.synonyms }}</span>
+                </div>
+            </div></div>
+            
+            
+            <div class="col-sm-6 scorebox"><div class="row">
+                <div class="col-sm-6 scorecol">
+                    <span class="score{% if orderby == 'f1_score' %} selected{% endif %}">F<span style="font-size:x-small;vertical-align:sub">1</span> balance: {{ g.f1_score|floatformat:-3 }}</span><br />
+                    <span class="score{% if orderby == 'adjusted_precision' %} selected{% endif %}">Specificity: {{ g.precision|floatformat:-3 }}</span><br />
+                    <span class="pvalue">p-value: {{ p }}</span>
+                </div>
+                <div class="col-sm-6">
+                    <span class="score{% if orderby == 'matching_abstracts' %} selected{% endif %}">Matching abstracts: {{ g.hits }}</span><br />
+                    <span class="score{% if orderby == 'total_abstracts' %} selected{% endif %}">Total abstracts: {{ g.abstracts_display }}</span><br />
+                    <a id="showabs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showabstracts" href="javascript: void(0);" genesymbol="{{ g.symbol|urlencode }}" offset="0">Show abstracts</a><br />
+                </div>
+            </div></div>
+            
+            <!--<td class="linkcol">
+                <a id="showcrossrefs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showcrossrefs" href="javascript: void(0);" genesymbol="{{ g.symbol|urlencode }}">External links for {{ g.symbol }}</a>
+            </td>-->
+        </div>
+    {% endfor %}
+{% endif %}
+{% endautoescape %}

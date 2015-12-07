@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}GADGET{% if q or genesyms %}: genes for{% if q %} {{ q|safe }}{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} {{ genesyms|safe }}{% endif %}{% endif %}{% endblock %}
+
+
+
+
+{% block head %}
+{% if q or genes or usegenefile %}
+<script type="text/javascript">
+    var q = "{{ q|urlencode }}";
+    var genes = "{{ genes|urlencode }}";
+    var geneop = "{{ geneop|urlencode }}"; // any/all
+    var genesyms = "{{ genesyms|urlencode }}";
+    var species = "{{ species|urlencode }}";
+    var usehomologs = "{{ usehomologs|urlencode }}";
+    var orderby = "{{ orderby|urlencode }}";
+    var usegenefile = "{{ usegenefile|default:''|urlencode }}";
+    var genefileID = "{{ genefileID|urlencode }}";
+</script>
+<script type="text/javascript" src="/static/metabolitesearch.js"></script>
+{% endif %}
+{% if errormsg %}
+<script type="text/javascript">
+$(document).ready(function()
+{
+    flash("{{ errormsg|escapejs }} ");
+});
+</script>
+{% endif %}
+{% endblock %}
+
+
+
+{% block queryspecies %}
+<p class="form-control-static">Homo Sapiens</p>
+{% endblock %}
+
+{% block usemetabolites %}{% endblock %}
+
+
+
+{% block searchbuttons %}
+    <div id="search-buttons" class="container-fluid">
+        <div class="col-sm-5 col-sm-offset-1">
+            <div class="search-button" id="search-button-genes" 
+                style="background-image:url('/static/icon-gene.png')">
+                Find genes
+            </div>
+        </div>
+        <!--<div class="col-sm-4">
+            <div class="search-button" id="search-button-keyphrases">
+                <img src="/static/icon-text.png" style="width:100%;height:auto;">
+                Find<br />keyphrases
+            </div>
+        </div>-->
+        <div class="col-sm-5">
+            <div class="search-button search-button-active" id="search-button-metabolites"
+                style="background-image:url('/static/icon-metabolite-inverted.png');padding-top:14px;cursor:default;">
+                <span style="font-weight:normal;font-style:italic;font-size:90%">Under Construction</span><br />
+                Find metabolites
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+{% block content %}
+
+<div class="row show-with-results" id="description-row" style="display:none">
+    
+    <div id="description" class="col-sm-8">
+        Ranking metabolites in <span id="abstractcount" style="display:none"></span> abstracts
+        {% if q %} matching <b>{{ q|safe }}</b>{% endif %}
+        {% if q %}{% if genesyms or usegenefile %} and{% endif %}{% endif %}
+        {% if genesyms or usegenefile %} containing <b>{{ geneop|safe }}</b> of genes 
+            {% if usegenefile %}in the file <b>{{ genefilename|safe }}</b>
+            {% else %}<b>{{ genesyms|safe }}</b>{% endif %}
+        {% endif %}
+        <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Gene search" data-content="GADGET ranks genes by finding abstracts related to your search, and then computing scores for each gene based on the number of matching abstracts.<div class='help-more'><a href='/manual.html#genesearch' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
+        <br />
+        For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
+    </div>
+
+    <div class="col-sm-4" style="text-align:right"><a id="download-results" href="genelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}{% endif %}&download=csv"><img src="/static/icon-download.png" style="margin-right:5px"/> Download CSV</a></div>
+
+</div>
+
+
+
+
+<div class="row show-with-results" style="display:none"><div class="col-sm-12">
+
+    <b>Sort:</b> 
+
+    <div class="btn-group sort-btn-group" role="group" aria-label="Sort">
+        <a class="btn sort-btn {% if orderby == 'f1_score' %}sort-btn-active{% endif %}" href="javascript:order('f1_score');">F<span style="font-size:x-small;vertical-align:baseline;position:relative;top:0.4em">1</span> Balance</a>
+        <a class="btn sort-btn {% if orderby == 'adjusted_precision' %}sort-btn-active{% endif %}" href="javascript:order('adjusted_precision');">Specificity</a>
+        <a class="btn sort-btn {% if orderby == 'matching_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('matching_abstracts');">Query-Matching Abstracts</a>
+        <a class="btn sort-btn {% if orderby == 'total_abstracts' %}sort-btn-active{% endif %}" href="javascript:order('total_abstracts');">Total Abstracts</a>
+
+        
+    </div>
+    
+    <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Scores" data-content="<ul><li><b>F<span style='font-size:x-small;vertical-align:baseline;position:relative;top:0.4em'>1</span> Balance</b>: a balanced measure specificity and query-matching abstracts</li><li><b>Specificity</b>: shows genes that occur in abstracts relevant to your query, but that occur less frequently in other abstracts</li><li><b>Query-Matching Abstracts</b>: the absolute number of abstracts that match your query and also mention this gene</li><li><b>Total Abstracts</b>: the total number of abstracts that mention this gene</li></ul><div class='help-more'><a href='/manual.html#scores' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
+
+</div></div>
+
+
+
+
+<div id="results" style="display:none">
+    <br /><br /><!--
+    <a class="hint" target="_blank" href="/manual.html#genesearch">About gene search results</a>
+    <a class="hint" target="_blank" href="/manual.html#scores">About gene search scores</a> -->
+    <div class="container-fluid result-list" id="generank"></div>
+</div>
+<a id="more" style="display:none" href="javascript:void();">More genes...</a>
+{% endblock %}

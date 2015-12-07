@@ -6,6 +6,8 @@ import geneview.genecrossrefs as gxr
 import abstracts.abstracts as ab
 #import keyphraseview.keyphraseview as kv
 import geneindex.fileupload as gfu
+import metaboliteview.metaboliteview as mv
+
 
 from django.conf import settings
 import os
@@ -19,6 +21,8 @@ GADGET_URLs = patterns('',
     (r'^genesearch', gv.searchpage),
     (r'^genelist', gv.genesearch),
     (r'^genecrossrefs', gxr.genecrossrefs),
+    (r'^metabolitesearch', mv.searchpage),
+    (r'^metabolitelist', mv.metabolitesearch),
     (r'^abstractview', ab.abstractview),
     (r'^abstract', ab.abstracts),
     #(r'^eventsearch', ev.search),

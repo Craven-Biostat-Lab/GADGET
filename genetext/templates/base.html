@@ -86,15 +86,18 @@
                 <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Species" data-content="<ul><li>When searching for <b>genes,</b> filter your results by species.</li><li>When searching for <b>metabolites</b>, use this species for your entered gene symbols.</li></ul><div class='help-more'><a href='/manual.html#species' target='_blank'>More...</a></div>" data-html="true" data-container="body">
               </label>
               <div class="col-sm-9">
-                <!--<select name="species" id="id_species" class="form-control">
-                    <option value="9606">Homo sapiens</option>
-                    <option value="10090">Mus musculus</option>
-                    <option value="559292">Saccharomyces cerevisiae</option>
-                </select>-->
-                {{ form.species }}
+                {% block queryspecies %}
+                    <!--<select name="species" id="id_species" class="form-control">
+                        <option value="9606">Homo sapiens</option>
+                        <option value="10090">Mus musculus</option>
+                        <option value="559292">Saccharomyces cerevisiae</option>
+                    </select>-->
+                    {{ form.species }}
+                {% endblock %}
               </div>
             </div>
             
+            {% block usemetabolites %}
             <div class="form-group" style="margin-bottom:0">
                 <div class="col-sm-9 col-sm-offset-3">
                 <label>
@@ -104,6 +107,7 @@
                 </label>
                 </div>
             </div>
+            {% endblock %}
 
         </form>
            
