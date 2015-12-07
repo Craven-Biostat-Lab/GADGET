@@ -6,6 +6,8 @@
 
 
 {% block head %}
+<script type="text/javascript" src="/static/metabolitesearch.js"></script>
+
 {% if q or genes or usegenefile %}
 <script type="text/javascript">
     var q = "{{ q|urlencode }}";
@@ -18,7 +20,6 @@
     var usegenefile = "{{ usegenefile|default:''|urlencode }}";
     var genefileID = "{{ genefileID|urlencode }}";
 </script>
-<script type="text/javascript" src="/static/metabolitesearch.js"></script>
 {% endif %}
 {% if errormsg %}
 <script type="text/javascript">
