@@ -287,9 +287,3 @@ $(window).bind('pageshow', function() {
     }
 });
 
-
-$(document).ready(function() {
-    $('#search-button-metabolites').click(function() {
-        $('#searchform').attr('action', '/gadget/metabolitesearch').submit();
-    });
-});
