@@ -3,26 +3,36 @@
 Config file for GADGET automatic data updates
 """
 
+
+# connection string for database
+dbparams = {'user': 'root', 'db': 'gadget'}
+
+
+
+import os
+BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+
 # path and filename for log files.
 # log files rotate, so old log files are kept and suffixed with numbers.
-logfilename = 'updater.log'
+logfilename = os.path.join(BASE_DIR, '../../gadget-data/updater-workspace/updater.log')
 
-# minimum 'severity' of events to record in log.
+# minimum severity of events to record in log.
 # valid options are 'DEBUG', 'INFO', 'WARNING', 'ERROR', and 'CRITICAL'.
 # see http://docs.python.org/howto/logging.html for log level descriptions.
 loglevel = 'DEBUG'
 
-# connection string for database
-dbparams = {'user': 'root', 'passwd': 'password', 'db': 'updater'}
+
 
 # path to abstract Whoosh index to update
-ABSTRACT_INDEX_PATH = '../index/abstracts'
+ABSTRACT_INDEX_PATH = os.path.join(BASE_DIR, '../../gadget-data/abstracts')
+
+
 
 # directory to store downloaded files
 # (nothing needs to be in here when the script runs, but the script will not
 # delete the files that it downloads.  It will write over the files every time
 # the script runs.)
-datapath = '/home/genetext/update_data/gene_abstract_links'
+datapath = os.path.join(BASE_DIR, '../../gadget-data/updater-workspace')
 
 # url for fetching abstracts from PubMed
 # the script will format this with a comma-separated list of PubMed ID's
