@@ -177,69 +177,7 @@ $(document).ready(function()
     
     
     
-    // show or hide external links (cross references) when the button gets clicked
-    $("#generank").delegate("a.showcrossrefs", "click", function()
-    {
-        var gene = $(this).attr("gene");
-        var sym = $(this).attr("genesymbol");
-        
-        if ($("#generank div#crossrefs" + gene).length == 0) // see if the tr for crossrefs exists
-        {
-            hidepanes(gene); // hide other panes
-            
-            // the tr for crossrefs doesn't exist, so make one
-            $("#generank div#gene" + gene).after('<div class="crossrefs pane" style="display:none" id="crossrefs' + gene + '"><img src="/static/spinner2.gif"></div>');
-        
-            // assemble querystring
-            var querystring = "gene=" + gene + "&genesymbol=" + sym;
-            
-            // fetch and display crossrefs
-            $.getJSON("genecrossrefs", querystring)
-            .success(function(data)
-            {
-                $("#generank div#crossrefs" + gene + " img").remove(); // hide spinner
-                if (data.validresult)
-                {
-                    // display the cross references 
-                    $("#generank div#crossrefs" + gene).html(data.result);
-                    $("#generank div#crossrefs" + gene).append('<a href="javascript:void(0);" class="hidepanes" gene="' + gene + '">&times Hide external links</a>');
-                    $("#generank div#crossrefs" + gene).append('<a href="javascript:void(0);" class="hidepanes close-pane-x" gene="' + gene + '">&times;</a>');
-                    $("#generank div#crossrefs" + gene).slideDown();
-                }
-                else
-                {
-                    // collapse the pane, show an error message
-                    $("#generank tr#crossrefs" + gene).remove();
-                    hidepanes(gene);
-                    flasherror();
-                }
-            })
-            .error(function()
-            {
-                $("#generank div#crossrefs" + gene).remove();
-                hidepanes(gene);
-                flasherror();
-            });
-            
-        }
-        else // the tr for crossrefs exists
-        {
-            // is the crossrefs pane hidden?
-            if (!$("#generank div#crossrefs" + gene).is(":visible"))
-            {
-                // the crossrefs pane exists but is hidden
-                // show the crossrefs pane
-                hidepanes(gene);
-                $("#generank div#crossrefs" + gene).slideDown();
-            }
-            else
-            {
-                // the crossrefs pane is visible, so hide it
-                hidepanes(gene);
-            }
-        }
-    });
-
+    
 
     // hide the pane when the "hide" link gets clicked
     $("#generank").delegate("a.hidepanes", "click", function()
