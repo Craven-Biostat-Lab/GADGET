@@ -32,6 +32,31 @@ function flasherror()
 }
 
 
+
+function initPopovers(selection) {
+    // initialize help popovers
+    selection.popover();
+    
+    // close popover on page click
+    selection.click(function(e) {
+        
+        // if there's a popover already open, hide it
+        selection.not(this).popover('hide');
+ 
+        var icon = $(this);
+        icon.popover('toggle');
+        e.stopPropagation();
+        e.preventDefault();
+  
+        // hide the popover on the next click
+        $(document).one('click', function() {
+            icon.popover('hide');
+        });
+  
+    });
+}
+
+
 // bind events for gene file upload
 $(document).ready( function ()
 {
@@ -67,26 +92,12 @@ $(document).ready( function ()
     */
     
     
-    // initialize help popovers
-    $('.help-icon').popover();
     
-    // close popover on page click
-    $('.help-icon').click(function(e) {
-        
-        // if there's a popover already open, hide it
-        $('.help-icon').not(this).popover('hide');
- 
-        var icon = $(this);
-        icon.popover('toggle');
-        e.stopPropagation();
-        e.preventDefault();
-  
-        // hide the popover on the next click
-        $(document).one('click', function() {
-            icon.popover('hide');
-        });
-  
-    });
+    
+    
+    initPopovers($('.help-icon'));
+    
+    
     
 });
 

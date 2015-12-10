@@ -5,13 +5,16 @@
         
             <div class="col-sm-6"><div class="row info-col-group">
                 <div class="col-sm-1 rankcol">{{ forloop.counter|add:offset }}</div>
-                <div class="col-sm-6 namecol">
+                <div class="col-sm-11 namecol">
                     <span class="genesymbol">{{ g.common_name }}</span>
-                    <br />
-                    <span class="genename">{{ g.name }}</span></div>
-                <div class="col-sm-5 infocol">
-                    HMDB_ID ID: <a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}" target="_blank">{{ g.hmdb_id}}</a><br />
-                    <span class="genesynonyms">Synonyms: {{ g.synonyms }}</span>
+                    
+                    <a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}" target="_blank" style="margin-left:10px">{{ g.hmdb_id}}</a><br />
+                    <span class="genesynonyms">
+                        Synonyms: {{ g.synonyms|truncatechars:150 }}
+                        {% if g.synonyms.150 %}
+                            <a data-toggle="popover" data-content="{{ g.synonyms|escape }}" class="more-synonyms" data-html="true" data-container="body">more</a>
+                        {% endif %}
+                    </span>
                 </div>
             </div></div>
             

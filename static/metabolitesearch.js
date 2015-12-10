@@ -40,6 +40,7 @@ $(document).ready(function()
         {
             // append new genes to table, show "more" button
             $("#generank").append(data.result);
+            initPopovers($("#generank .more-synonyms"));
             
             hidespinner();     
             
@@ -82,6 +83,7 @@ $(document).ready(function()
             {
                 // append new genes to table
                 $("#generank").append(data.result);
+                initPopovers($("#generank .more-synonyms"));
                 hidespinner();
                 $("#more").show();
             }
