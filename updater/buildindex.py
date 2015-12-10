@@ -33,6 +33,7 @@ def open_index(indexpath):
                 pmid = NUMERIC(stored=True, unique=True, signed=False)
                 genes = IDLIST(stored=True) # Entrez ID's
                 homolog_genes = IDLIST(stored=True) # Entrez ID's
+                metabolites = IDLIST(stored=True) # HMDB ID's
                 title = TEXT(stored=True)
                 abstract = TEXT
                 authors = TEXT(stored=True)
@@ -104,6 +105,21 @@ def lookup_homolog_genes(pmid, cursor):
     return cursor.fetchall()
 
 
+def lookup_metabolites(pmid, cursor):
+    """Find metabolites tied to an abstract in the metabolite_abstract table"""
+    
+    cursor.execute("""
+    SELECT `metabolite_hmdb_id` 
+    from `metabolite_abstract` 
+    where `abstract` = %s
+    """, (pmid,))
+
+    return cursor.fetchall()
+    
+
+
+
+
 def mark_as_indexed(pmid, cursor):
     """Mark an abstract as indexed"""
 
@@ -146,8 +162,11 @@ def write(articles, ix, db):
             
         homolog_genes = u' '.join([unicode(g[0]) for g in lookup_homolog_genes(pmid, c)]) 
         
+        metabolites = u' '.join([unicode(g[0]) for g in lookup_metabolites(pmid, c)])
+        
         # index the document
         writer.update_document(pmid=pmid, genes=genes, homolog_genes=homolog_genes,
+            metabolites=metabolites,
             title=title, abstract=abstract, authors=authors, year=year, month=month, 
             day=day, journal=journal, volume=volume, pages=pages, review=review)
         
