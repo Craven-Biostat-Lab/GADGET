@@ -76,7 +76,7 @@ $(document).ready(function()
 
         // get more genes
         spin();
-        $.getJSON("genelist", queryString)
+        $.getJSON("metabolitelist", queryString)
         .success(function(data)
         {
             if (data.validresult)
