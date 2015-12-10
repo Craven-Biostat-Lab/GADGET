@@ -8,7 +8,7 @@
                 <div class="col-sm-11 namecol">
                     <span class="genesymbol">{{ g.common_name }}</span>
                     
-                    <a href="http://www.ncbi.nlm.nih.gov/gene?term={{ g.entrez_id }}" target="_blank" style="margin-left:10px">{{ g.hmdb_id}}</a><br />
+                    <a href="http://www.hmdb.ca/metabolites/{{ g.hmdb_id|escape }}" target="_blank" style="margin-left:10px">{{ g.hmdb_id}}</a><br />
                     <span class="genesynonyms">
                         Synonyms: {{ g.synonyms|truncatechars:150 }}
                         {% if g.synonyms.150 %}
