@@ -15,7 +15,7 @@ var offset = 0;
 function order(key)
 {
     var querystring = "q=" + q + "&genes=" + genesyms + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key + "&usegenefile=" + usegenefile;
-    window.location = "genesearch?" + querystring;
+    window.location = "metabolitesearch?" + querystring;
 }
 
 // collapse the slider panes in the gene results table for a specific gene
