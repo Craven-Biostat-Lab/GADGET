@@ -317,9 +317,9 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
 
 def makeCSV(genes, pvals, offset):
     """Create a CSV file (returned as a string) given a list of genes and a list of p values."""
-    header = 'rank,f1_balance,matching_abstracts,total_abstracts,specificity,p_value,symbol,name,synonyms,entrez_id,chromosome,map_location\n'
+    header = 'rank,metabolite_name,hmdb_id,f1_balance,matching_abstracts,total_abstracts,specificity,p_value\n'
     body = '\n'.join([','.join(['"{0}"'.format(f) for f in 
-        (rank, '{0:0.3f}'.format(g.f1_score), g.hits, g.abstracts_display, '{0:0.3f}'.format(g.precision), p, g.symbol, g.name, g.synonyms, g.entrez_id, g.chromosome, g.maplocation)])
+        (rank, g.common_name.encode('ascii', 'ignore'), g.hmdb_id, '{0:0.3f}'.format(g.f1_score), g.hits, g.abstracts_display, '{0:0.3f}'.format(g.precision), p)])
         for rank, (g, p) in enumerate(zip(genes, pvals), start=1+offset)])
     return header + body
 
