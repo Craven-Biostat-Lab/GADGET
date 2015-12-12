@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}GADGET{% if q or genesyms %}: genes for{% if q %} {{ q|safe }}{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} {{ genesyms|safe }}{% endif %}{% endif %}{% endblock %}
+{% block title %}GADGET{% if q or genesyms %}: genes for{% if q %} {{ q|safe }}{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} {{ genesyms|safe }}{% endif %}{% else %} gene search{% endif %}{% endblock %}
 
 
 
