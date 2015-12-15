@@ -64,3 +64,13 @@ class GeneAbstract(models.Model):
     class Meta:
         db_table = 'gene_abstract'
         managed = False
+        
+        
+class Metabolite(models.Model):
+    hmdb_id = models.CharField(primary_key=True, max_length=30)
+    common_name = models.CharField(max_length=250)
+    synonyms = models.TextField(blank=True)
+    abstracts = models.IntegerField(blank=True, null=True)
+    class Meta:
+        managed = False
+        db_table = 'metabolite'

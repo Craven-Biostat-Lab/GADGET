@@ -21,6 +21,7 @@ else:
         pmid = NUMERIC(stored=True, unique=True, signed=False)
         genes = IDLIST(stored=True) # Entrez ID's
         homolog_genes = IDLIST(stored=True) # Entrez ID's
+        metabolites = IDLIST(stored=True) # HMDB ID's
         title = TEXT(stored=True)
         abstract = TEXT
         authors = TEXT(stored=True)
@@ -59,7 +60,7 @@ def cachekey(keywords='', genes=(), genehomologs=True):
         genehomologs)
 
 
-def buildquery(keywords=None, genes=None, genehomologs=True, onlyreviews=False, scored=False, abstractlist=None):
+def buildquery(keywords=None, genes=None, genehomologs=True, onlyreviews=False, scored=False, abstractlist=None, metabolite=None):
     """Return a whoosh query object for searching the index"""
     
     # decide which index field to use for genes, based upon whether we're
@@ -86,12 +87,21 @@ def buildquery(keywords=None, genes=None, genehomologs=True, onlyreviews=False, 
         abstractbranch = Or([Term('pmid', int_to_text(a, signed=False)) for a in abstractlist])
     else:
         abstractbranch = NullQuery()
+        
+        
+    # metabolite ID
+    if metabolite:
+        metabolitebranch = Term('metabolites', unicode(metabolite))
+    else:
+        metabolitebranch = NullQuery()
+        
+
 
     # return query, don't score each abstract
     if scored:
-        return genebranch & keywordbranch & reviewbranch & abstractbranch
+        return genebranch & keywordbranch & reviewbranch & abstractbranch & metabolitebranch
     else:
-        return ConstantScoreQuery(genebranch & keywordbranch & reviewbranch & abstractbranch)
+        return ConstantScoreQuery(genebranch & keywordbranch & reviewbranch & abstractbranch & metabolitebranch)
 
 
 def get_abstracts(keywords=None, genes=None, genehomologs=True):
@@ -121,7 +131,7 @@ def get_abstracts(keywords=None, genes=None, genehomologs=True):
     return results
 
 
-def abstracts_page(keywords=None, genes=None, genehomologs=True, limit=None, offset=None, orderby='relevance', onlyreviews=False, abstractlist=None):
+def abstracts_page(keywords=None, genes=None, genehomologs=True, limit=None, offset=None, orderby='relevance', onlyreviews=False, abstractlist=None, metabolite=None):
     """Return a page of abstracts (as a Whoosh result object) matching a keyword/gene
     query.  Optionally specify limit and offset, orderby, whether to include gene
     homologs and whether to include only reviews.
@@ -147,9 +157,9 @@ def abstracts_page(keywords=None, genes=None, genehomologs=True, limit=None, off
     # build a query, scored if we're sorting by relevance
     # (don't score abstracts unles we have to, because scoring abstracts is slow.)
     if orderby == 'relevance':
-        query = buildquery(keywords, genes, genehomologs, onlyreviews, True, abstractlist)
+        query = buildquery(keywords, genes, genehomologs, onlyreviews, True, abstractlist, metabolite)
     else:
-        query = buildquery(keywords, genes, genehomologs, onlyreviews, False, abstractlist)
+        query = buildquery(keywords, genes, genehomologs, onlyreviews, False, abstractlist, metabolite)
     
     # we have to apply the limit before the offset, so add the offset to
     # the limit so we still get back the correct number of abstracts

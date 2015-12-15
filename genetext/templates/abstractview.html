@@ -1,6 +1,6 @@
 <span class="pane-title">{{ abstractcount }} abstracts</span><br />
 
-{% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% endif %}{% if rowgene %} for <b>{{ rowgene|safe }}</b>{% endif %}{% if genesyms %} for{% if geneop %} <b>{{ geneop }}</b> of{% endif %} <b>{{ genesyms|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}<br /><br />
+{% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% endif %}{% if rowgene %} for <b>{{ rowgene|safe }}</b>{% endif %}{% if metabolite_name %} for <b>{{ metabolite_name|safe }}</b>{% endif %}{% if genesyms %} for{% if geneop %} <b>{{ geneop }}</b> of{% endif %} <b>{{ genesyms|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}<br /><br />
 
 {% if gene_symbol_list %}
   Filter by gene: 
@@ -25,6 +25,6 @@
 
 <br /><br />
 <div class="abstractcontainer" abs_unique="{{ unique|escapejs }}" onlyreviews="{{ onlyreviews|urlencode }}" orderby="{{ orderby|urlencode }}" genefilter="{% if genefilter %}{{ genefilter|escapejs }}{% endif %}" offset="0" abstractcount="{{ abstractcount|escapejs }}"
-    query="abstracts?{% if q %}&q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if geneop %}&geneop={{ geneop }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if keywordnum %}&keywordnum={{ keywordnum|urlencode }}{% endif %}{% if rowgene %}&rowgene={{ rowgene|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}"><ul></ul></div>
+    query="abstracts?{% if q %}&q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if geneop %}&geneop={{ geneop }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if keywordnum %}&keywordnum={{ keywordnum|urlencode }}{% endif %}{% if rowgene %}&rowgene={{ rowgene|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% endif %}{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}{% if metabolite_id %}&metabolite={{ metabolite_id|urlencode }}{% endif %}"><ul></ul></div>
 <img class="spinner" src="/static/spinner2.gif" abs_unique="{{ unique|escapejs }}" style="display:none">
 <a href="javascript:void(0);" class="moreabstracts" abs_unique="{{ unique|escapejs }}" style="display:none">More abstracts...</a>

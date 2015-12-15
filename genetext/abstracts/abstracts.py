@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response
 from geneview.geneview import parseboolean
 from index import abstracts_page
 from geneindex.geneindex import parse_gene_abstractquery, gene_id_list, genefile_lookup, BadGenefileError, addgene
-from models import Abstract, KeyPhrase, KeyphraseAbstract, Gene
+from models import Abstract, KeyPhrase, KeyphraseAbstract, Gene, Metabolite
 
 def abstracts(request):
     """Return a list of abstracts (as HTML wrapped in JSON) for a keyword
@@ -103,9 +103,14 @@ def abstracts(request):
         keyword_abstracts = [a.pubmed_id for a in Abstract.objects.filter(ka_abstract__keyphrase=keywordID).only('pubmed_id')]
     else:
         keyword_abstracts = None
+        
+        
+    # get optional metabolite ID
+    metabolite = request.GET.get('metabolite')
+    
     
     # get abstract ID's from index
-    abstracts = abstracts_page(keywords, genes, usehomologs, limit, offset, orderby, onlyreviews, keyword_abstracts)
+    abstracts = abstracts_page(keywords, genes, usehomologs, limit, offset, orderby, onlyreviews, keyword_abstracts, metabolite)
     
     # error if no abstracts
     if not abstracts:
@@ -132,6 +137,17 @@ def filter_genes(genelist, keywordnum=None, geneID=None):
     return [g.symbol for g in genes]
   
 
+
+def lookup_metabolitename(HMDBID):
+    """
+    Given an HMDB ID, look up the name to display to the user.
+    """
+    
+    return Metabolite.objects.get(hmdb_id=HMDBID).common_name
+    
+
+
+
 def abstractview(request):
     """Render the container page for displaying abstracts"""
     q = request.GET.get('q')
@@ -150,6 +166,7 @@ def abstractview(request):
     genefilter = request.GET.get('genefilter')
     usegenefile = request.GET.get('usegenefile')
     genefileID = request.GET.get('genefileID')
+    metabolite = request.GET.get('metabolite')
 
 
     # clean up gene symbols
@@ -182,6 +199,14 @@ def abstractview(request):
     else:
         genefilter = None
         gene_symbol_list = []
+        
+        
+    # look up metabolite
+    if metabolite:
+        metabolite_name = lookup_metabolitename(metabolite)
+    else:
+        metabolite_name = None
+        
 
     return render_to_response('abstractview.html', {'q':q,
         'species':species, 'genes':genes, 'genesyms': genesyms, 'geneop': geneop,
@@ -190,5 +215,7 @@ def abstractview(request):
         'unique':unique, 'abstractcount':abstractcount, 'rowgene':rowgene,
         'keywordnum': keywordnum, 'keywordstring': keywordstring,
         'gene_symbol_list': gene_symbol_list, 
-        'usegenefile': usegenefile, 'genefileID': genefileID})
+        'usegenefile': usegenefile, 'genefileID': genefileID,
+        'metabolite_id': metabolite, 'metabolite_name': metabolite_name
+        })
         
