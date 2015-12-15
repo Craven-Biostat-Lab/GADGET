@@ -137,8 +137,8 @@ $(document).ready(function()
                     // append abstracts to td
                     $("#generank div#abstracts" + metabolite + " img").remove(); // hide spinner
                     $("#generank div#abstracts" + metabolite).html(result); 
-                    $("#generank div#abstracts" + metabolite).append('<a href="javascript:void(0);" class="hidepanes" gene="' + metabolite + '">&times; Hide abstracts</a>');
-                    $("#generank div#abstracts" + metabolite).append('<a href="javascript:void(0);" class="hidepanes close-pane-x" gene="' + metabolite + '">&times;</a>');
+                    $("#generank div#abstracts" + metabolite).append('<a href="javascript:void(0);" class="hidepanes" metabolite="' + metabolite + '">&times; Hide abstracts</a>');
+                    $("#generank div#abstracts" + metabolite).append('<a href="javascript:void(0);" class="hidepanes close-pane-x" metabolite="' + metabolite + '">&times;</a>');
                     
                     $("#generank div#abstracts" + metabolite).slideDown();
                     fetchabstracts(metabolite);

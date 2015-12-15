@@ -28,7 +28,7 @@
                 <div class="col-sm-6">
                     <span class="score{% if orderby == 'matching_abstracts' %} selected{% endif %}">Matching abstracts: {{ g.hits }}</span><br />
                     <span class="score{% if orderby == 'total_abstracts' %} selected{% endif %}">Total abstracts: {{ g.abstracts_display }}</span><br />
-                    <a id="showabs{{ g.entrez_id }}" gene="{{ g.entrez_id }}" class="showabstracts" href="javascript: void(0);" metabolite="{{ g.hmdb_id|urlencode }}" offset="0">Show abstracts</a><br />
+                    <a id="showabs{{ g.hmdb_id }}" gene="{{ g.hmdb_id }}" class="showabstracts" href="javascript: void(0);" metabolite="{{ g.hmdb_id|urlencode }}" offset="0">Show abstracts</a><br />
                 </div>
             </div></div>
             
