@@ -45,7 +45,7 @@
     
     <div id="search">
         <div style="text-align:center;padding-bottom:24px;font-size:125%;"><img src="/static/icon-search.png" style="margin-right:5px; vertical-align:0;"/> Search <b>genes</b> and <b>metabolites</b> related to your query</div>
-        <form id="searchform" class="form-horizontal">
+        <form id="searchform" class="form-horizontal" {% block formaction %}{% endblock %}>
             {{ form.usegenefile }}
             
             <input type="hidden" name="usegenefile" id="id_usegenefile" />

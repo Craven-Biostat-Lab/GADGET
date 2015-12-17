@@ -92,6 +92,11 @@ $(document).ready( function ()
     
     
 
+    $('#searchform input').keydown(function(e) {
+        if (e.keyCode == 13) {
+            $('#searchform').submit();
+        }
+    });
     
     
     
