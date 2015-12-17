@@ -7,13 +7,6 @@
 
 {% block head %}
 
-<script type="text/javascript">
-$(document).ready(function() {
-    $('#search-button-metabolites').click(function() {
-        $('#searchform').attr('action', '/gadget/metabolitesearch').submit();
-    });
-});
-</script>
 
 {% if q or genes or usegenefile %}
 <script type="text/javascript">
@@ -39,6 +32,11 @@ $(document).ready(function()
 {% endif %}
 {% endblock %}
 
+
+
+{% block formaction %}
+action="/gadget/metabolitesearch"
+{% endblock %}
 
 
 {% block queryspecies %}
