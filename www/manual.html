@@ -34,40 +34,45 @@
     
     
     <a class="topic" name="genesearch">Search for genes</a>
-    <p>When you search for genes, GADGET first finds <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> articles that match your search.  If you've entered a keyword search, GADGET checks to see if your keywords are present in the abstract for each article.  If you've entered gene symbols, GADGET checks several data sources to find articles that mention your genes (see below.)</p>
+    <p>When you search for genes, GADGET first finds <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> articles that match your search.  (If you've entered a keyword query, GADGET checks to see if your keywords are present in the abstract for each article.  If you've entered gene symbols, GADGET checks several data sources to find articles that mention your genes.)</p>
     <p>For each gene in the search results, you can see the abstracts that link this gene to your search by clicking the "show abstracts" link.</p>
-    <p>You can download gene search results as a CSV file.  Downloaded results will contain all of the genes that match your query, not just the top-scoring genes displayed on the page.</p>
+    <p>You can download gene search results as a CSV file.  Downloaded results will contain all of the genes that match your query, not only the top-scoring genes displayed on the page.</p>
     
 
 
     <a class="topic" name="queryterms">Searching by keyword</a>
-    <p>To search for genes, keywords, or interactions, you can enter one or more key terms.  GADGET searches for abstracts that contain your query terms, and then links them to genes or interactions.  Query terms in GADGET are not case sensitive (although Boolean operators are).</p>
-    <p>You will often get better results by using more specific terms in your searches.  Avoid using common terms like "gene" in your query; they don't usually add much value to the results, and they can slow down GADGET.</p>
+    <p>GADGET can find genes and metabolites that match any set of keywords or keyphrases, by finding PubMed abstracts that contain the keywords and keyphrases in your query.</p>
+    <br />
     <p>GADGET supports Boolean queries for more specific searches.  Terms can be separated with <span class="example">AND</span> and <span class="example">OR</span>.  An <span class="example">AND</span> query will match abstracts that contain both terms, while an <span class="example">OR</span> query will match abstracts that contain either term.  Terms separated by spaces are automatically treated as an <span class="example">AND</span> query.  You can also exclude terms from your query by using <span class="example">NOT</span> followed by the term.  You can use parentheses to make complex Boolean queries.</p>
     <p>Examples:</p>
     <div class="example">Match genes or interactions referenced in abstracts matching both "Cat" and "Dog":<br /><span>Cat AND Dog</span> or just <span>Cat Dog</span></div>
     <div class="example">Match genes or interactions referenced in abstracts matching "Cat" or "Dog", but not "Fish":<br /><span>Cat OR Dog NOT Fish</span></div>
     <div class="example">Match genes or interactions referenced in abstracts matching "Cat", or both "Dog" and "Fish":<br /><span>Cat OR (Dog AND Fish)</span></div>
+    <br />
     <p>To do an exact match on a multi-word phrase, enclose the phrase in quotes.</p>
     <div class="example">Match abstracts containing the terms "Embryonic", "Stem", and "Cell":<br /><span>Embryonic stem cell</span></div>
     <div class="example">Match abstracts containing "Embryonic stem cell" all together:<br /><span>"Embryonic stem cell"</span></div>
+    <br />
     <p>You can also restrict abstracts by the year they were published by entering <span class="example">year:</span> followed by the year.  You can specify ranges of years by using <span class="example">year:[<u>startyear</u> to <u>endyear</u>]</span>.  You can leave either <u>startyear</u> or <u>endyear</u> blank for an open-ended range.</p>
     <div class="example">Match abstracts published in 2011:<br /><span>year:2011</span></div>
     <div class="example">Match abstracts containing "apoptosis" published between 2005 and 2009 (inclusive):<br /><span>apoptosis year:[2005 to 2009]</span></div>
     <div class="example">Match abstracts containing "surfactant" published in or before 2007:<br /><span>surfactant year:[to 2007]</span></div>
     <div class="example">Match abstracts containing "chitin" published in or after 2009:<br /><span>chitin year:[2009 to]</span></div>
+    <br />
     <p>GADGET accepts wildcards to match inexact terms.  Including a question mark (<span class="example">?</span>) in a term will match any single character, while an asterisk (<span class="example">*</span>) will match any number of arbitrary characters.  Note that using a wildcard character at the beginning of a term will significantly slow GADGET down.  You cannot use wildcard characters within quotation marks.</p>
     <div class="example">Match abstracts containing "text", "test", etc.:<br /><span>te?t</span></div>
     <div class="example">Match abstracts containing "BLAST", "blastula", "blastema", etc.:<br /><span>blast*</span></div>
+    <br />
+    <p>Query terms in GADGET are not case sensitive (although Boolean operators are case sensitive).</p>
+    <p>You will often get better and faster results by using more specific terms in your searches.  Avoid using common terms like "gene" in your query; they don't usually add much value to the results, and they can slow down GADGET.</p>
     <p>GADGET uses the <a href="http://packages.python.org/Whoosh/querylang.html" target="_blank">Whoosh query language</a> for matching abstracts.  Not all features of the query language are applicable to GADGET.</p>
 
 
 
-<a class="topic" name="geneentry">Searching genes and keyphrases by gene symbol</a>
-    <p>You can enter a list of genes to search for related <a href="#genesearch">genes</a> and <a href="#keyphrasesearch">keyphrases</a>.  GADGET will find abstracts that mention your supplied genes, and show you genes or keyphrases from those abstracts.</p>
-    <p><b>The <a href="#eventsearch">interaction search</a> doesn't support all of the gene entry features supported by the other search modes.</b>  See <a href="#geneentry_interactions">searching interactions by gene symbol</a>.</p>
+<a class="topic" name="geneentry">Searching via related genes</a>
+    <p>You can enter a list of genes to search for related genes and metabolites.  GADGET will find articles that mention your queried genes, and show you a list of genes/metabolites highly represented in those abstracts.</p>
     <p>You can enter genes using their <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene" target="_blank">Entrez Gene</a> symbols or Gene ID's (eg. <span class="example">TAL1</span> or <span class="example">6886</span>.)</p>
-    <p>If you provide GADGET with a list of genes, you can select whether GADGET should use abstracts that mention <span class="example">any</span> (at least one) or <span class="example">all</span> of your genes.</p>
+    <p>You can select whether GADGET should use articles that mention <span class="example">any</span> (at least one) or <span class="example">all</span> of your genes.</p>
     <p>You can use boolean operators (<span class="example">AND</span>, <span class="example">OR</span>, and <span class="example">NOT</span> in caps) in your gene list.  These operators override your <span class="example">any</span> / <span class="example">all</span> choice.</p>  You can also use <span class="example">*</span> for wildcard matches.
     <div class="example">With the <span>any</span> option selected, match abstracts that mention either SHH or LBH (or both.)  With the </span>all</span> option selected, match abstracts that mention both SHH and LBH.<br /><span>SHH LBH</span></div>
     <div class="example">The same as the previous example, using Entrez Gene ID's instead of gene symbols:<br /><span>6469 81606</span></div>
