@@ -83,40 +83,45 @@
 
 
 
-<a class="topic" name="scores">Gene scores</a>
-    <p>In the <a href="#genesearch">gene search</a>, GADGET can use different scores to determine which genes are most important to your query.</p>
-    <p>When you do a search, GADGET finds all of the abstracts that match your query, and then finds genes that are mentioned in those abstracts.  GADGET computes scores for each gene based upon: the number of abstracts matching the query for each gene, the total number of abstracts associated with each gene, and the total number of abstracts matching the query.</p>
-    <p>Each of the available scores takes some of these factors into account in different ways.  You can rank the genes by a score by clicking on the score's name in the table header.</p>
+<a class="topic" name="scores">Gene / metabolite scores</a>
+
+    <p>GADGET can optionally use a few different scores to rank search results for genes and metabolites:</p>
     <table class="instructions">
-        <tr><td>F1 score</td><td>The <a href="http://en.wikipedia.org/wiki/F1_score" target="_blank">F1 score</a> is a balanced measurement of <a href="http://en.wikipedia.org/wiki/Precision_and_recall" target="_blank">precision and recall</a>.  It takes both the proportion of matching abstracts for each gene and the total number of matching abstracts into account.  The F1 score represents a tradeoff between the "Adjusted precision" and "Matching abstracts" scores.  This score is used by default.</td></tr>
-        <tr><td>Adjusted precision</td><td>The adjusted <a href="http://en.wikipedia.org/wiki/Precision_%28information_retrieval%29" target="_blank">precision</a> score is based upon the proportion of a gene's abstracts that match your query.  For each gene in your query, adjusted precision is calculated as (number of abstracts for the gene matching the query) / (10 + total number of abstracts for the gene).  The precision is adjusted by adding a "pseudocount" of 10 to the denominator, so that a gene with 10/10 matching abstracts scores higher than a gene with 1/1 matching abstracts.</td></tr>
-        <tr><td>Matching abstracts</td><td>"Matching abstracts" is the number of abstracts for the gene that match your query.  This score is useful for finding genes that have larger amounts of published literature relevant to your query, but genes with more total abstracts tend to be ranked higher even if they are less relevant to your query.</td></tr>
-        <tr><td>Total abstracts</td><td>"Total abstracts" shows the total number of abstracts associated with each gene.  This number does not change based upon your query.</td></tr>
+        <tr><td>F1 Balanced Score</td><td>The <b>default</b> <a href="http://en.wikipedia.org/wiki/F1_score" target="_blank">F1 score</a> is a balanced measurement of <a href="http://en.wikipedia.org/wiki/Precision_and_recall" target="_blank">precision and recall</a> (specificity and query-matching abstracts).  It takes both the proportion of matching abstracts for each gene and the total number of matching abstracts into account.  The F1 score represents a tradeoff between the "Adjusted precision" and "Matching abstracts" scores.</td></tr>
+        <tr><td>Specificity</td><td>The specificity score is based upon the proportion of a gene's abstracts that match your query &ndash; it hilights genes that occur frequently in articles matching your query, but occuring less frequently in other articles.  For each gene in your query, specificity is calculated as (number of abstracts for the gene matching the query) &divide; (10 + total number of abstracts for the gene).  The specificity score is adjusted by adding a "pseudocount" of 10 to the denominator, so that a gene with 10/10 matching abstracts scores higher than a gene with 1/1 matching abstracts.  (See <a href="http://en.wikipedia.org/wiki/Precision_%28information_retrieval%29" target="_blank">precision</a> on Wikipedia.)</td></tr>
+        <tr><td>Query-matching abstracts</td><td>The number of abstracts for each gene/metabolite that match your query.</td></tr>
+        <tr><td>Total abstracts</td><td>The total number of abstracts associated with each gene.  (This number is not based upon your query.)</td></tr>
     </table>
-    <p>GADGET also computes a <b>p-value</b> for each gene using the <a href="http://en.wikipedia.org/wiki/Hypergeometric_test" target="_blank">hypergeometric test</a>.  The null hypothesis for the test is that the fraction of abstracts that match the query for a given gene is equal to the "background" fraction of abstracts that match the query in the entire corpus of abstracts.  The p-value thus indicates how confident we are that a gene's abstract set is enriched for the query.</p>
+    <br />
+    <p>GADGET also computes a <b>p-value</b> for each gene using the <a href="http://en.wikipedia.org/wiki/Hypergeometric_test" target="_blank">hypergeometric test</a>.  The null hypothesis for the test is that the fraction of abstracts that match the query for a given gene is equal to the "background" fraction of abstracts that match the query in the entire corpus of abstracts.  The p-value thus indicates how confident we are that a gene's abstract set is enriched for the query.  (There is no option in GADGET to sort genes by the p-value because it would be too slow, but you can still do this if you download your search results in a CSV file.)</p>
 
 
 
     <a class="topic" name="species">Selecting a species</a>
-    <p>When you do a GADGET gene search, all of the genes in your results will be from a particular species.  GADGET allows you to select from several species to view genes for.  The currently-supported species are:
-    <table>
+
+    
+    <p>When you do a GADGET <i>gene search</i>, all of the genes in your results will be from a particular species.  GADGET allows you to select from several species to view genes for.  The currently-supported species are:
+    <table style="border-collapse:separate;border-spacing:15px;">
         <tr><th>NCBI Taxonomy ID</th><th>Name</th></tr>
         <tr><td>9606</td><td>Homo Sapiens (default)</td></tr>
         <tr><td>10090</td><td>Mus musculus</td></tr>
         <tr><td>559292</td><td>Saccharomyces cerevisiae</td></tr>
     </table></p>
+    <p><b>The metabolite search currently only supports Homo Sapiens.</b></p>
     <p>For gene search queries, when you provide a list of <a href="#geneentry">gene symbols</a>, GADGET will match them to genes from your selected species.</p>
-    <p>GADGET's <a href="#eventsearch">interaction search</a> does not take a species as input.  GADGET's interaction search currently uses only human genes (and homologs.)</p>
+
 
 
 
     <a class="topic" name="usehomologs">Optional inclusion of homologs</a>
-    <p>When finding and <a href="#scores">scoring</a> genes that match your query, GADGET's gene search can optionally take homologs into account.  To calculate scores for each gene, GADGET counts the number of abstracts matching your query that each gene appears in.  If you choose to include homologs, GADGET will also count abstracts that refer to homologs of each gene.</p>
+    <p><b>Gene search only</b></p>
+    <p>When finding and <a href="#scores">ranking</a> genes that match your query, GADGET's gene search can optionally take homologs into account.  To calculate scores for each gene, GADGET counts the number of abstracts matching your query that each gene appears in.  If you choose to include homologs, GADGET will also count abstracts that refer to homologs of each gene.</p>
     <p>The groups of homologs that GADGET uses come from <a href="http://www.ncbi.nlm.nih.gov/homologene" target="_blank">Homologene</a>.  Homologs can be either from the same species as each gene, or from different species.</p>
+    <p>This feature can be useful for queries that match a small number of articles.</p>
 
     
 
-    <a class="topic" name="genesearch_via_querystring">Using the gene search without a browser</a>
+    <a class="topic" name="data_api">Data API - Using GADGET without a browser</a>
     <p>If you want to automatically access GADGET's gene search without using a web browser, you can download comma-delimited CSV or XML files by fetching <span class="example">http://gadget.biostat.org/gadget/genelist?</span> and sending arguments via the query string at the end of the URL.  To download data, the query string must include <span class="example">&download=CSV</span> or <span class="example">&download=XML</span>, depending on which format you want.</p>
     <p>To send information to GADGET, just append it to the url.  Aguments are given by the name of the argument, an equals sign (<span class="example">=</span>), and the argument's value, e.g. <span class="example"><u>argument</u>=<u>value</u></span>.  Multiple arguments should be separated by ampersands (<span class="example">&</span>).  Here's a list of the arguments you can send:</p>
     <table class="instructions">

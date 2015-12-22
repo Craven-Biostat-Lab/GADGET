@@ -563,10 +563,12 @@ div#manual a.topic {
 
 table.instructions {
     margin: 0 5%;
+    border-spacing: 5px;
+    border-collapse: separate;
 }
 
 table.instructions td {
-    padding: 5px 10px;
+    padding: 20px;
 }
 
 
