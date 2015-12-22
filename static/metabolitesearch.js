@@ -55,7 +55,7 @@ $(document).ready(function()
             
             $("#more").show();
             
-            $('body,html').animate({scrollTop: $('div#description').offset().top - 10}, 600);   
+            $('body,html').animate({scrollTop: $('div#description').offset().top - 10}, 700);   
         }
         else
         {

@@ -81,7 +81,7 @@ div#search {
     border-radius: 10px;
     padding: 20px;
     padding-top: 15px;
-    margin-top: 5px;
+    margin-top: 10px;
     color: white;
 }
 
@@ -128,7 +128,7 @@ div#search-buttons {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 20px;
+    margin-top: 24px;
 }
 
 div.search-button {
@@ -428,6 +428,7 @@ a.showcrossrefs img {
 
 #generank div.pane {
     padding: 40px;
+    padding-bottom: 5px;
     position: relative;
     left: 15px;
     width: 100%;
@@ -480,9 +481,10 @@ a.moreabstracts {
 
 #generank a.hidepanes {
     display: block;
-    padding-top: 10px;
     color: #702B34;
+    padding-top: 16px;
 }
+
 
 #generank div.abstracts.pane a.hidepanes {
     padding-left: 40px;
