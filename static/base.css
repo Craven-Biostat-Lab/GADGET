@@ -536,6 +536,18 @@ div#links a:hover {
 
 
 
+div#front-examples {
+    text-align: center;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+}
+
+div#front-examples a {
+    color: #f26400;
+}
+
 
 
 /*******************************************************************************
