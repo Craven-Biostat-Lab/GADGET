@@ -32,18 +32,20 @@
     
     <div id="search">
         <div style="text-align:center;padding-bottom:30px;padding-top:12px;font-size:165%;"><img src="/static/icon-search.png" style="margin-right:5px; vertical-align:0;"/>Search <b>genes</b> and <b>metabolites</b> related to your query</div>
-        <form id="searchform" class="form-horizontal" action="/gadget/genesearch">
-            <input type="hidden" name="usegenefile" id="id_usegenefile" />
+        <form id="searchform" class="form-horizontal" 
+action="/gadget/genesearch"
+>
+            <input id="id_usegenefile" name="usegenefile" type="hidden" />
             
             <input type="hidden" name="usegenefile" id="id_usegenefile" />
             
             <div class="form-group">
                 <label for="id_q" class="col-sm-3 control-label">
                     Query Keywords
-                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Filter with keywords and phrases" data-content="<ul><li>Use quotation marks to filter with <b>&quot;multi-word phrases&quot;</b>.</li><li>You can use boolean operators like <b>AND, OR</b> and <b>NOT</b>.</li></ul><div class='help-more'><a href='/manual.html#queryterms' target='_blank'>More...</a></div>" data-html="true" data-container="body">
+                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="<ul><li>Use quotation marks to filter with <b>&quot;multi-word phrases&quot;</b>.</li><li>You can use boolean operators like <b>AND, OR</b> and <b>NOT</b>.</li></ul><div class='help-more'><a href='/manual.html#queryterms' target='_blank'>More...</a></div>" data-html="true" data-container="body">
                 </label>
                 <div class="col-sm-9">
-                    <input name="q" placeholder="Keywords and phrases" class="form-control" type="text" id="id_q" />
+                    <input class="form-control" id="id_q" name="q" placeholder="Keywords and phrases" type="text" />
                 </div>
             </div>
             
@@ -51,18 +53,18 @@
               <label for="genes" class="col-sm-3 control-label">
                 <span style="font-weight:normal;padding:4px 6px; border-radius:20px;font-size:100%;background:rgba(255,255,255,0.15);margin-right:4px;">or</span>
                 Query Genes 
-                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Related genes" data-content="<ul><li>Enter a list of gene symbols to search articles mentioning any/all of those genes (including synonyms.)</li><li>If you have a long list of genes, you can upload a file.</li></ul><div class='help-more'><a href='/manual.html#geneentry' target='_blank'>More...</a></div>" data-html="true" data-container="body">
+                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="<ul><li>Enter a list of gene symbols to search articles mentioning any/all of those genes (including synonyms.)</li><li>If you have a long list of genes, you can upload a file.</li></ul><div class='help-more'><a href='/manual.html#geneentry' target='_blank'>More...</a></div>" data-html="true" data-container="body">
               </label>
               <div class="col-sm-9"><div class="input-group">
-                <input id="id_genes" type="text" placeholder="Gene symbols" class="form-control" name="genes" />
+                <input class="form-control" id="id_genes" name="genes" placeholder="Gene symbols" type="text" />
                 <div class="input-group-addon" id="cleargenefile-addon" style="display:none"><a href="javascript:void(0);" id="cleargenefile">&times;</a></div>
                 <div class="input-group-addon" style="background:white;border-left-color:white;border-right-color:white">
                     <a class="badge" id="uploadgenes" href="javascript:void(0);">Upload</a>
                 </div>
                 <div class="input-group-addon" style="background:white;border-left-color:white;">
-                    <ul>
-<li><label for="id_geneop_0"><input type="radio" id="id_geneop_0" value="any" name="geneop" /> any</label></li>
-<li><label for="id_geneop_1"><input checked="checked" type="radio" id="id_geneop_1" value="all" name="geneop" /> all</label></li>
+                    <ul id="id_geneop">
+<li><label for="id_geneop_0"><input id="id_geneop_0" name="geneop" type="radio" value="any" /> any</label></li>
+<li><label for="id_geneop_1"><input checked="checked" id="id_geneop_1" name="geneop" type="radio" value="all" /> all</label></li>
 </ul>
                 </div>
               </div></div>
@@ -73,31 +75,35 @@
             <div class="form-group">
               <label for="id_species" class="col-sm-3 control-label">
                 Species
-                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Species" data-content="<ul><li>When searching for <b>genes,</b> filter your results by species.</li><li>When searching for <b>metabolites</b>, use this species for your entered gene symbols.</li></ul><div class='help-more'><a href='/manual.html#species' target='_blank'>More...</a></div>" data-html="true" data-container="body">
+                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="<b>Gene search only</b><br />Search genes for humans, yeast, or mice.  (Metabolite search only supports humans.)<div class='help-more'><a href='/manual.html#species' target='_blank'>More...</a></div>" data-html="true" data-container="body">
               </label>
               <div class="col-sm-9">
-                <!--<select name="species" id="id_species" class="form-control">
-                    <option value="9606">Homo sapiens</option>
-                    <option value="10090">Mus musculus</option>
-                    <option value="559292">Saccharomyces cerevisiae</option>
-                </select>-->
-                <select id="id_species" class="form-control" name="species">
+                
+                    <!--<select name="species" id="id_species" class="form-control">
+                        <option value="9606">Homo sapiens</option>
+                        <option value="10090">Mus musculus</option>
+                        <option value="559292">Saccharomyces cerevisiae</option>
+                    </select>-->
+                    <select class="form-control" id="id_species" name="species">
 <option value="9606" selected="selected">Homo sapiens</option>
 <option value="10090">Mus musculus</option>
 <option value="559292">Saccharomyces cerevisiae</option>
 </select>
+                
               </div>
             </div>
+            
             
             <div class="form-group" style="margin-bottom:0">
                 <div class="col-sm-9 col-sm-offset-3">
                 <label>
-                    <input type="checkbox" name="usehomologs" id="id_usehomologs" />
+                    <input id="id_usehomologs" name="usehomologs" type="checkbox" />
                     <span style="font-weight:normal;margin-left:10px">Count <b>homologs</b> from other species 
-                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Homologs" data-content="When ranking genes, also include abstracts with homologs in other species.  (Good for searches with few abstracts.) <div class='help-more'><a href='/manual.html#usehomologs' target='_blank'>More...</a></div>" data-html="true" data-container="body"></span>
+                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="<b>Gene search only</b><br />When ranking genes, also include articles with homologs in other species.  (Good for searches with few matching articles.)  GADGET uses homologs from the <i>Homologene</i> database.<div class='help-more'><a href='/manual.html#usehomologs' target='_blank'>More...</a></div>" data-html="true" data-container="body"></span>
                 </label>
                 </div>
             </div>
+            
 
         </form>
            

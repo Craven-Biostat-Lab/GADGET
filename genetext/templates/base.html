@@ -53,7 +53,7 @@
             <div class="form-group">
                 <label for="id_q" class="col-sm-3 control-label">
                     Query Keywords
-                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Filter with keywords and phrases" data-content="<ul><li>Use quotation marks to filter with <b>&quot;multi-word phrases&quot;</b>.</li><li>You can use boolean operators like <b>AND, OR</b> and <b>NOT</b>.</li></ul><div class='help-more'><a href='/manual.html#queryterms' target='_blank'>More...</a></div>" data-html="true" data-container="body">
+                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="<ul><li>Use quotation marks to filter with <b>&quot;multi-word phrases&quot;</b>.</li><li>You can use boolean operators like <b>AND, OR</b> and <b>NOT</b>.</li></ul><div class='help-more'><a href='/manual.html#queryterms' target='_blank'>More...</a></div>" data-html="true" data-container="body">
                 </label>
                 <div class="col-sm-9">
                     {{ form.q }}
@@ -64,7 +64,7 @@
               <label for="genes" class="col-sm-3 control-label">
                 <span style="font-weight:normal;padding:4px 6px; border-radius:20px;font-size:100%;background:rgba(255,255,255,0.15);margin-right:4px;">or</span>
                 Query Genes 
-                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Gene symbols" data-content="<ul><li>Enter a list of gene symbols to search articles mentioning any/all of those genes (including synonyms.)</li><li>If you have a long list of genes, you can upload a file.</li></ul><div class='help-more'><a href='/manual.html#geneentry' target='_blank'>More...</a></div>" data-html="true" data-container="body">
+                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="<ul><li>Enter a list of gene symbols to search articles mentioning any/all of those genes (including synonyms.)</li><li>If you have a long list of genes, you can upload a file.</li></ul><div class='help-more'><a href='/manual.html#geneentry' target='_blank'>More...</a></div>" data-html="true" data-container="body">
               </label>
               <div class="col-sm-9"><div class="input-group">
                 {{ form.genes }}
@@ -83,7 +83,7 @@
             <div class="form-group">
               <label for="id_species" class="col-sm-3 control-label">
                 Species
-                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Species" data-content="<ul><li>When searching for <b>genes,</b> filter your results by species.</li><li>When searching for <b>metabolites</b>, use this species for your entered gene symbols.</li></ul><div class='help-more'><a href='/manual.html#species' target='_blank'>More...</a></div>" data-html="true" data-container="body">
+                <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="<b>Gene search only</b><br />Search genes for humans, yeast, or mice.  (Metabolite search only supports humans.)<div class='help-more'><a href='/manual.html#species' target='_blank'>More...</a></div>" data-html="true" data-container="body">
               </label>
               <div class="col-sm-9">
                 {% block queryspecies %}
@@ -103,7 +103,7 @@
                 <label>
                     {{ form.usehomologs }}
                     <span style="font-weight:normal;margin-left:10px">Count <b>homologs</b> from other species 
-                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Homologs" data-content="When ranking genes, also include abstracts with homologs in other species.  (Good for searches with few abstracts.) <div class='help-more'><a href='/manual.html#usehomologs' target='_blank'>More...</a></div>" data-html="true" data-container="body"></span>
+                    <img src="/static/icon-help-white.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="<b>Gene search only</b><br />When ranking genes, also include articles with homologs in other species.  (Good for searches with few matching articles.)  GADGET uses homologs from the <i>Homologene</i> database.<div class='help-more'><a href='/manual.html#usehomologs' target='_blank'>More...</a></div>" data-html="true" data-container="body"></span>
                 </label>
                 </div>
             </div>
