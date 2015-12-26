@@ -547,6 +547,7 @@ div#manual {
     width: 800px;
     max-width: 100%;
     padding: 14px;
+    padding-top: 70px;
 }
 
 div#manual h1 {
@@ -559,6 +560,7 @@ div#manual a.topic {
     margin-top: 60px;
     color: #702B34;
     text-decoration: none;
+    padding-bottom: 10px;
 }
 
 table.instructions {

@@ -20,23 +20,27 @@
     <p><a href="/">GADGET</a> is a tool that lets you search for genes and metabolites in the biomedical literature.</p>
     
     
-    <ul>
+    <ul style="margin-top:40px">
         <li><a href="#genesearch">Search for genes</a></li>
-        <ul>
-            <li><a href="#queryterms">Searching by keyword</a></li>
-            <li><a href="#geneentry">Searching by gene symbol</a></li>
-            <li><a href="#scores">Gene scores</a></li>
-            <li><a href="#species">Selecting a species</a></li>
-            <li><a href="#usehomologs">Optional inclusion of homologs</a></li>
-            <li><a href="#genesearch_via_querystring">Using the gene search without a browser</a></li>
-        </ul>
+        <li><a href="#metabolitesearch">Search for metabolites</a></li>
+        <br />
+        <li><a href="#queryterms">Searching by keyword</a></li>
+        <li><a href="#geneentry">Searching by gene symbol</a></li>
+        <li><a href="#scores">Gene / metabolite scores</a></li>
+        <li><a href="#species">Selecting a species</a></li>
+        <li><a href="#usehomologs">Optional inclusion of homologs</a></li>
+        <li><a href="#data_api">Data API - Using GADGET without a browser</a></li>
     </ul>
     
     
     <a class="topic" name="genesearch">Search for genes</a>
-    <p>When you search for genes, GADGET first finds <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> articles that match your search.  (If you've entered a keyword query, GADGET checks to see if your keywords are present in the abstract for each article.  If you've entered gene symbols, GADGET checks several data sources to find articles that mention your genes.)</p>
+    <p>When you search for genes, GADGET first finds <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> articles that match your search.  From the set of articles we've found, then GADGET compiles a list of genes that are overrepresented in the articles, and thus related to your topic.  (If you've entered a keyword query, GADGET checks to see if your keywords are present in the abstract for each article.  If you've entered gene symbols, GADGET checks several data sources to find articles that mention your genes.)</p>
     <p>For each gene in the search results, you can see the abstracts that link this gene to your search by clicking the "show abstracts" link.</p>
     <p>You can download gene search results as a CSV file.  Downloaded results will contain all of the genes that match your query, not only the top-scoring genes displayed on the page.</p>
+    
+
+    <a class="topic" name="metabolitesearch">Search for metabolites</a>
+    <p>GADGET's metabolite search shows you a list of metabolites related to your query.  It works the same as the gene search, by first finding a set of articles related to your query, and then compiling a list of metabolites from the articles (see above for details.)</p>
     
 
 
@@ -99,7 +103,7 @@
 
     <a class="topic" name="species">Selecting a species</a>
 
-    
+    <p><b>Gene search only</b></p>
     <p>When you do a GADGET <i>gene search</i>, all of the genes in your results will be from a particular species.  GADGET allows you to select from several species to view genes for.  The currently-supported species are:
     <table style="border-collapse:separate;border-spacing:15px;">
         <tr><th>NCBI Taxonomy ID</th><th>Name</th></tr>
@@ -122,25 +126,27 @@
     
 
     <a class="topic" name="data_api">Data API - Using GADGET without a browser</a>
-    <p>If you want to automatically access GADGET's gene search without using a web browser, you can download comma-delimited CSV or XML files by fetching <span class="example">http://gadget.biostat.org/gadget/genelist?</span> and sending arguments via the query string at the end of the URL.  To download data, the query string must include <span class="example">&download=CSV</span> or <span class="example">&download=XML</span>, depending on which format you want.</p>
+    <p>If you want to automatically access GADGET without using a web browser, you can download comma-delimited CSV or XML files by fetching URL's from GADGET and sending arguments via the query string at the end of the URL.  To download data, the query string must include <span class="example">&download=CSV</span>.</p>
+    <p>To search genes, use this URL: <span class="example">http://gadget.biostat.org/gadget/genelist?download=csv&<span style="font-weight:normal">&lt;query parameters here&gt;</span></span></p>
+    <p>To search metabolites, use this URL: <span class="example">http://gadget.biostat.org/gadget/metabolitelist?download=csv&<span style="font-weight:normal">&lt;query parameters here&gt;</span></span></p>
     <p>To send information to GADGET, just append it to the url.  Aguments are given by the name of the argument, an equals sign (<span class="example">=</span>), and the argument's value, e.g. <span class="example"><u>argument</u>=<u>value</u></span>.  Multiple arguments should be separated by ampersands (<span class="example">&</span>).  Here's a list of the arguments you can send:</p>
     <table class="instructions">
-        <tr><td>download</td><td>This argument is <b>required</b> to download the results as a CSV or XML file.  To download a CSV, use <span>&download=CSV</span>.  To get XML, use <span>&download=XML</span>.  The XML representation uses a DTD file that can be found <a href="/static/genelist.dtd">here</a>.</td></tr>
-        <tr><td>q</td><td>The keyword query terms of your search.<br /><br />In most browsers, you can include spaces and quotation marks in the URL.  Special characters, like "&" and "/", must be <a href="http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters" target="_blank">percent encoded</a>.<br /><br />Either <span>q</span> or <span>genes</span> (or both) is <b>required</b> for GADGET gene search queries.</td></tr>
-        <tr><td>genes</td><td>A list of gene symbols and/or Entrez Gene IDs to search for.  You can use the same format and all of the same <a href="#geneentry">features for entering genes</a> as you can in the graphical interface.<br /><br />If you provide gene symbols, GADGET will match them to genes for your selected <span>species</span><br /><br />Either <span>q</span> or <span>genes</span> (or both) is <b>required</b> for GADGET gene search queries.</td></tr>
+        <tr><td>download</td><td>This argument is <b>required</b> to download the results as a CSV file. (<span>&download=CSV</span>.)</td></tr>
+        <tr><td>q</td><td>The keyword query terms of your search.<br /><br />In most browsers, you can include spaces and quotation marks in the URL.  Special characters, like "&" and "/", must be <a href="http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters" target="_blank">percent encoded</a>.<br /><br />Either <span>q</span> or <span>genes</span> (or both) is required for GADGET queries.</td></tr>
+        <tr><td>genes</td><td>A list of gene symbols and/or Entrez Gene IDs to search for.  You can use the same format and all of the same <a href="#geneentry">features for entering genes</a> as you can in the graphical interface.<br /><br />If you provide gene symbols, GADGET will match them to genes for your selected <span>species</span><br /><br />Either <span>q</span> or <span>genes</span> (or both) is required for GADGET queries.</td></tr>
         <tr><td>geneop</td><td>The "gene operator" to use for your list of genes - whether to match abstracts that mention <span>any</span> or <span>all</span> of your genes (see <a href="#geneentry">gene entry for the gene search and keyphrase search</a>.)  If <span>geneop</span> isn't provided, <span>any</span> will be used by default.</td></tr>
-        <tr><td>species</td><td>The species to use for your gene search.  All of the genes in your gene search results will belong to this species.<br /><br />To specify a species, use the species's NCBI taxonomy ID, (e.g. <span>&species=9606</span> for humans).  See <a href="#species">here</a> for a list of currently available species and taxonomy IDs.  If you don't specify a species, <b>homo sapiens will be used by default.</b></td></tr>
-        <tr><td>usehomologs</td><td>Whether or not to include homologs when calculating scores for each gene.  (See <a href="#usehomologs">here</a>.)  To include homologs, include <span>&usehomologs=1</span> in your query string.  If <span>usehomologs</span> is omitted, homologs will not be included by default.</td></tr>
-        <tr><td>orderby</td><td>Which score to use to rank the results.<br /><br />There are 4 possible values for <span>orderby</span>.  The possible values are <span>f1_score</span>, which will order the genes by the F1 score; <span>adjusted_precision</span>, which will order the genes by the adjusted precision; <span>matching_abstracts</span>, which will order the genes by the number of abstracts matching your query; and <span>total_abstracts</span>, which will order the genes by the total number of abstracts for each gene.<br /><br />If the <span>orderby</span> argument is omitted or invalid, GADGET will default to the F1 score.  See <a href="#scores">above</a> for more information about the different scores.</td></tr>
-         <tr><td>limit</td><td>The maximum number of genes to return.  This argument should be a number.  If <span>limit</span> is not included or is invalid, GADGET will return all of the genes found in the search.</td></tr>
-         <tr><td>offset</td><td>The rank (minus one) of the first gene to include in the results.  To omit the first 100 genes, include <span>&offset=100</span>.  If <span>offset</span> is omitted or invalid, GADGET will not omit any genes.</td></tr>
+        <tr><td>species</td><td><b>Gene search only</b> (GADGET's metabolite search only supports homo sapiens for now.)  <br /><br />The species to use for your gene search.  All of the genes in your gene search results will belong to this species.<br /><br />To specify a species, use the species's NCBI taxonomy ID, (e.g. <span>&species=9606</span> for humans).  See <a href="#species">here</a> for a list of currently available species and taxonomy IDs.  If you don't specify a species, <b>homo sapiens will be used by default.</b></td></tr>
+        <tr><td>usehomologs</td><td><b>Gene search only</b><br /><br />Whether or not to include homologs when calculating scores for each gene.  (See <a href="#usehomologs">here</a>.)  To include homologs, include <span>&usehomologs=1</span> in your query string.  If <span>usehomologs</span> is omitted, homologs will not be included by default.</td></tr>
+        <tr><td>orderby</td><td>Which score to use to rank the results.<br /><br />There are 4 possible values for <span>orderby</span>.  The possible values are <span>f1_score</span>, which will order the results by the F1 score; <span>adjusted_precision</span>, which will order the results by the specificity (aka. adjusted precision); <span>matching_abstracts</span>, which will order the results by the number of abstracts matching your query; and <span>total_abstracts</span>, which will order the results by the total number of abstracts for each gene/metabolite.<br /><br />If the <span>orderby</span> argument is omitted or invalid, GADGET will default to the F1 score.  See <a href="#scores">above</a> for more information about the different scores.</td></tr>
+         <tr><td>limit</td><td>The maximum number of results to return.  This argument should be a number.  If <span>limit</span> is not included or is invalid, GADGET will return all of the genes/metabolites found in the search.</td></tr>
+         <tr><td>offset</td><td>The rank (minus one) of the first gene/metabolite to include in the results.  To omit the first 100 results, include <span>&offset=100</span>.  If <span>offset</span> is omitted or invalid, GADGET will not omit any results.</td></tr>
     </table>
-    <p>If no abstracts or genes match your query, or if <span class="example">q</span> is omitted or invalid, the GADGET server will issue a 404 error instead of returning a CSV file.</p>
+    <p>If no articles or genes/metabolites match your query, or if <span class="example">q</span> is omitted or invalid, the GADGET server will issue a 404 error instead of returning a CSV file.</p>
     <p>Examples:</p>
-    <div class="example">Download a CSV of genes matching "arteriole", using homologs:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&usehomologs=1&q=arteriole</b></span></div>
-    <div class="example">Download a CSV of mouse genes matching "mesoderm", ranked by adjusted precision:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&q=mesoderm&orderby=adjusted_precision</span></div>
-    <div class="example">Download XML of the top 150 genes for mice matching "Loop of Henle", using homologs:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=XML&species=10090&q=Loop of Henle&limit=150&usehomologs=1</span></div>
-    <div class="example">Download XML of the top 80 genes related to CFTR matching "cystic fibrosis", ranked by number of matching abstracts:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=XML&q=cystic fibrosis&genes=CFTR&limit=80&orderby=matching_abstracts</span></div>
+    <div class="example">Download genes matching "arteriole", using homologs:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&usehomologs=1&q=arteriole</b></span></div>
+    <div class="example">Download mouse genes matching "mesoderm", ranked by adjusted precision:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&q=mesoderm&orderby=adjusted_precision</span></div>
+    <div class="example">Download the top 150 genes for mice matching "Loop of Henle", using homologs:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&species=10090&q=Loop of Henle&limit=150&usehomologs=1</span></div>
+    <div class="example">Download the top 80 metabolites related to CFTR matching "cystic fibrosis", ranked by number of matching abstracts:<br /><span>http://gadget.biostat.wisc.edu/gadget/metabolitelist?download=CSV&q=cystic fibrosis&genes=CFTR&limit=80&orderby=matching_abstracts</span></div>
 
         
 
