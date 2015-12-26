@@ -86,7 +86,7 @@ action="/gadget/metabolitesearch"
             {% if usegenefile %}in the file <b>{{ genefilename|safe }}</b>
             {% else %}<b>{{ genesyms|safe }}</b>{% endif %}
         {% endif %}
-        <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Gene search" data-content="GADGET ranks genes by finding abstracts related to your search, and then computing scores for each gene based on the number of matching abstracts.<div class='help-more'><a href='/manual.html#genesearch' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
+        <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="GADGET ranks metabolites by finding articles related to your search, and then computing scores for each metabolite based on the number of matching articles.<div class='help-more'><a href='/manual.html#genesearch' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
         <br />
         For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
     </div>
@@ -111,7 +111,7 @@ action="/gadget/metabolitesearch"
         
     </div>
     
-    <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" title="Scores" data-content="<ul><li><b>F<span style='font-size:x-small;vertical-align:baseline;position:relative;top:0.4em'>1</span> Balance</b>: a balanced measure specificity and query-matching abstracts</li><li><b>Specificity</b>: shows genes that occur in abstracts relevant to your query, but that occur less frequently in other abstracts</li><li><b>Query-Matching Abstracts</b>: the absolute number of abstracts that match your query and also mention this gene</li><li><b>Total Abstracts</b>: the total number of abstracts that mention this gene</li></ul><div class='help-more'><a href='/manual.html#scores' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
+    <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="<ul><li><b>F<span style='font-size:x-small;vertical-align:baseline;position:relative;top:0.4em'>1</span> Balance</b>: a balanced measure specificity and query-matching abstracts</li><li><b>Specificity</b>: shows genes that occur in abstracts relevant to your query, but that occur less frequently in other abstracts</li><li><b>Query-Matching Abstracts</b>: the absolute number of abstracts that match your query and also mention this gene</li><li><b>Total Abstracts</b>: the total number of abstracts that mention this gene</li></ul><div class='help-more'><a href='/manual.html#scores' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
 
 </div></div>
 
