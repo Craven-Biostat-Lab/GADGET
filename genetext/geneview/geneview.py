@@ -2,7 +2,7 @@
 from urllib import quote
 import json
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.template.loader import render_to_string
 from django.http import HttpResponse, Http404
 from django.db.models import Sum, Count
@@ -66,6 +66,10 @@ def searchpage(request):
     
     usehomologs = parseboolean(usehomologs_input)
     usegenefile = parseboolean(usegenefile_input)
+    
+    
+    if not (q or genes or usegenefile):
+        return redirect('/')
     
     return render_to_response('genesearch.html', {'form': form, 'q': q, 
         'genes': genes, 'geneop': geneop, 'genesyms': genesyms, 'species': species, 
