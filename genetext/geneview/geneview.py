@@ -16,7 +16,7 @@ from geneindex.geneindex import parse_gene_abstractquery, genefile_lookup, BadGe
 
 # allowable species (specieschoices should be in order, with the default first)
 speciesnames = {'9606': 'Homo sapiens', '10090': 'Mus musculus', '559292': 'Saccharomyces cerevisiae'}
-specieschoices = (('9606', 'Homo sapiens'),('10090', 'Mus musculus'), ('559292', 'Saccharomyces cerevisiae'))
+specieschoices = (('9606', 'Homo sapiens'),('10090', 'Mus musculus  (gene search only)'), ('559292', 'Saccharomyces cerevisiae     (gene search only)'))
 
 geneoperators = (('any', 'any'), ('all','all'))
     
