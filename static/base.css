@@ -188,6 +188,8 @@ img.help-icon {
     display: inline;
     vertical-align: -3px;
     margin-left: 5px;
+    width: 20px;
+    height: 20px;
 }
 
 img.help-icon:hover {
