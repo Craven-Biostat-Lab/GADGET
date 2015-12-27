@@ -40,7 +40,7 @@ def searchpage(request):
     class SearchForm(forms.Form):
         q = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Keywords and phrases'}))
         genes = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Gene symbols'}))
-        geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='any')
+        geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='all')
         usegenefile = forms.BooleanField(initial=False, widget=forms.HiddenInput())
         species = forms.ChoiceField(choices=specieschoices, initial='9606', widget=forms.Select(attrs={'class':'form-control'}))
         usehomologs = forms.BooleanField(label='Use homologs to find matching abstracts', widget=forms.CheckboxInput(check_test=parseboolean), initial=True)
@@ -50,7 +50,7 @@ def searchpage(request):
     # get form arguments from the query string
     q = request.GET.get('q', default='')
     genes = request.GET.get('genes', default='')
-    geneop = request.GET.get('geneop', default=geneoperators[0][0])
+    geneop = request.GET.get('geneop', default='all')
     usegenefile_input = request.GET.get('usegenefile', default=False)
     genefilename = request.COOKIES.get('genefilename')
     genefileID = request.COOKIES.get('genefileID')

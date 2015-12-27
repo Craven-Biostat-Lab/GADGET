@@ -50,7 +50,7 @@ def searchpage(request):
     # get form arguments from the query string
     q = request.GET.get('q', default='')
     genes = request.GET.get('genes', default='')
-    geneop = request.GET.get('geneop', default=geneoperators[0][0])
+    geneop = request.GET.get('geneop', default='all')
     usegenefile_input = request.GET.get('usegenefile', default=False)
     genefilename = request.COOKIES.get('genefilename')
     genefileID = request.COOKIES.get('genefileID')
