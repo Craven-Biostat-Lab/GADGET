@@ -89,7 +89,7 @@ action="/gadget/metabolitesearch"
         {% endif %}
         <img src="/static/icon-help-gray.png" class="help-icon" data-toggle="popover"  data-trigger="manual" data-content="GADGET ranks metabolites by finding articles related to your search, and then computing scores for each metabolite based on the number of matching articles.<div class='help-more'><a href='/manual.html#genesearch' target='_blank'>More...</a></div>" data-html="true" data-container="body"/>
         <br />
-        For species <b>{{ speciesname }}</b>,<b>{% if not usehomologs %} not{% endif %} using homologs</b><br /><br />
+        For species <b>{{ speciesname }}</b>{% comment %},<b>{% if not usehomologs %} not{% endif %} using homologs</b>{% endcomment %}<br /><br />
     </div>
 
     <div class="col-sm-4" style="text-align:right"><a id="download-results" href="metabolitelist?{% if q %}q={{ q|urlencode }}{% endif %}{% if genes %}&genes={{ genes|urlencode }}{% endif %}{% if species %}&species={{ species|urlencode }}{% endif %}{% if usehomologs %}&usehomologs={{ usehomologs|urlencode }}{% endif %}{% if orderby %}&orderby={{ orderby|urlencode }}{% endif %}{% if usegenefile %}&usegenefile=true{% if genefileID %}&genefileID={{ genefileID|urlencode }}{% endif %}{% endif %}&download=csv"><img src="/static/icon-download.png" style="margin-right:5px"/> Download CSV</a></div>

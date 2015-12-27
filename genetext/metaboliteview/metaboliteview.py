@@ -59,7 +59,7 @@ def searchpage(request):
     
     # get the species from the form if we ever support multiple species for metabolites
     species = 9606 #request.GET.get('species', default='9606')
-    
+    usehomologs = False
     
     # validate species
     species, speciesname = validatespecies(request.GET.get('species'))
@@ -67,7 +67,7 @@ def searchpage(request):
     # gene input to display to the user
     genesyms = genes
     
-    usehomologs = parseboolean(usehomologs_input)
+    #usehomologs = parseboolean(usehomologs_input)
     usegenefile = parseboolean(usegenefile_input)
     
     if not (q or genes or usegenefile):
