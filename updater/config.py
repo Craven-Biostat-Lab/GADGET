@@ -28,11 +28,17 @@ ABSTRACT_INDEX_PATH = os.path.join(BASE_DIR, '../../gadget-data/abstracts')
 
 
 
+
 # directory to store downloaded files
 # (nothing needs to be in here when the script runs, but the script will not
 # delete the files that it downloads.  It will write over the files every time
 # the script runs.)
 datapath = os.path.join(BASE_DIR, '../../gadget-data/updater-workspace')
+
+
+# path to temporary index for searching new abstracts for metabolites
+TEMP_METABOLITE_INDEX_PATH = os.path.join(datapath, 'new-abstract-temp-index')
+
 
 # url for fetching abstracts from PubMed
 # the script will format this with a comma-separated list of PubMed ID's

@@ -8,8 +8,11 @@ them in the index.  Optimize the index when we're done.
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST, DATETIME, STORED, BOOLEAN
 from datetime import datetime
+from shutil import rmtree
+import os.path
+from os import mkdir
 
-from config import ABSTRACT_INDEX_PATH, getcursor
+from config import ABSTRACT_INDEX_PATH, TEMP_METABOLITE_INDEX_PATH, getcursor
 
 # set up logging
 import logging
@@ -130,8 +133,13 @@ def mark_as_indexed(pmid, cursor):
     """, (pmid,))
 
 
-def write(articles, ix, db):
-    """Given a list of articles as tuples, write them to the index ix.""" 
+def write(articles, ix, db, mark_db=True):
+    """
+    Given a list of articles as tuples, write them to the index ix.
+    
+    If mark_db is True, then update the database record for each article in 'articles,'
+    recording that it has been indexed.
+    """ 
 
     logger.debug('writing articles to index')
 
@@ -188,8 +196,9 @@ def write(articles, ix, db):
 
 
     # mark all of the indexed abstracts as indexed after a successful commit
-    for pmid in writtenPMIDs:
-        mark_as_indexed(pmid, c)
+    if mark_db:
+        for pmid in writtenPMIDs:
+            mark_as_indexed(pmid, c)
 
     c.close()
 
@@ -240,6 +249,35 @@ def update_index(db):
         logger.error('could not remove abstracts in the `removed_abstracts` table from the index.  Error message: %s', e)
 
     ix.close()
+    
+    
+    
+    
+
+
+def temp_metabolite_index(db):
+    """Create a temporary index containing only the new articles, so we can 
+    scan them for metabolites."""
+
+
+    # remove existing index
+    if os.path.exists(TEMP_METABOLITE_INDEX_PATH):
+        rmtree(TEMP_METABOLITE_INDEX_PATH)
+    mkdir(TEMP_METABOLITE_INDEX_PATH)
+
+    ix = open_index(TEMP_METABOLITE_INDEX_PATH)
+    
+    logger.debug('Creating temporary index for metabolite scanning')
+    
+    try:
+        write(articles(db), ix, db, mark_db=False)
+    except Exception as e:
+        logger.critical('could not write articles to temporary metabolite-scanning index.  Error message: %s', e)
+        raise
+
+    ix.close()
+
+    
 
 
 def check_abstract_counts(db):
