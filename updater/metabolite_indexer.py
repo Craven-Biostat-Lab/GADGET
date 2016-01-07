@@ -1,3 +1,9 @@
+"""
+Scans new articles for metabolites, and updates the metabolite_abstract database
+table.
+"""
+
+
 
 #import MySQLdb
 import whoosh.index as index
@@ -22,7 +28,7 @@ logger = logging.getLogger('GADGET.updater.metabolite_indexer')
 #Builds Query
 def buildquery(parser, keywords=None):
     # get keyword branch of query
-    print "keywords (buildquery input) ==", keywords
+    #print "keywords (buildquery input) ==", keywords
     keywords = keywords.decode("utf-8")
     
 
@@ -64,7 +70,7 @@ def insert_db_records(cursor, hmdb_id, abstracts):
 
 
 
-def scan_metabolites(db):
+def update_metabolites(db):
     """
     Find metabolites mentioned in new articles, and insert new records into the
     metabolite_abstract table in the database.
@@ -72,6 +78,8 @@ def scan_metabolites(db):
     (For each metabolite in the metabolite_info.txt file, search against the 
     temporary whoosh index containing only new articles.)
     """
+
+    logger.debug('Scanning for metabolites')
 
     # Don't open the index until this enclosing function is called, because
     # we'll be deleting it and re-creating it in a previous state of the 
@@ -140,7 +148,7 @@ def scan_metabolites(db):
                 #outfile.write(rline) #Write references to file (line 3)
 
 
-
+    logger.info('updated metabolite-abstract links')
 
 
         

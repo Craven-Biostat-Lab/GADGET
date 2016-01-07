@@ -9,6 +9,7 @@ gene_abstract
 homologene_gene_abstract
 mgi_reference
 removed_abstracts
+metabolite_abstract
 
 The script will update the `abstracts` and `homolog_abstracts` of the `gene`
 table, but will not insert any records.  The `gene` table should be populated 
@@ -30,6 +31,7 @@ import abstractqueries
 import fetchabstracts
 import buildindex
 import clear_uploaded_files
+import metabolite_indexer
 
 from config import dbparams, logfilename, loglevel
 
@@ -95,16 +97,22 @@ if __name__ == '__main__':
     # 10: populate 'homologene_gene_abstract' table
     abstractqueries.make_homolog_links(db)
 
-    # 10: update abstract index - add new abstracts and "index_dirty" abstracts
+    # 11: set up temporary index with only new abstracts, to scan for metabolites
+    buildindex.temp_metabolite_index(db)
+    
+    # 12: scan new articles for metabolites, update the metabolite_abstract table
+    metabolite_indexer.scan_metabolites(db)
+
+    # 13: update abstract index - add new abstracts and "index_dirty" abstracts
     buildindex.update_index(db)
 
-    # make sure the index and database table have the same number of abstracts
+    # 14: make sure the index and database table have the same number of abstracts
     buildindex.check_abstract_counts(db)
 
-    # 11: update 'gene' table, count abstracts for each gene
+    # 15: update 'gene' table, count abstracts for each gene
     abstractqueries.count_genes(db)
 
-    #12: clear old uploaded files from the database
+    # 16: clear old uploaded files from the database
     clear_uploaded_files.clearfiles(db)
 
     logger.info('Completed GADGET data update.')
