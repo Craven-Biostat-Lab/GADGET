@@ -369,18 +369,10 @@ div.rankcol {
     vertical-align: center;
 }
 
-div.rankcol.metabolite-rankcol {
-    padding-top: 14px;
-}
-
 div.namecol {
     padding-top: 12px;
     padding-left: 0;
     vertical-align: center;
-}
-
-div.namecol.metabolite-namecol {
-    padding-top: 4px;
 }
 
 div.namecol span.genesymbol {
@@ -408,28 +400,18 @@ div.scorecol span.pvalue {
     padding-left: 15px;
 }
 
-div.scorecol {
-    font-size: 90%;
-    padding-left: 25px;
-    padding-top: 10px;
-    padding-right: 0;
-}
-
 .result-list span.score.selected, .result-list span.score.selected {
     font-weight: bold;
 }
 
 
-div.score-col-group {
-    vertical-align: center;
-}
 
-
-div.abstractcol {
+div.scorebox {
     border: solid 2px #702B34;
     border-radius: 5px;
     padding-top: 10px;
     padding-bottom: 10px;
+    vertical-align: center;
 }
 
 
