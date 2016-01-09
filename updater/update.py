@@ -101,7 +101,7 @@ if __name__ == '__main__':
     buildindex.temp_metabolite_index(db)
     
     # 12: scan new articles for metabolites, update the metabolite_abstract table
-    metabolite_indexer.scan_metabolites(db)
+    metabolite_indexer.update_metabolites(db)
 
     # 13: update abstract index - add new abstracts and "index_dirty" abstracts
     buildindex.update_index(db)
