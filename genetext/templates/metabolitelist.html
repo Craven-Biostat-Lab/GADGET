@@ -10,10 +10,8 @@
                     
                     <a href="http://www.hmdb.ca/metabolites/{{ g.hmdb_id|escape }}" target="_blank" class="showcrossrefs"><img src="/static/icon-external-link.png"> {{ g.hmdb_id}}</a><br />
                     <span class="genesynonyms">
-                        Synonyms: {{ g.synonyms|truncatechars:150 }}
-                        {% if g.synonyms.150 %}
-                            <a data-toggle="popover" data-content="{{ g.synonyms|escape }}" class="more-synonyms" data-html="true" data-container="body">more</a>
-                        {% endif %}
+                        Synonyms: {{ g.synonyms_list|join:'; '|truncatechars:150 }}
+                        <a data-toggle="popover" data-content="<ul class='synonyms-list'>{% for s in g.synonyms_list %} <li>{{ s|escape }}</li>{% endfor %}</ul>" class="more-synonyms" data-html="true" data-container="body">veiw all</a>
                     </span>
                 </div>
             </div></div>

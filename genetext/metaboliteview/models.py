@@ -25,6 +25,9 @@ class Metabolite(models.Model):
     class Meta:
         managed = False
         db_table = 'metabolite'
+        
+    def synonyms_list(self):
+        return self.synonyms.split('\n')
 
 class MetaboliteAbstract(models.Model):
     id = models.IntegerField(primary_key=True)
