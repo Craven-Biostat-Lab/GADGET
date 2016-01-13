@@ -20,7 +20,7 @@
 
     <a name="top"><h1>GADGET User Manual</h1></a>
     
-    <p><a href="/">GADGET</a> is a tool that lets you search for genes and metabolites in the biomedical literature.</p>
+    <p><a href="/">GADGET</a> is a tool that lets you find genes and metabolites associated with a given query in the biomedical literature.</p>
     
     
     <ul style="margin-top:40px">
@@ -35,17 +35,18 @@
         <br />
         <li><a href="#data_sources">Data sources</a></li>
         <li><a href="#data_api">Data API - Using GADGET without a browser</a></li>
+        <li><a href="#source_code">Source code</a></li>
     </ul>
     
     
     <a class="topic" name="genesearch">Search for genes</a>
-    <p>When you search for genes, GADGET first finds <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> articles that match your search.  From the set of articles we've found, then GADGET compiles a list of genes that are overrepresented in the articles, and thus related to your topic.  (If you've entered a keyword query, GADGET checks to see if your keywords are present in the abstract for each article.  If you've entered gene symbols, GADGET checks several data sources to find articles that mention your genes.)</p>
-    <p>For each gene in the search results, you can see the abstracts that link this gene to your search by clicking the "show abstracts" link.</p>
+    <p>When you search for genes, GADGET first finds <a href="http://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a> abstracts that match your query.  From the set of abstracts found, GADGET compiles a list of genes that are overrepresented in the abstracts, and thus related to your query.  (If you've entered a keyword query, GADGET checks to see if your keywords are present in the abstract for each abstract.  If you've entered gene symbols, GADGET checks several data sources to find abstracts that mention your genes.)</p>
+    <p>For each gene in the search results, you can see the abstracts that link this gene to your query by clicking the "Show abstracts" link.</p>
     <p>You can download gene search results as a CSV file.  Downloaded results will contain all of the genes that match your query, not only the top-scoring genes displayed on the page.</p>
     
 
     <a class="topic" name="metabolitesearch">Search for metabolites</a>
-    <p>GADGET's metabolite search shows you a list of metabolites related to your query.  It works the same as the gene search, by first finding a set of articles related to your query, and then compiling a list of metabolites from the articles (see above for details.)</p>
+    <p>GADGET's metabolite search shows you a list of metabolites related to your query.  It works the same as the gene search, by first finding a set of abstracts related to your query, and then compiling a list of metabolites from the abstracts (see above for details.)</p>
     
 
 
@@ -54,9 +55,9 @@
     <br />
     <p>GADGET supports Boolean queries for more specific searches.  Terms can be separated with <span class="example">AND</span> and <span class="example">OR</span>.  An <span class="example">AND</span> query will match abstracts that contain both terms, while an <span class="example">OR</span> query will match abstracts that contain either term.  Terms separated by spaces are automatically treated as an <span class="example">AND</span> query.  You can also exclude terms from your query by using <span class="example">NOT</span> followed by the term.  You can use parentheses to make complex Boolean queries.</p>
     <p>Examples:</p>
-    <div class="example">Match genes or interactions referenced in abstracts matching both "Cat" and "Dog":<br /><span>Cat AND Dog</span> or just <span>Cat Dog</span></div>
-    <div class="example">Match genes or interactions referenced in abstracts matching "Cat" or "Dog", but not "Fish":<br /><span>Cat OR Dog NOT Fish</span></div>
-    <div class="example">Match genes or interactions referenced in abstracts matching "Cat", or both "Dog" and "Fish":<br /><span>Cat OR (Dog AND Fish)</span></div>
+    <div class="example">Find genes or metabolites referenced in abstracts matching both "Cat" and "Dog":<br /><span>Cat AND Dog</span> or just <span>Cat Dog</span></div>
+    <div class="example">Find genes or metabolites referenced in abstracts matching "Cat" or "Dog", but not "Fish":<br /><span>Cat OR Dog NOT Fish</span></div>
+    <div class="example">Find genes or metabolites referenced in abstracts matching "Cat", or both "Dog" and "Fish":<br /><span>Cat OR (Dog AND Fish)</span></div>
     <br />
     <p>To do an exact match on a multi-word phrase, enclose the phrase in quotes.</p>
     <div class="example">Match abstracts containing the terms "Embryonic", "Stem", and "Cell":<br /><span>Embryonic stem cell</span></div>
@@ -74,15 +75,14 @@
     <br />
     <p>Query terms in GADGET are not case sensitive (although Boolean operators are case sensitive).</p>
     <p>You will often get better and faster results by using more specific terms in your searches.  Avoid using common terms like "gene" in your query; they don't usually add much value to the results, and they can slow down GADGET.</p>
-    <p>GADGET uses the <a href="http://packages.python.org/Whoosh/querylang.html" target="_blank">Whoosh query language</a> for matching abstracts.  Not all features of the query language are applicable to GADGET.</p>
 
 
 
 <a class="topic" name="geneentry">Searching via related genes</a>
-    <p>You can enter a list of genes to search for related genes and metabolites.  GADGET will find articles that mention your queried genes, and show you a list of genes/metabolites highly represented in those abstracts.</p>
+    <p>You can enter a list of genes to search for related genes and metabolites.  GADGET will find abstracts that mention your queried genes, and show you a list of genes/metabolites highly represented in those abstracts.</p>
     <p>You can enter genes using their <a href="http://www.ncbi.nlm.nih.gov/sites/entrez?db=gene" target="_blank">Entrez Gene</a> symbols or Gene ID's (eg. <span class="example">TAL1</span> or <span class="example">6886</span>.)</p>
-    <p>You can select whether GADGET should use articles that mention <span class="example">any</span> (at least one) or <span class="example">all</span> of your genes.</p>
-    <p>You can use boolean operators (<span class="example">AND</span>, <span class="example">OR</span>, and <span class="example">NOT</span> in caps) in your gene list.  These operators override your <span class="example">any</span> / <span class="example">all</span> choice.</p>  You can also use <span class="example">*</span> for wildcard matches.
+    <p>You can select whether GADGET should use abstracts that mention <span class="example">any</span> (at least one) or <span class="example">all</span> of your genes.</p>
+    <p>You can use Boolean operators (<span class="example">AND</span>, <span class="example">OR</span>, and <span class="example">NOT</span> in caps) in your gene list.  These operators override your <span class="example">any</span> / <span class="example">all</span> choice.</p>  You can also use <span class="example">*</span> for wildcard matches.
     <div class="example">With the <span>any</span> option selected, match abstracts that mention either SHH or LBH (or both.)  With the </span>all</span> option selected, match abstracts that mention both SHH and LBH.<br /><span>SHH LBH</span></div>
     <div class="example">The same as the previous example, using Entrez Gene ID's instead of gene symbols:<br /><span>6469 81606</span></div>
     <div class="example">Match abstracts that mention PECAM1 and either KDR or TIE1 (or both):<br /><span>PECAM1 AND (KDR OR TIE1)</span></div>
@@ -94,15 +94,15 @@
 
 <a class="topic" name="scores">Gene / metabolite scores</a>
 
-    <p>GADGET can optionally use a few different scores to rank search results for genes and metabolites:</p>
+    <p>GADGET can use several different scores to rank search results for genes and metabolites:</p>
     <table class="instructions">
-        <tr><td>F1 Balanced Score</td><td>The <b>default</b> <a href="http://en.wikipedia.org/wiki/F1_score" target="_blank">F1 score</a> is a balanced measurement of <a href="http://en.wikipedia.org/wiki/Precision_and_recall" target="_blank">precision and recall</a> (specificity and query-matching abstracts).  It takes both the proportion of matching abstracts for each gene and the total number of matching abstracts into account.  The F1 score represents a tradeoff between the "Adjusted precision" and "Matching abstracts" scores.</td></tr>
-        <tr><td>Specificity</td><td>The specificity score is based upon the proportion of a gene's abstracts that match your query &ndash; it hilights genes that occur frequently in articles matching your query, but occuring less frequently in other articles.  For each gene in your query, specificity is calculated as (number of abstracts for the gene matching the query) &divide; (10 + total number of abstracts for the gene).  The specificity score is adjusted by adding a "pseudocount" of 10 to the denominator, so that a gene with 10/10 matching abstracts scores higher than a gene with 1/1 matching abstracts.  (See <a href="http://en.wikipedia.org/wiki/Precision_%28information_retrieval%29" target="_blank">precision</a> on Wikipedia.)</td></tr>
+        <tr><td>F1 Balanced Score</td><td>The <b>default</b> <a href="http://en.wikipedia.org/wiki/F1_score" target="_blank">F1 Balanced Score</a> is a balanced measurement of <a href="http://en.wikipedia.org/wiki/Precision_and_recall" target="_blank">precision and recall</a> (specificity and query-matching abstracts).  It takes both the proportion of matching abstracts for each gene and the total number of matching abstracts into account.  The F1 score represents a tradeoff between the "Adjusted precision" and "Matching abstracts" scores.</td></tr>
+        <tr><td>Specificity</td><td>The specificity score is based upon the proportion of a gene's abstracts that match your query &ndash; it highlights genes that occur frequently in abstracts matching your query, but occuring less frequently in other abstracts.  For each gene in your query, specificity is calculated as (number of abstracts for the gene matching the query) &divide; (10 + total number of abstracts for the gene).  The specificity score is adjusted by adding a "pseudocount" of 10 to the denominator, so that a gene with 10/10 matching abstracts scores higher than a gene with 1/1 matching abstracts.  (See <a href="http://en.wikipedia.org/wiki/Precision_%28information_retrieval%29" target="_blank">precision</a> on Wikipedia.)</td></tr>
         <tr><td>Query-matching abstracts</td><td>The number of abstracts for each gene/metabolite that match your query.</td></tr>
         <tr><td>Total abstracts</td><td>The total number of abstracts associated with each gene.  (This number is not based upon your query.)</td></tr>
     </table>
     <br />
-    <p>GADGET also computes a <b>p-value</b> for each gene using the <a href="http://en.wikipedia.org/wiki/Hypergeometric_test" target="_blank">hypergeometric test</a>.  The null hypothesis for the test is that the fraction of abstracts that match the query for a given gene is equal to the "background" fraction of abstracts that match the query in the entire corpus of abstracts.  The p-value thus indicates how confident we are that a gene's abstract set is enriched for the query.  (There is no option in GADGET to sort genes by the p-value because it would be too slow, but you can still do this if you download your search results in a CSV file.)</p>
+    <p>GADGET also computes a <b>p-value</b> for each gene using the <a href="http://en.wikipedia.org/wiki/Hypergeometric_test" target="_blank">hypergeometric test</a>.  The null hypothesis for the test is that the fraction of abstracts that match the query for a given gene/metabolite is equal to the "background" fraction of abstracts that match the query in the entire corpus of abstracts.  The p-value thus indicates how confident we are that a gene/metabolite's abstract set is enriched for the query.  (There is no option in GADGET to sort genes/metabolites by the p-value because it would be too slow, but you can still do this if you download your search results in a CSV file.)</p>
 
 
 
@@ -124,21 +124,21 @@
 
     <a class="topic" name="usehomologs">Optional inclusion of homologs</a>
     <p><b>Gene search only</b></p>
-    <p>When finding and <a href="#scores">ranking</a> genes that match your query, GADGET's gene search can optionally take homologs into account.  To calculate scores for each gene, GADGET counts the number of abstracts matching your query that each gene appears in.  If you choose to include homologs, GADGET will also count abstracts that refer to homologs of each gene.</p>
-    <p>The groups of homologs that GADGET uses come from <a href="http://www.ncbi.nlm.nih.gov/homologene" target="_blank">Homologene</a>.  Homologs can be either from the same species as each gene, or from different species.</p>
-    <p>This feature can be useful for queries that match a small number of articles.</p>
+    <p>When finding and <a href="#scores">ranking</a> genes that match your query, GADGET's gene search can optionally take homologs into account.  To calculate scores for each gene, GADGET counts the number of abstracts matching your query that the gene appears in.  If you choose to include homologs, GADGET will also count abstracts that refer to homologs of the gene.</p>
+    <p>The groups of homologs that GADGET uses come from <a href="http://www.ncbi.nlm.nih.gov/homologene" target="_blank">Homologene</a>.  Homologs can be from both the same species as each gene, and from different species.</p>
+    <p>This feature can be useful for queries that match a small number of abstracts.</p>
 
     
     
     <a class="topic" name="data_sources">Data sources</a>
-    <p>GADGET's gene search uses gene-article links from NCBI's "gene2pubmed" dataset, Saccharomyces Genome Database (SGD), and Mouse Genome Informatics (MGI).  Gene homologs come from the Homologene database.</p>
-    <p>GADGET's metabolite search uses a list of metabolites from the Human Metabolome Database (HMDB).  Metabolite-article links are generated by matching metabolite names and synonyms from HMDB in the set of PubMed abstracts from the gene search.</p>
-    <p>GADGET downloads abstract text from PubMed.  New abstracts, gene-abstract links, and metabolite-abstract links are updated regularly.</p>
+    <p>GADGET's gene search uses gene-abstract links from NCBI's <a href="ftp://ftp.ncbi.nih.gov/gene/DATA/" target="_blank">gene2pubmed</a> dataset, <a href="http://www.yeastgenome.org/" target="_blank">Saccharomyces Genome Database (SGD)</a>, and <a href="http://www.informatics.jax.org/" target="_blank">Mouse Genome Informatics (MGI)</a>.  Gene homologs come from the <a href="http://www.ncbi.nlm.nih.gov/homologene/" target="_blank">Homologene</a> database.</p>
+    <p>GADGET's metabolite search uses a list of metabolites from the <a href="http://www.hmdb.ca/" target="_blank">Human Metabolome Database (HMDB)</a>.  Metabolite-abstract links are generated by matching metabolite names and synonyms from HMDB in the set of PubMed abstracts collected for the gene search.</p>
+    <p>GADGET downloads abstract text from <a href="https://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">PubMed</a>.  New abstracts, gene-abstract links, and metabolite-abstract links are updated twice a week.</p>
     
     
 
     <a class="topic" name="data_api">Data API - Using GADGET without a browser</a>
-    <p>If you want to automatically access GADGET without using a web browser, you can download comma-delimited CSV or XML files by fetching URL's from GADGET and sending arguments via the query string at the end of the URL.  To download data, the query string must include <span class="example">&download=CSV</span>.</p>
+    <p>If you want to automatically access GADGET without using a web browser, you can download comma-delimited CSV or XML files by fetching URLs from GADGET and sending arguments via the query string at the end of the URL.  To download data, the query string must include <span class="example">&download=CSV</span>.</p>
     <p>To search genes, use this URL: <span class="example">http://gadget.biostat.org/gadget/genelist?download=csv&<span style="font-weight:normal">&lt;query parameters here&gt;</span></span></p>
     <p>To search metabolites, use this URL: <span class="example">http://gadget.biostat.org/gadget/metabolitelist?download=csv&<span style="font-weight:normal">&lt;query parameters here&gt;</span></span></p>
     <p>To send information to GADGET, just append it to the url.  Aguments are given by the name of the argument, an equals sign (<span class="example">=</span>), and the argument's value, e.g. <span class="example"><u>argument</u>=<u>value</u></span>.  Multiple arguments should be separated by ampersands (<span class="example">&</span>).  Here's a list of the arguments you can send:</p>
@@ -153,7 +153,7 @@
          <tr><td>limit</td><td>The maximum number of results to return.  This argument should be a number.  If <span>limit</span> is not included or is invalid, GADGET will return all of the genes/metabolites found in the search.</td></tr>
          <tr><td>offset</td><td>The rank (minus one) of the first gene/metabolite to include in the results.  To omit the first 100 results, include <span>&offset=100</span>.  If <span>offset</span> is omitted or invalid, GADGET will not omit any results.</td></tr>
     </table>
-    <p>If no articles or genes/metabolites match your query, or if <span class="example">q</span> is omitted or invalid, the GADGET server will issue a 404 error instead of returning a CSV file.</p>
+    <p>If no abstracts or genes/metabolites match your query, or if <span class="example">q</span> is omitted or invalid, the GADGET server will issue a 404 error instead of returning a CSV file.</p>
     <p>Examples:</p>
     <div class="example">Download genes matching "arteriole", using homologs:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&usehomologs=1&q=arteriole</b></span></div>
     <div class="example">Download mouse genes matching "mesoderm", ranked by adjusted precision:<br /><span>http://gadget.biostat.wisc.edu/gadget/genelist?download=CSV&q=mesoderm&orderby=adjusted_precision</span></div>
@@ -162,6 +162,9 @@
 
         
 
+
+<a class="topic" name="source_code">Source code</a>
+<p>GADGET's source code is available in <a href="https://github.com/Craven-Biostat-Lab/GADGET" target="_blank">this repository on GitHub</a>.</p>
 
 
     
