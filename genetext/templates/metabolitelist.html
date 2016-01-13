@@ -19,8 +19,8 @@
             
             <div class="col-sm-6 scorebox"><div class="row">
                 <div class="col-sm-6 scorecol">
-                    <span class="score{% if orderby == 'f1_score' %} selected{% endif %}">F<span style="font-size:x-small;vertical-align:sub">1</span> balance: {{ g.f1_score|floatformat:-3 }}</span><br />
-                    <span class="score{% if orderby == 'adjusted_precision' %} selected{% endif %}">Specificity: {{ g.precision|floatformat:-3 }}</span><br />
+                    <span class="score{% if orderby == 'f1_score' %} selected{% endif %}">F<span style="font-size:x-small;vertical-align:sub">1</span> balanced score: {{ g.f1_score|floatformat:-3 }}</span><br />
+                    <span class="score{% if orderby == 'adjusted_precision' %} selected{% endif %}">Adjusted precision: {{ g.precision|floatformat:-3 }}</span><br />
                     <span class="pvalue">p-value: {{ p }}</span>
                 </div>
                 <div class="col-sm-6">
