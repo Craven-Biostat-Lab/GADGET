@@ -6,11 +6,14 @@
             <div class="col-sm-6"><div class="row info-col-group">
                 <div class="col-sm-1 rankcol">{{ forloop.counter|add:offset }}</div>
                 <div class="col-sm-11 namecol">
-                    <span class="genesymbol">{{ g.common_name }}</span>
+                    <span class="genesymbol">{{ g.common_name }}</span><br />
                     
-                    <a href="http://www.hmdb.ca/metabolites/{{ g.hmdb_id|escape }}" target="_blank" class="showcrossrefs"><img src="/static/icon-external-link.png"> {{ g.hmdb_id}}</a><br />
+                    <a href="http://www.hmdb.ca/metabolites/{{ g.hmdb_id|escape }}" target="_blank" class="showcrossrefs metabolite-showcrossrefs">
+                    <img src="/static/icon-external-link.png"> {{ g.hmdb_id}}</a>
+                    <span class="metabolite-origins">{{ g.origins }}</span>
+                    <br />
                     <span class="genesynonyms">
-                        Synonyms: {{ g.synonyms_list|join:'; '|truncatechars:150 }}
+                        Synonyms: {{ g.synonyms_list|join:'; '|truncatechars:100 }}
                         <a data-toggle="popover" data-content="<ul class='synonyms-list'>{% for s in g.synonyms_list %} <li>{{ s|escape }}</li>{% endfor %}</ul>" class="more-synonyms" data-html="true" data-container="body">veiw all</a>
                     </span>
                 </div>

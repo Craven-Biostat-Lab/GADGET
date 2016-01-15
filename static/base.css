@@ -449,7 +449,10 @@ a.showcrossrefs img {
     vertical-align: 0px;
 }
 
-
+a.showcrossrefs.metabolite-showcrossrefs {
+    margin-left: 0; 
+    margin-right: 10px;
+}
 
 
 
