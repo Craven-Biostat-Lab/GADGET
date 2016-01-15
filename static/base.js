@@ -33,6 +33,7 @@ function flasherror()
 
 
 
+// init popovers that open on click
 function initPopovers(selection) {
     // initialize help popovers
     selection.popover();
@@ -100,11 +101,16 @@ $(document).ready( function ()
     
     
     
-    
+    // init clickable popovers
     initPopovers($('.help-icon'));
     
-    
-    
+    // init hover popovers
+    $('.sort-btn').popover({
+        trigger: 'hover',
+        container: 'body',
+        html: true,
+        placement: 'bottom',
+        });
 });
 
 

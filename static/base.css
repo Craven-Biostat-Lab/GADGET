@@ -250,6 +250,9 @@ a#download-results:hover {
 }
 
 
+div#sort-row {
+    margin-top: 16px;
+}
 
 
 div.sort-btn-group {
@@ -274,7 +277,12 @@ a.sort-btn-active, a.sort-btn-active:hover {
     background: #702B34;
     font-weight: bold;
     color: white !important;
-    pointer-events: none;
+    cursor: default;
+    
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */  
 }
 
 

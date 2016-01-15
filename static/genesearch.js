@@ -14,6 +14,9 @@ var offset = 0;
 // build the query string and redirect to a page with the new ordering
 function order(key)
 {
+    // do nothing if we're already sorting by this key.
+    if (orderby == key) { return; }
+    
     var querystring = "q=" + q + "&genes=" + genesyms + "&geneop=" + geneop + "&species=" + species + "&usehomologs=" + usehomologs + "&orderby=" + key + "&usegenefile=" + usegenefile;
     window.location = "genesearch?" + querystring;
 }
