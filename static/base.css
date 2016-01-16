@@ -220,6 +220,11 @@ img.help-icon:hover {
     transition: 0.2s;
 }
 
+img.help-icon.help-icon-big {
+    width: 28px;
+    height: 28px;
+    vertical-align: -8px;
+}
 
 
 
