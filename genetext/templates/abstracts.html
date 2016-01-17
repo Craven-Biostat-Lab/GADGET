@@ -1,3 +1,5 @@
+{% comment %} List of abstract references, used for abstract-display {% endcomment %}
+
 {% autoescape on %}
     {% for a in abstracts %}
         <li>{% if a.title %}<b>{{ a.title }}</b>{% endif %}

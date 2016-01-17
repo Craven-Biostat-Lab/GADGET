@@ -1,3 +1,5 @@
+{% comment %} Rendered in the "show abstracts" pane, with the title, sort buttons, and 'only reviews' checkbox.  The actual list of abstracts is rendered in the "abstracts.html" template. {% endcomment %}
+
 <span class="pane-title">{{ abstractcount }} abstracts</span><br />
 
 {% if keywordstring %} for <b>{{ keywordstring|safe }}</b>{% endif %}{% if rowgene %} for <b>{{ rowgene|safe }}</b>{% endif %}{% if metabolite_name %} for <b>{{ metabolite_name|safe }}</b>{% endif %}{% if genesyms %} for{% if geneop %} <b>{{ geneop }}</b> of{% endif %} <b>{{ genesyms|safe }}</b>{% endif %}{% if q and genesyms %} matching{% endif %}{% if q %} <b>{{ q|safe }}</b>{% endif %}<br /><br />

@@ -1,3 +1,4 @@
+{% comment %} This template is used to download a list of gene search results as XML.  This feature is no longer advertised or documented, but it's not disabled in the source code.  It may or may not still work. {% endcomment %}
 <?xml version="1.0" ?>
 <!DOCTYPE genelist SYSTEM "http://gadget.biostat.wisc.edu/static/genelist.dtd">
 <genelist>

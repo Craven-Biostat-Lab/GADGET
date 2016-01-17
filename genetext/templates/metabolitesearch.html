@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% comment %} Template for the metabolite search page.  Includes the search buttons, sort buttons, download button, among a few other things (some other controls are in base.html.  The actual list of metabolites in the results is the metabolitelist.html template. {% endcomment %}
+
 {% block title %}GADGET{% if q or genesyms %}: metabolites for{% if q %} {{ q|safe }}{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} {{ genesyms|safe }}{% endif %}{% else %} metabolite search{% endif %}{% endblock %}
 
 
@@ -99,7 +101,7 @@ action="/gadget/metabolitesearch"
 
 
 
-<div class="row show-with-results" style="display:none"><div class="col-sm-12">
+<div class="row show-with-results" id="sort-row" style="display:none"><div class="col-sm-12">
 
     <b>Sort:</b> 
 

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% comment %} Template for the gene search page.  Includes the search buttons, sort buttons, download button, among a few other things (some other controls are in base.html.  The actual list of genes in the results is the genelist.html template. {% endcomment %}
+
 {% block title %}GADGET{% if q or genesyms %}: genes for{% if q %} {{ q|safe }}{% endif %}{% if q and genesyms %} and{% endif %}{% if genesyms %} {{ genesyms|safe }}{% endif %}{% else %} gene search{% endif %}{% endblock %}
 
 
