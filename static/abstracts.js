@@ -1,4 +1,4 @@
-// script for fetching and displaying abstracts
+// script for fetching and displaying abstracts in the search results
 // uses jquery
 
 // number of abstracts to fetch 

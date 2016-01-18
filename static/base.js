@@ -1,3 +1,7 @@
+// Common JS used on all GADGET search pages, as well as the home page.
+// Miscellaneous odds and ends
+
+
 var errormessage = "An error occurred!  Please check your internet connection, reload the page, and try again.  If the problem persists, please <a href='/contact.html'>contact us</a>.";
 
 // display a message

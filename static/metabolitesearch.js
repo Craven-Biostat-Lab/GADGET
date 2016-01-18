@@ -1,4 +1,5 @@
-// script for gene search page
+// Script for metabolite search page
+// Mostly copied from genesearch.js.
 // requires jquery
 
 // string variables "q", "genes", "geneop", "genesyms", "species", "usehomologs",
