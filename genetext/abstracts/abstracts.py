@@ -1,4 +1,12 @@
 #!/usr/bin/python
+"""
+Django views for showing lists of abstracts in all of the search modes.
+
+The view functions in this file interact with abstracts/index.py, which has code
+for accessing the Whoosh full-text index of abstracts.
+"""
+
+
 import json
 from whoosh.query import NullQuery
 

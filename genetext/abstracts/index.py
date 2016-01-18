@@ -1,4 +1,12 @@
 #!/usr/bin/python
+"""
+Queries the Whoosh index of abstracts.  This module is used by all of the search
+modes to execute the queries, to find all of the relevant abstracts before
+ranking genes/metabolites/keyphrases/events.  It's also used by abstracts/abstracts.py,
+for getting lists of abstracts to show to the user.
+"""
+
+
 import atexit
 import whoosh.index as index
 from whoosh.fields import SchemaClass, TEXT, NUMERIC, IDLIST, BOOLEAN, STORED

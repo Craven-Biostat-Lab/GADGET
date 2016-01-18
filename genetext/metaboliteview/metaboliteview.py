@@ -1,4 +1,17 @@
 #!/usr/bin/python
+
+"""
+Django views for the metabolite search, including a view for the search page, and a
+view for the results (loaded separately via AJAX.)
+
+This module validates the user input, and queries the database to do the heavy
+computational lifting for the metabolite search results.
+
+This whole module was coped from geneview.py, and tweaked to fit it for metabolites.
+(Gross, I know.)
+"""
+
+
 from urllib import quote
 import json
 

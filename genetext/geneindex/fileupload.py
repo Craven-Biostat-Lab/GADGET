@@ -1,4 +1,12 @@
 """
+Handles gene file uploads
+"""
+
+
+
+
+
+"""
 to-do's
 
 maximum number of genes in a file?

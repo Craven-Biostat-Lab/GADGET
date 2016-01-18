@@ -1,4 +1,15 @@
 #!/usr/bin/python
+"""
+This module processes genes inputted by the user, by matching the user's input
+against a Whoosh index of genes.  (Takes gene input from the user as a string,
+and computes a Whoosh query object to be used against the Whoosh abstract index,
+to find abstracts matching the user's gene query.)
+
+This file also handles the any/all operation for gene queries, and handles searching
+with uploaded gene files.  (See fileupload.py for uploading gene files.)
+
+This module is used by all of the search modes, as well as the abstract-viewer.
+"""
 
 from django.conf import settings
 import whoosh.index as index

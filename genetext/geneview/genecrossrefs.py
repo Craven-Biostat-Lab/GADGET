@@ -1,3 +1,9 @@
+"""
+Django view for the "external links" panels for individual genes in the gene search
+results.
+"""
+
+
 import json
 from django.http import HttpResponse
 from django.template.loader import render_to_string

@@ -1,4 +1,17 @@
 #!/usr/bin/python
+
+"""
+Django views for the gene search, including a view for the search page, and a
+view for the results (loaded separately via AJAX.)
+
+This module validates the user input, and queries the database to do the heavy
+computational lifting for the gene search results.
+
+A couple of the other disabled search modes, like the event view and keyphrase view,
+import this module and use its input validation logic.  (It would have been cleaner
+to split the validation into its own separate module.)
+"""
+
 from urllib import quote
 import json
 
