@@ -80,7 +80,7 @@
     
     
     
-    <a class="topic">GADGET dependencies</a>
+    <a class="topic">GADGET setup</a>
     <p>GADGET's dependencies have been updated since the 2013 version.  As of January 2016, the dependencies are:
     <ul>
         <li>Python 2.7</li>
@@ -92,6 +92,10 @@
         <li>*MySQL-python 1.2.2</li>
     </ul>
         Requirements which are python packages (marked with * stars) can be installed using pip straight from the requirements.txt file in the repository.
+    </p>
+    
+    <p>
+        GADGET (both the web application and updater script) log into the MySQL server using a username called 'gadget' with no password, using a database called 'gadget'.  The user should have select, insert, and update privilages on all of the tables in the 'gadget' database.
     </p>
     
     
