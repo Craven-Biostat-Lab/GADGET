@@ -286,7 +286,7 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
             # create, package, and return a CSV file
             response = HttpResponse(mimetype='text/csv')
             response['Content-Disposition'] = \
-                'attachment; filename=gadget-{0}-{1}.csv'.format(quote(query) if query else '', quote(genes) if genes else '')
+                'attachment; filename=gadget-genes-{0}-{1}.csv'.format(quote(query) if query else '', quote(genes) if genes else '')
             response.write(makeCSV(results, pvals, offset))
             return response
             

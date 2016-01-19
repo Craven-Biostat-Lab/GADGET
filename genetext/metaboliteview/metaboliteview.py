@@ -294,7 +294,7 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
             # create, package, and return a CSV file
             response = HttpResponse(mimetype='text/csv')
             response['Content-Disposition'] = \
-                'attachment; filename=gadget-{0}-{1}.csv'.format(quote(query) if query else '', quote(genes) if genes else '')
+                'attachment; filename=gadget-metabolites-{0}-{1}.csv'.format(quote(query) if query else '', quote(genes) if genes else '')
             response.write(makeCSV(results, pvals, offset))
             return response
             
@@ -333,9 +333,9 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
 
 def makeCSV(genes, pvals, offset):
     """Create a CSV file (returned as a string) given a list of genes and a list of p values."""
-    header = 'rank,metabolite_name,hmdb_id,f1_balance,matching_abstracts,total_abstracts,specificity,p_value\n'
+    header = 'rank,metabolite_name,hmdb_id,synonyms,origin,f1_balance,matching_abstracts,total_abstracts,specificity,p_value\n'
     body = '\n'.join([','.join(['"{0}"'.format(f) for f in 
-        (rank, g.common_name.encode('ascii', 'ignore'), g.hmdb_id, '{0:0.3f}'.format(g.f1_score), g.hits, g.abstracts_display, '{0:0.3f}'.format(g.precision), p)])
+        (rank, g.common_name.encode('ascii', 'ignore'), g.hmdb_id, g.synonyms.replace('"','').replace('\n','; ').encode('ascii', 'ignore'), g.origins.replace('"','').encode('ascii','ignore'), '{0:0.3f}'.format(g.f1_score), g.hits, g.abstracts_display, '{0:0.3f}'.format(g.precision), p)])
         for rank, (g, p) in enumerate(zip(genes, pvals), start=1+offset)])
     return header + body
 
