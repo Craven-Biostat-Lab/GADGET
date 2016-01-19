@@ -1,0 +1,115 @@
+<html>
+<head>
+    <title>GADGET 2015 documentation</title>
+    <style type="text/css">
+    div#content {
+        font-family: sans, sans-serif;
+        margin: auto;
+        width: 1000px;
+        max-width: 100%;
+    }
+
+    a.topic {
+        display: block;
+        font-size: x-large;
+        font-weight: bold;
+        margin-top: 40px;
+    }
+
+    table.instructions {
+        margin: 0 5%;
+    }
+
+    table.instructions td {
+        padding: 5px 10px;
+    }
+
+    a.top {
+        display: block;
+        font-size: 80%;
+    }
+
+    div.example {
+        border-left: solid 2px #426BA2 /*#74C7DC*/;
+        margin-left: 5%;
+        padding-left: 5px;
+        margin-bottom: 5px;
+    }
+
+    div.example span, span.example, div.example pre,
+    table.instructions tr td:first-child, table.instructions span {
+        font-family: Consolas, mono;
+        color: #426BA2;
+        font-weight: bold;
+        background-color: #DCE8FA;
+        padding: 1px 5px;
+    }
+    
+    ol {
+        list-style-type: decimal;
+    }
+    
+    ol ol {
+        list-style-type: lower-alpha;
+    }
+    
+    ol ol ol {
+        list-style-type: lower-roman;
+    }
+    </style>
+</head>
+<body><div id="content">
+    <a name="top"><h1>GADGET 2015 documentation</h1></a>
+    
+    <p>This file is an update to the 2013 documentation file.  If you're working on GADGET, it might be helpful to look over the old documentation file too.</p>
+    
+    
+    <a class="topic">Github repository</a>
+    <p>GADGET's source code can be cloned from this central repository:<br />
+        <a href="https://github.com/Craven-Biostat-Lab/GADGET">https://github.com/Craven-Biostat-Lab/GADGET</a>
+    </p>
+    
+    
+    
+    <a class="topic">Development environment VM</a>
+    <p>The easiest way to set up a GADGET development/test environment is to use the virtual machine image here:
+    <div class="example">
+        /u/ml-group/information_extraction/gadget/gadget.ova
+    </div></p>
+    <p>The VM image was created with VirtualBox, but should in theory work with other virtualization software as well.  Create a copy of the image onto your local machine, (it will be too slow to run it straight from the network drive.)  The VM already has GADGET set up with the correct dependencies installed, as well as the database.  It should have everything you need to work on GADGET.</p>
+    
+    
+    
+    <a class="topic">GADGET dependencies</a>
+    <p>GADGET's dependencies have been updated since the 2013 version.  As of January 2016, the dependencies are:
+    <ul>
+        <li>Python 2.7</li>
+        <li>R 3.x (older versions might work)</li>
+        <li>Mysql server 5.1 (other versions are probably fine)</li>
+        <li>*Django 1.6.1 or higher</li>
+        <li>*Whoosh 2.5.7</li>
+        <li>*rpy2 2.1.9</li>
+        <li>*MySQL-python 1.2.2</li>
+    </ul>
+        Requirements which are python packages (marked with * stars) can be installed using pip straight from the requirements.txt file in the repository.
+    </p>
+    
+    
+    
+    <a class="topic">Updating the web server</a>
+    <p>Updating the live GADGET web server is now much easier than it was in the 2013 version.  Now, all you have to do is:
+    <ol>
+        <li>SSH into gadget.biostat.wisc.edu  (you'll probably have to get in touch with the system administrators to get set up with a login.  You'll need the same permissions as Matt's account ('ziegler').)</li>
+        <li>$ <span class="example">cd /var/www/gadget</span></li>
+        <li>$ <span class="example">git pull</span></li>
+        <li>$ <span class="example">sudo systemctl restart httpd</span> (to restart apache)</li>
+    </ol>
+    
+    If you need to log into the mysql server for some reason, just do <span class="example">$ mysql gadget</span> (no password.)
+    </p>
+    
+    
+    
+    <a class="topic">Disabled event search and keyphrase search</a>
+    <p>In the 2015 version of GADGET, the event search and keyphrase search modes have been disabled.  If you ever want to revive these modes, you'll have to edit settings.py and urls.py to turn these modes back on.  You'll want to restore the old database tables used from these modes from a 2013 dump of the database.  Much of the front-end code has been overhauled since the removal of these 2 modes, so the front-end code would have to be updated.  For the keyphrase search, probably the easies thing to do would be to copy the front-end code from the gene search and modify it to work with the keyphrase search, instead of working with the old front-end code from the keyphrase search.  It would probably be helpful to check out a 2013 version of the code from the git repository, to see how it used to work.</p>
+    </p>
