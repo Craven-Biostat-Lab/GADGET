@@ -111,8 +111,11 @@ if __name__ == '__main__':
 
     # 15: update 'gene' table, count abstracts for each gene
     abstractqueries.count_genes(db)
+    
+    # 16: update 'metabolite' table, count abstracts for each metabolite
+    abstractqueries.count_metabolites(db)
 
-    # 16: clear old uploaded files from the database
+    # 17: clear old uploaded files from the database
     clear_uploaded_files.clearfiles(db)
 
     logger.info('Completed GADGET data update.')

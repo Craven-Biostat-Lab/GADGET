@@ -182,3 +182,29 @@ def count_genes(db):
 
     c.close()
     logger.info('updated the `gene` table with new abstract counts')
+    
+    
+    
+    
+def count_metabolites(db):
+    """Update the `metabolite` table with counts of associated abstracts"""
+
+    logger.debug('updating the `metabolite` table with new abstract counts')
+
+    c = getcursor(db)
+
+    try:
+        c.execute("""
+        update `metabolite`
+        set `metabolite`.`abstracts` = (
+            select count(distinct `abstract`) 
+            from `metabolite_abstract` 
+            where `metabolite_abstract`.`metabolite_hmdb_id` = `metabolite`.`hmdb_id`);
+        """)
+        
+    except Exception as e:
+        logger.critical('Error updating the `metabolite` table with new abstract counts.  Error message: %s', e)
+        raise
+
+    c.close()
+    logger.info('updated the `metabolite` table with new abstract counts')
