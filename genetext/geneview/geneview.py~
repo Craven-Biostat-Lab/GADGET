@@ -1,16 +1,16 @@
 #!/usr/bin/python
 
 """
-Django views for the metabolite search, including a view for the search page, and a
+Django views for the gene search, including a view for the search page, and a
 view for the results (loaded separately via AJAX.)
 
 This module validates the user input, and queries the database to do the heavy
-computational lifting for the metabolite search results.
+computational lifting for the gene search results.
 
-This whole module was coped from geneview.py, and tweaked to fit it for metabolites.
-(Gross, I know.)
+A couple of the other disabled search modes, like the event view and keyphrase view,
+import this module and use its input validation logic.  (It would have been cleaner
+to split the validation into its own separate module.)
 """
-
 
 from urllib import quote
 import json
@@ -23,13 +23,13 @@ from django import forms
 
 import rpy2.robjects as robjects
 
-from models import Metabolite, MetaboliteAbstract, Abstract
+from models import Gene, GeneAbstract, Abstract
 from abstracts.index import get_abstracts, corpus_size
 from geneindex.geneindex import parse_gene_abstractquery, genefile_lookup, BadGenefileError
 
 # allowable species (specieschoices should be in order, with the default first)
 speciesnames = {'9606': 'Homo sapiens', '10090': 'Mus musculus', '559292': 'Saccharomyces cerevisiae'}
-specieschoices = (('9606', 'Homo sapiens'),('10090', 'Mus musculus'), ('559292', 'Saccharomyces cerevisiae'))
+specieschoices = (('9606', 'Homo sapiens'),('10090', 'Mus musculus  (gene search only)'), ('559292', 'Saccharomyces cerevisiae     (gene search only)'))
 
 geneoperators = (('any', 'any'), ('all','all'))
     
@@ -53,7 +53,7 @@ def searchpage(request):
     class SearchForm(forms.Form):
         q = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Keywords and phrases'}))
         genes = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Gene symbols'}))
-        geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='any')
+        geneop = forms.ChoiceField(label='Gene operator', choices=geneoperators, widget=forms.RadioSelect, initial='all')
         usegenefile = forms.BooleanField(initial=False, widget=forms.HiddenInput())
         species = forms.ChoiceField(choices=specieschoices, initial='9606', widget=forms.Select(attrs={'class':'form-control'}))
         usehomologs = forms.BooleanField(label='Use homologs to find matching abstracts', widget=forms.CheckboxInput(check_test=parseboolean), initial=True)
@@ -67,12 +67,9 @@ def searchpage(request):
     usegenefile_input = request.GET.get('usegenefile', default=False)
     genefilename = request.COOKIES.get('genefilename')
     genefileID = request.COOKIES.get('genefileID')
+    species = request.GET.get('species', default='9606')
     usehomologs_input = request.GET.get('usehomologs', default='')
     orderby = request.GET.get('orderby', default='f1_score')
-    
-    # get the species from the form if we ever support multiple species for metabolites
-    species = 9606 #request.GET.get('species', default='9606')
-    usehomologs = False
     
     # validate species
     species, speciesname = validatespecies(request.GET.get('species'))
@@ -80,13 +77,14 @@ def searchpage(request):
     # gene input to display to the user
     genesyms = genes
     
-    #usehomologs = parseboolean(usehomologs_input)
+    usehomologs = parseboolean(usehomologs_input)
     usegenefile = parseboolean(usegenefile_input)
+    
     
     if not (q or genes or usegenefile):
         return redirect('/')
     
-    return render_to_response('metabolitesearch.html', {'form': form, 'q': q, 
+    return render_to_response('genesearch.html', {'form': form, 'q': q, 
         'genes': genes, 'geneop': geneop, 'genesyms': genesyms, 'species': species, 
         'speciesname': speciesname, 'usehomologs': usehomologs, 'orderby': orderby,
         'usegenefile': usegenefile, 'genefilename': genefilename,
@@ -177,28 +175,23 @@ class searchparams:
         return repr(locals())
 
 
-def metabolitesearch(request):
-    """Does the actual search for the metabolite search.  Given a keyword query,
+def genesearch(request):
+    """Does the actual search for the gene search.  Given a keyword query,
     a list of genes, species, homology option, offset, limit, sorting
     criterion, and response type (all via the query string), fetches a list of
-    metabolites relevent to the query via the index and database, and returns the 
+    genes relevent to the query via the index and database, and returns the 
     appropriate response."""
     
     params = searchparams(request)
         
     # use homology option to decide which gene-abstract table and which
     # abstract-count column to use.
-    #if params.usehomologs:
-    #    geneabstract_tablename = 'homologene_gene_abstract'
-    #    abstract_col = 'homolog_abstracts'
-    #else:
-    #    geneabstract_tablename = 'gene_abstract'
-    #    abstract_col = 'abstracts'
-     
-    # No homologs for metabolite view
-    geneabstract_tablename = 'metabolite_abstract'
-    abstract_col = 'abstracts'
-    
+    if params.usehomologs:
+        geneabstract_tablename = 'homologene_gene_abstract'
+        abstract_col = 'homolog_abstracts'
+    else:
+        geneabstract_tablename = 'gene_abstract'
+        abstract_col = 'abstracts'
     
     if params.genes or params.usegenefile:
         try:
@@ -251,11 +244,11 @@ def metabolitesearch(request):
         (2 * (COUNT(*) / `{abstract_col}`) * (COUNT(*) / {query_abstract_count})) / 
             ((COUNT(*) / `{abstract_col}`) + (COUNT(*) / {query_abstract_count})) f1_score
     FROM `{geneabstract_tablename}` a
-    INNER JOIN `metabolite` g
-    ON g.hmdb_id = a.metabolite_hmdb_id
+    INNER JOIN `gene` g
+    ON g.entrez_id = a.gene
     WHERE a.`abstract` in ({paramstring})
-    # AND g.`tax_id` = %s
-    GROUP BY g.hmdb_id
+    AND g.`tax_id` = %s
+    GROUP BY g.entrez_id
     ORDER BY `{orderby}` DESC
     LIMIT %s, %s;
     """.format(
@@ -267,13 +260,12 @@ def metabolitesearch(request):
         abstract_col=abstract_col)
     
     # execute sql query, get genes
-    results = Metabolite.objects.raw(sqlquery, abstracts + [params.species, params.offset, params.query_limit])
-    #results = Metabolite.objects.raw(sqlquery, abstracts + [params.offset, params.query_limit])
+    results = Gene.objects.raw(sqlquery, abstracts + [params.species, params.offset, params.query_limit])
     
     # calculate p values
     # '{0:.2e}'.format()
     phyper = robjects.r['phyper']
-    pvals_float = [phyper(g.hits-1, query_abstract_count, total_abstract_count-query_abstract_count, g.abstracts_display, lower_tail=False)[0]  for g in results]
+    pvals_float = [hyper(g.hits-1, query_abstract_count, total_abstract_count-query_abstract_count, g.abstracts_display, lower_tail=False)[0]  for g in results]
     pvals = [('{0:.2e}'.format(p) if p > 0.0000000001 else '< 1e-10') for p in pvals_float]
 
     if not pvals: 
@@ -296,7 +288,7 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
             # create, package, and return a CSV file
             response = HttpResponse(mimetype='text/csv')
             response['Content-Disposition'] = \
-                'attachment; filename=gadget-metabolites-{0}-{1}.csv'.format(quote(query) if query else '', quote(genes) if genes else '')
+                'attachment; filename=gadget-genes-{0}-{1}.csv'.format(quote(query) if query else '', quote(genes) if genes else '')
             response.write(makeCSV(results, pvals, offset))
             return response
             
@@ -323,7 +315,7 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
     else: # display results in web browser
         # render results to html
         if validresult:
-            resulthtml = render_to_string('metabolitelist.html', {'results': zip(results, pvals), 'pvals': pvals, 'offset': offset, 'orderby': orderby})
+            resulthtml = render_to_string('genelist.html', {'results': zip(results, pvals), 'pvals': pvals, 'offset': offset, 'orderby': orderby})
         else:
             resulthtml = None
 
@@ -335,9 +327,9 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
 
 def makeCSV(genes, pvals, offset):
     """Create a CSV file (returned as a string) given a list of genes and a list of p values."""
-    header = 'rank,metabolite_name,hmdb_id,synonyms,origin,f1_balance,matching_abstracts,total_abstracts,specificity,p_value\n'
+    header = 'rank,symbol,name,synonyms,entrez_id,chromosome,map_location,f1_balance,matching_abstracts,total_abstracts,specificity,p_value\n'
     body = '\n'.join([','.join(['"{0}"'.format(f) for f in 
-        (rank, g.common_name.encode('ascii', 'ignore'), g.hmdb_id, g.synonyms.replace('"','').replace('\n','; ').encode('ascii', 'ignore'), g.origins.replace('"','').encode('ascii','ignore'), '{0:0.3f}'.format(g.f1_score), g.hits, g.abstracts_display, '{0:0.3f}'.format(g.precision), p)])
+        (rank, g.symbol, g.name, g.synonyms, g.entrez_id, g.chromosome, g.maplocation, '{0:0.3f}'.format(g.f1_score), g.hits, g.abstracts_display, '{0:0.3f}'.format(g.precision), p)])
         for rank, (g, p) in enumerate(zip(genes, pvals), start=1+offset)])
     return header + body
 
