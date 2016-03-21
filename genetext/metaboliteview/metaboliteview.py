@@ -277,7 +277,7 @@ def metabolitesearch(request):
     pvals = [('{0:.2e}'.format(p) if p > 0.0000000001 else '< 1e-10') for p in pvals_float]
 
     if not pvals: 
-        return searchresponse(validresult=False, download=params.download, errmsg="Your query didn't match any genes.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, species=params.species, usegenefile=params.usegenefile)
+        return searchresponse(validresult=False, download=params.download, errmsg="Your query didn't match any metabolites.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, species=params.species, usegenefile=params.usegenefile)
 
     return searchresponse(validresult=True, download=params.download, results=results, genes=params.genes, geneop=params.geneop, pvals=pvals, offset=params.offset, orderby=params.orderby, query=params.keywords, limit=params.limit, usehomologs=params.usehomologs, species=params.species, query_abstract_count=query_abstract_count, abstracts=abstracts, usegenefile=params.usegenefile)
     

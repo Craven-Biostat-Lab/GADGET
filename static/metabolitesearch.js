@@ -96,7 +96,7 @@ $(document).ready(function()
                 // If "validresult" is false, we ran out of genes.  
                 hidespinner();
                 $("#more").hide(); 
-                $("div#content").append("No more genes match your query!");
+                $("div#content").append("No more metabolites match your query!");
             }
         })
         .error(function() 
