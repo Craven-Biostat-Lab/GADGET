@@ -90,7 +90,7 @@ ga_sources = [
     ),
 
    
-    # full_ner_mapping.txt
+    # full_ner_mapping.txt local file not extracted from web
     ga.linksource(
         url = None,
         filename = 'full_ner_mapping.txt',
