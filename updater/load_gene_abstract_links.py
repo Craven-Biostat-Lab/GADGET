@@ -99,6 +99,9 @@ def fetch(source):
     """Fetch and decompress the specified url into the filename, use logging.
     Return True if the retrieval was successful, False otherwise."""
 
+    if source.url is None:
+        return True
+
     try:
         # use filename if the file is not compressed
         name = source.compressedfilename or source.filename

@@ -88,6 +88,20 @@ ga_sources = [
             ignore 1 lines
             (@tax_id, `gene`, `abstract`);"""
     ),
+
+   
+    # full_ner_mapping.txt
+    ga.linksource(
+        url = None,
+        filename = 'full_ner_mapping.txt',
+        insertquery = \
+            """load data local infile '{path}'
+            into table `gene_abstract`
+            fields terminated by '\t'
+            ignore 1 lines
+            (@tax_id, `gene`, `abstract`);"""
+    ),
+
     
     # SGD
     # requires "sgd_xrefs" table
