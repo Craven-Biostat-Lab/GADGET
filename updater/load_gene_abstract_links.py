@@ -99,6 +99,7 @@ def fetch(source):
     """Fetch and decompress the specified url into the filename, use logging.
     Return True if the retrieval was successful, False otherwise."""
 
+    # if none that means that file is local
     if source.url is None:
         return True
 
