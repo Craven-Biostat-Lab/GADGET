@@ -14,7 +14,9 @@ from whoosh.qparser import MultifieldParser
 from whoosh.query import And, Or, Term, ConstantScoreQuery, NullQuery, Query
 from whoosh.scoring import BM25F
 from whoosh.sorting import MultiFacet
+#from whoosh.legacy import int_to_text
 from whoosh.codec.whoosh2 import int_to_text
+
 
 from django.core.cache import cache
 
@@ -85,6 +87,8 @@ def buildquery(keywords=None, genes=None, genehomologs=True, onlyreviews=False, 
         genebranch = NullQuery()
         
     # get keyword branch of query
+    if keywords is not None:
+	keywords = keywords.replace(":[to",":{0 to")
     keywordbranch = parser.parse(unicode(keywords)) if keywords else NullQuery()
     
     # include only reviews?

@@ -180,7 +180,7 @@ def fetchall(db):
             m = fetch(idlist)
             update(db, m)
         except Exception as e:
-            logger.Error('Exception while fetching abstracts from pubmed.  IDlist: %s,   error message: %s', idlist, e)
+            logger.error('Exception while fetching abstracts from pubmed.  IDlist: %s,   error message: %s', idlist, e)
 
     logger.info('Fetched unfetched abstracts in `abstract` table')
 

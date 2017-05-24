@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "./update.py", line 56, in <module>
+    db = MySQLdb.connect(**dbparams)
+  File "/usr/lib64/python2.7/site-packages/MySQLdb/__init__.py", line 81, in Connect
+    return Connection(*args, **kwargs)
+  File "/usr/lib64/python2.7/site-packages/MySQLdb/connections.py", line 187, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (2002, "Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock' (13)")

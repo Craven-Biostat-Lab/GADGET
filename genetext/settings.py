@@ -11,7 +11,7 @@ DEBUG = True #RUNNING_DEVSERVER
 TEMPLATE_DEBUG = DEBUG
 URLS_DEBUG = RUNNING_DEVSERVER
 
-
+ALLOWED_HOSTS = ['gadget.biostat.wisc.edu']
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os

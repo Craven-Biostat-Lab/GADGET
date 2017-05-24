@@ -1,7 +1,7 @@
 #!/usr/bin/python
 """
 Update the gene-abstract links and abstract texts that GADGET uses.
-
+a
 This script will insert records into these database tables.  These tables can 
 be empty when you run the script:
 abstract
