@@ -261,11 +261,21 @@ def genesearch(request):
     
     # execute sql query, get genes
     results = Gene.objects.raw(sqlquery, abstracts + [params.species, params.offset, params.query_limit])
-    
+
+    try:
+        x = len(list(results))
+    except:
+        return searchresponse(validresult=False, download=params.download, errmsg='Query did not return results. Try a more specific query.', query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, usegenefile=params.usegenefile)
+
+
+
     # calculate p values
     # '{0:.2e}'.format()
     phyper = robjects.r['phyper']
+
     pvals_float = [phyper(g.hits-1, query_abstract_count, total_abstract_count-query_abstract_count, g.abstracts_display, lower_tail=False)[0]  for g in results]
+
+
     pvals = [('{0:.2e}'.format(p) if p > 0.0000000001 else '< 1e-10') for p in pvals_float]
 
     if not pvals: 
