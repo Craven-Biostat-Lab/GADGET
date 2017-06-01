@@ -263,9 +263,9 @@ def genesearch(request):
     results = Gene.objects.raw(sqlquery, abstracts + [params.species, params.offset, params.query_limit])
 
     try:
-        x = len(list(results))
+        resultslength = len(list(results))
     except:
-        return searchresponse(validresult=False, download=params.download, errmsg='Query did not return results. Try a more specific query.', query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, usegenefile=params.usegenefile)
+        return searchresponse(validresult=False, download=params.download, errmsg='Query returned too many results. Try a more specific query.', query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, usegenefile=params.usegenefile)
 
 
 
