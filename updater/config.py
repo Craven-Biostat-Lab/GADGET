@@ -74,33 +74,47 @@ def getcursor(db):
 
 #from load_gene_abstract_links import linksource, insertMGI
 import load_gene_abstract_links as ga
-ga_sources = [    
-    # gene2pubmed
+ga_sources = [
+    #gene2pubtator
     ga.linksource(
-        url = 'ftp://ftp.ncbi.nih.gov/gene/DATA/gene2pubmed.gz',
-        filename = 'gene2pubmed',
+        url = 'ftp://ftp.ncbi.nlm.nih.gov/pub/lu/PubTator/gene2pubtator.gz',
+        filename = 'gene2pubtator',
         compressiontype = 'gzip',
-        compressedfilename = 'gene2pubmed.gz',
+        compressedfilename = 'gene2pubtator.gz',
         insertquery = \
             """load data local infile '{path}'
             into table `gene_abstract`
             fields terminated by '\t'
             ignore 1 lines
-            (@tax_id, `gene`, `abstract`);"""
+            (`abstract`, `gene`, @mention, @resource);"""
     ),
+
+    # gene2pubmed
+    #ga.linksource(
+    #    url = 'ftp://ftp.ncbi.nih.gov/gene/DATA/gene2pubmed.gz',
+    #    filename = 'gene2pubmed',
+    #    compressiontype = 'gzip',
+    #    compressedfilename = 'gene2pubmed.gz',
+    #    insertquery = \
+    #        """load data local infile '{path}'
+    #        into table `gene_abstract`
+    #        fields terminated by '\t'
+    #        ignore 1 lines
+    #        (@tax_id, `gene`, `abstract`);"""
+    #),
 
    
     # full_ner_mapping.txt local file not extracted from web
-    ga.linksource(
-        url = None,
-        filename = 'full_ner_mapping.txt',
-        insertquery = \
-            """load data local infile '{path}'
-            into table `gene_abstract`
-            fields terminated by '\t'
-            ignore 1 lines
-            (@tax_id, `gene`, `abstract`);"""
-    ),
+    #ga.linksource(
+    #    url = None,
+    #    filename = 'full_ner_mapping.txt',
+    #    insertquery = \
+    #        """load data local infile '{path}'
+    #        into table `gene_abstract`
+    #        fields terminated by '\t'
+    #        ignore 1 lines
+    #        (@tax_id, `gene`, `abstract`);"""
+    #),
 
     
     # SGD
