@@ -269,6 +269,15 @@ def metabolitesearch(request):
     # execute sql query, get genes
     results = Metabolite.objects.raw(sqlquery, abstracts + [params.species, params.offset, params.query_limit])
     #results = Metabolite.objects.raw(sqlquery, abstracts + [params.offset, params.query_limit])
+
+
+    try:
+	resultlength = len(list(results))
+    except:	
+        return searchresponse(validresult=False, download=params.download, errmsg="Query returned too many results. Try a more speceific query.", query=params.keywords, genes=params.genes, usehomologs=params.usehomologs, usegenefile=params.usegenefile)
+
+
+
     
     # calculate p values
     # '{0:.2e}'.format()
@@ -336,8 +345,11 @@ def searchresponse(validresult, download=None, errmsg=None, results=[], genes=[]
 def makeCSV(genes, pvals, offset):
     """Create a CSV file (returned as a string) given a list of genes and a list of p values."""
     header = 'rank,metabolite_name,hmdb_id,synonyms,origin,f1_balance,matching_abstracts,total_abstracts,specificity,p_value\n'
-    body = '\n'.join([','.join(['"{0}"'.format(f) for f in 
+    #body = '\n'.join([','.join(['"{0}"'.format(f) for f in
+    body = '\n'.join(['\t'.join([str(f) for f in 
         (rank, g.common_name.encode('ascii', 'ignore'), g.hmdb_id, g.synonyms.replace('"','').replace('\n','; ').encode('ascii', 'ignore'), g.origins.replace('"','').encode('ascii','ignore'), '{0:0.3f}'.format(g.f1_score), g.hits, g.abstracts_display, '{0:0.3f}'.format(g.precision), p)])
         for rank, (g, p) in enumerate(zip(genes, pvals), start=1+offset)])
+    body = body.replace(',',';')
+    body = body.replace('\t',',')
     return header + body
 

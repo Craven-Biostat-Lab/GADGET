@@ -6,3 +6,15 @@ Traceback (most recent call last):
   File "/usr/lib64/python2.7/site-packages/MySQLdb/connections.py", line 187, in __init__
     super(Connection, self).__init__(*args, **kwargs2)
 _mysql_exceptions.OperationalError: (2002, "Can't connect to local MySQL server through socket '/var/lib/mysql/mysql.sock' (13)")
+Traceback (most recent call last):
+  File "update.py", line 45, in <module>
+    fh = logging.handlers.RotatingFileHandler(logfilename, maxBytes=5000, backupCount=5)
+  File "/usr/lib64/python2.7/logging/handlers.py", line 117, in __init__
+    BaseRotatingHandler.__init__(self, filename, mode, encoding, delay)
+  File "/usr/lib64/python2.7/logging/handlers.py", line 64, in __init__
+    logging.FileHandler.__init__(self, filename, mode, encoding, delay)
+  File "/usr/lib64/python2.7/logging/__init__.py", line 902, in __init__
+    StreamHandler.__init__(self, self._open())
+  File "/usr/lib64/python2.7/logging/__init__.py", line 925, in _open
+    stream = open(self.baseFilename, self.mode)
+IOError: [Errno 13] Permission denied: '/var/www/gadget-data/updater-workspace/updater.log'
