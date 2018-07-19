@@ -3,6 +3,7 @@
 Update the gene-abstract links and abstract texts that GADGET uses.
 a
 This script will insert records into these database tables.  These tables can 
+
 be empty when you run the script:
 abstract
 gene_abstract
@@ -119,3 +120,4 @@ if __name__ == '__main__':
     clear_uploaded_files.clearfiles(db)
 
     logger.info('Completed GADGET data update.')
+

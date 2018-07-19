@@ -191,7 +191,7 @@ def write(articles, ix, db, mark_db=True):
 
 
     logger.debug("committing abstract index...")
-    writer.commit() 
+    writer.commit(merge=False) 
     logger.info("committed abstract index")
 
 
@@ -263,7 +263,11 @@ def temp_metabolite_index(db):
     # remove existing index
     if os.path.exists(TEMP_METABOLITE_INDEX_PATH):
         rmtree(TEMP_METABOLITE_INDEX_PATH)
-    mkdir(TEMP_METABOLITE_INDEX_PATH)
+    
+    try:
+        mkdir(TEMP_METABOLITE_INDEX_PATH)
+    except Exception as e:
+	logger.critical('could not make dir')
 
     ix = open_index(TEMP_METABOLITE_INDEX_PATH)
     
